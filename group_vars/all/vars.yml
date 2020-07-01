@@ -1,0 +1,95 @@
+---
+credentials:
+  ssh:
+    username: root
+    password: root
+
+common:
+  platform: onprem
+  #proxy:
+  #  http: {}
+  #  https: {}
+  #  no_proxy: {}                     #"localhost, 127.0.0.1, 10.1.10.0/24,172.20.0.0/16,10.244.0.0/16,10.96.0.0/16"
+  name: OnPremSetup
+
+controller_host_ip: 16.22.143.140
+bd_domain: bddomain
+bd_prefix: bluedata
+hdfs_disks: /dev/sdc
+no_tenant_isolation: false
+no_tenant_storage: false
+node_disks: /dev/sdb
+int_start_ip: 172.20.0.2
+int_end_ip: 172.20.255.254
+int_gw_ip: 172.20.0.1
+int_nw_mask: 16
+
+# epic workers
+epicworkers:
+  host_pools:
+    - name: worker1
+      worker: 10.1.10.21
+  hdfs_disks: /dev/sdc
+  node_disks: /dev/sdb
+
+# for k8s cluster
+k8shosts:
+  host_pools:
+    - name: worker1
+      host: 10.1.10.21
+    - name: worker2
+      host: 10.1.10.22
+    - name: worker3
+      host: 10.1.10.23
+  ephemeral_disks: /dev/sdc
+  persistent_disks: /dev/sdb
+
+gateway:
+  gateway_set_hostname: gateway-node.v0010.gselr5.local
+  host_ip: 10.1.10.24
+
+k8scluster:
+  name: cluster01
+  description: "my first cluster"
+  # TODO: get the host url through API
+  host_pools:
+    - name: master-pool
+      role: master
+      host: "10.1.10.23" # ip address of the node
+    - name: worker-pool
+      role: worker
+      host: "10.1.10.21"
+    - name: worker-pool
+      role: worker
+      host: "10.1.10.22"
+  k8sversion: "1.17.5"
+  pod_network_range: "10.244.0.0/16"
+  service_network_range: "10.96.0.0/16"
+  pod_dns_domain: "cluster.local"
+  persistent_storage: 
+    nimble_csi: false
+
+k8stenant:
+  name: test01
+  description: "my first tenant01"
+  tenant_type_info:
+    map_services_to_gateway: true
+    specified_namespace_name: test01
+    is_namespace_owner: true
+    adopt_existing_namespace: false
+  tenant_type: k8s
+  features:
+    ml_project: false
+  is_namespace_owner: true
+  quota:
+    memory: 20480 # 20x1024
+    persistent: 35840 # 35x1024
+    gpus: ""
+    cores: 12
+    disk: 25600 # 25x1024
+    tenant_storage: 30
+  k8s_cluster: cluster01
+  specified_namespace_name: test01
+  map_services_to_gateway: true
+  adopt_existing_namespace: false
+  krb_enc_types: []
