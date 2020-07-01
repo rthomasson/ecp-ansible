@@ -1,6 +1,6 @@
 ---
   - name: Install platform
-    hosts: localhost
+    hosts: "{{ controller_host }}"
     gather_facts: false
     roles:
       - role: platform
