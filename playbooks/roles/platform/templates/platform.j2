@@ -5,7 +5,7 @@ parameters:
   config:
     api_scheme: http
   host:
-    host_ip: "{{ controller.host_ip }}"
+    host_ip: "{{ controller_host_ip }}"
   ssh:
     password: "{{ credentials.ssh.password }}"
     username: "{{ credentials.ssh.username }}"
@@ -19,7 +19,7 @@ parameters:
     {% endif %}
     url_bin_path: "{{ bin_dir }}/{{ bin_file }}"
   host:
-    host_ip: "{{ controller.host_ip }}"
+    host_ip: "{{ controller_host_ip }}"
   ssh:
     password: "{{ credentials.ssh.password }}"
     username: "{{ credentials.ssh.username }}"
@@ -28,18 +28,18 @@ op: ControllerConfig
 platform: "{{ common.platform }}"
 parameters:
   config:
-    bd_domain: "{{ controller.bd_domain }}"
-    bd_prefix: "{{ controller.bd_prefix }}"
-    hdfs_disks: "{{ controller.hdfs_disks }}"
-    no_tenant_isolation: "{{ controller.no_tenant_isolation }}"
-    no_tenant_storage: "{{ controller.no_tenant_storage }}"
-    node_disks: "{{ controller.node_disks }}"
-    int_start_ip: "{{ controller.int_start_ip }}"
-    int_end_ip: "{{ controller.int_end_ip }}"
-    int_gw_ip: "{{ controller.int_gw_ip }}"
-    int_nw_mask: "{{ controller.int_nw_mask }}"
+    bd_domain: "{{ bd_domain }}"
+    bd_prefix: "{{ bd_prefix }}"
+    hdfs_disks: "{{ hdfs_disks }}"
+    no_tenant_isolation: "{{ no_tenant_isolation }}"
+    no_tenant_storage: "{{ no_tenant_storage }}"
+    node_disks: "{{ node_disks }}"
+    int_start_ip: "{{ int_start_ip }}"
+    int_end_ip: "{{ int_end_ip }}"
+    int_gw_ip: "{{ int_gw_ip }}"
+    int_nw_mask: "{{ int_nw_mask }}"
   host:
-    host_ip: "{{ controller.host_ip }}"
+    host_ip: "{{ controller_host_ip }}"
   ssh:
     password: "{{ credentials.ssh.password }}"
     username: "{{ credentials.ssh.username }}"
