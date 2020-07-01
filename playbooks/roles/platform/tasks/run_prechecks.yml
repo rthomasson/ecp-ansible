@@ -1,9 +1,9 @@
-  ---
-  - name: Run prechecks from the bin file
-    command: "{{ bundles_dir }}/{{ bin_file }} --prechecks-only"
-    register: res
-    #failed_when: res.rc != 0
-    failed_when: false
+---
+- name: Ensure pre-checks runs successfully.
+  shell: "{{ bundles_dir }}/{{ bin_file }} --prechecks-only"
+  changed_when: false
+  register: res
+  failed_when: res.rc != 0
 
-  - debug:
-      msg: "{{ res.stdout }}"
+- debug:
+    msg: "{{ res.stdout }}"
