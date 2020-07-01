@@ -6,7 +6,6 @@
     owner: root
     group: root
     mode: preserve
-  delegate_to: "{{ tower_server }}"
 
 - name: Ensure pre-checks runs successfully.
   shell: "{{ bundles_dir }}/{{ bin_file }} --prechecks-only"
