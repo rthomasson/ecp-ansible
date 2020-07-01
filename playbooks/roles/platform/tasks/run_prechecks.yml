@@ -1,7 +1,7 @@
 ---
 - name: Copy the bin file from the automation server to the target server.
   copy: 
-    src: "../files/{{ bin_file }}"
+    src: "{{ lookup('env','HOME') }}/{{ bin_file }}"
     dest: "{{ bundles_dir }}/{{ bin_file }}"
     owner: root
     group: root
