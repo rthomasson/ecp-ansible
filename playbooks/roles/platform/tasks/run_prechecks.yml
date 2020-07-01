@@ -1,7 +1,7 @@
 ---
 - name: Copy the bin file from the automation server to the target server.
   copy: 
-    src: "{{ bundles_dir }}/{{ bin_file }}"
+    src: "/var/lib/awx/projects/_9__wf_lab/playbooks/roles/platform/files/{{ bin_file }}"
     dest: "/root/{{ bin_file }}"
     owner: root
     group: root
