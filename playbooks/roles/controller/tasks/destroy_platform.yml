@@ -1,0 +1,9 @@
+  ---
+  - name: Run epicctl command to destroy the specified onprem platform
+    command: "epicctl -n {{ platform_name }} -p onprem destroy"
+    register: res
+    #failed_when: res.rc != 0
+    failed_when: false
+
+  - debug:
+      msg: "{{ res.stdout }}"
