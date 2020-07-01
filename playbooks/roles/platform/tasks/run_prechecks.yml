@@ -3,7 +3,7 @@
   synchronize: 
     src: "{{ bundles_dir }}/{{ bin_file }}"
     dest: "{{ bundles_dir }}/{{ bin_file }}"
-  delegate_to: Automation
+  delegate_to: "{{ tower_server }}"
 
 - name: Ensure pre-checks runs successfully.
   shell: "{{ bundles_dir }}/{{ bin_file }} --prechecks-only"
