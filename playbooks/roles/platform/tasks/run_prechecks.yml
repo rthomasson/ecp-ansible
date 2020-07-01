@@ -1,14 +1,14 @@
 ---
 - name: Copy the bin file from the automation server to the target server.
   copy: 
-    src: "{{ playbook_dir }}/{{ bin_file }}"
-    dest: "{{ bundles_dir }}/{{ bin_file }}"
+    src: "{{ bundles_dir }}/{{ bin_file }}"
+    dest: "/root/{{ bin_file }}"
     owner: root
     group: root
     mode: preserve
 
 - name: Ensure pre-checks runs successfully.
-  shell: "{{ bundles_dir }}/{{ bin_file }} --prechecks-only"
+  shell: "/root/{{ bin_file }} --prechecks-only"
   changed_when: false
   register: res
   failed_when: res.rc != 0
