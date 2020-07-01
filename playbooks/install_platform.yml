@@ -1,0 +1,8 @@
+---
+  - name: Install platform
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          install: yes

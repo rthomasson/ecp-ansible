@@ -1,0 +1,8 @@
+---
+  - name: Destroy platform
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          destroy: yes

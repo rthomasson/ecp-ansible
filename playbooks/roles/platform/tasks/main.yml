@@ -1,0 +1,10 @@
+---
+# tasks file for controller
+  - include_tasks: destroy_platform.yml
+    when: destroy is defined
+	
+  - include_tasks: run_prechecks.yml
+    when: run_checks is defined
+	
+  - include_tasks: install_platform.yml
+    when: install is defined
