@@ -1,15 +1,15 @@
 ---
-  - name: Prepare input file for epicctl.
-    template:
-      src: platform.j2
-      dest: "/tmp/{{ common.name }}_platform.yml"
-      mode: 0640
+- name: Prepare input file for epicctl.
+  template:
+    src: platform.j2
+    dest: "/tmp/{{ common.name }}_platform.yml"
+    mode: 0640
   
-  - name: Run epicctl command to setup and configure controller node
-    command: "epicctl op -f /tmp/{{ common.name }}_platform.yml -n {{ common.name }}"
-    register: res
-    #failed_when: res.rc != 0
-    failed_when: false
+- name: Run epicctl command to setup and configure controller node
+  command: "epicctl op -f /tmp/{{ common.name }}_platform.yml -n {{ common.name }}"
+  register: res
+  #failed_when: res.rc != 0
+  failed_when: false
 
-  - debug:
-      msg: "{{ res.stdout }}"
+- debug:
+    msg: "{{ res.stdout }}"
