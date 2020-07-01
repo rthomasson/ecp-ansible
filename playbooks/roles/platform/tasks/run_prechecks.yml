@@ -1,8 +1,11 @@
 ---
 - name: Copy the bin file from the automation server to the target server.
-  synchronize: 
+  copy: 
     src: "{{ bundles_dir }}/{{ bin_file }}"
     dest: "{{ bundles_dir }}/{{ bin_file }}"
+    owner: root
+    group: root
+    mode: '0755'
   delegate_to: "{{ tower_server }}"
 
 - name: Ensure pre-checks runs successfully.
