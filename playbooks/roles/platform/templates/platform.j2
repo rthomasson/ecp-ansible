@@ -16,7 +16,7 @@ parameters:
   config:
     {% if common.proxy is defined %}
     proxy_url: "{{ common.proxy.http }}"
-    {% endif % }
+    {% endif %}
     url_bin_path: "{{ bin_dir }}/{{ bin_file }}"
   host:
     host_ip: "{{ controller.host_ip }}"
