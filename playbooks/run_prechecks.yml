@@ -1,5 +1,5 @@
 ---
-  - hosts: mip-bdcs-vm39.mip.storage.hpecorp.net
+  - hosts: Controllers
     gather_facts: false
     roles:
       - role: platform
