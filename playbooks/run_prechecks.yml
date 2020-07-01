@@ -1,5 +1,5 @@
 ---
-  - hosts: "{{ controllers }}"
+  - hosts: "{{ Controllers }}"
     gather_facts: false
     roles:
       - role: platform
