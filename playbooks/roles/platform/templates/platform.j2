@@ -46,3 +46,36 @@ parameters:
   ssh:
     password: {{ credentials.ssh.password }}
     username: {{ credentials.ssh.username }}
+---
+op: GatewayConfig
+parameters:
+  config:
+    gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+    install_type: non-agent-based-install
+  host:
+    internal_ip: 16.143.22.141
+  ssh:
+    password: admin123
+    username: root
+    access_type: password_access
+    #access_type: ssh_key_access
+    #keypair_file: /Users/jagadish/Downloads/private_key.pem
+    #keypair_name: private_key.pem
+platform: onprem
+---
+op: GatewayConfig
+parameters:
+  config:
+    gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+    install_type: non-agent-based-install
+  host:
+    internal_ip: 16.143.22.157
+  ssh:
+    password: admin123
+    username: root
+    access_type: password_access
+    #access_type: ssh_key_access
+    #keypair_file: /Users/jagadish/Downloads/private_key.pem
+    #keypair_name: private_key.pem
+platform: onprem
+
