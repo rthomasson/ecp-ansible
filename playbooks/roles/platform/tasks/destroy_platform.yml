@@ -40,7 +40,6 @@
   become: yes  # use sudo 
   become_method: sudo 
   become_user: root
-  become_password: admin123
   register: res
   failed_when: false
   with_items:
