@@ -101,3 +101,274 @@ parameters:
     access_type: password_access
     password: {{ credentials.ssh.password }}
     username: {{ credentials.ssh.username }}
+
+---
+op: WorkerSetup
+parameters:
+  host:
+    host_ip: 16.143.22.146
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: WorkerSetup
+parameters:
+  host:
+    host_ip: 16.143.22.156
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: WorkerSetup
+parameters:
+  host:
+    host_ip: 16.0.8.232
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: WorkerSetup
+parameters:
+  host:
+    host_ip: 16.0.8.233
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.143.22.89
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.143.22.147
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.143.22.158
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.143.22.159
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.143.22.160
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.143.22.161
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.143.22.162
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.143.22.163
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.0.8.228
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.0.8.229
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: K8sHostSetup
+parameters:
+  host:
+    host_ip: 16.0.8.230
+  ssh:
+    password: admin123
+    username: root
+platform: onprem
+---
+op: WorkerConfig
+parameters:
+  config:
+    hdfs_disks: /dev/sdc
+    node_disks: /dev/sdb
+  host:
+    internal_ip: 16.143.22.146
+platform: onprem
+---
+op: WorkerConfig
+parameters:
+  config:
+    hdfs_disks: /dev/sdc
+    node_disks: /dev/sdb
+  host:
+    internal_ip: 16.143.22.156
+platform: onprem
+---
+op: WorkerConfig
+parameters:
+  config:
+    hdfs_disks: /dev/sdc
+    node_disks: /dev/sdb
+  host:
+    internal_ip: 16.0.8.232
+platform: onprem
+---
+op: WorkerConfig
+parameters:
+  config:
+    hdfs_disks: /dev/sdc
+    node_disks: /dev/sdb
+  host:
+    internal_ip: 16.0.8.233
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.143.22.89
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.143.22.147
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.143.22.158
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.143.22.159
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.143.22.160
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.143.22.161
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.143.22.162
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.143.22.163
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.0.8.228
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.0.8.229
+platform: onprem
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: /dev/sdb
+    persistent_disks: /dev/sdc
+  host:
+    internal_ip: 16.0.8.230
+platform: onprem
