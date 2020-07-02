@@ -8,10 +8,21 @@
 - name: Ensure previous files and directories are clean before copy.
   command: rm -f /opt/bluedata/repositories/*
   register: res
+  warn: false
   failed_when: res.rc != 0
 
 - name: Ensure previous docker is removed.
-  command: yum remove docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-engine -y
+  yum:
+    name:
+      - docker 
+      - docker-client 
+      - docker-client-latest 
+      - docker-common 
+      - docker-latest 
+      - docker-latest-logrotate 
+      - docker-logrotate 
+      - docker-engine
+    state: absent
   register: res
   failed_when: res.rc != 0
 
