@@ -1,9 +1,9 @@
 ---
-  - name: k8s tenants LCM.
+  - name: k8s tenant LCM.
     hosts: localhost
     gather_facts: false
     roles:
-      - role: k8s-tenants
+      - role: k8s-tenant
         vars:
           createtenant: true
           updatetenant: false
