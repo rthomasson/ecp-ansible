@@ -3,7 +3,7 @@
     hosts: localhost
     gather_facts: false
     roles:
-      - role: k8s-hosts
+      - role: k8s-worker
         vars:
           addhosts: true
 
@@ -11,7 +11,7 @@
     hosts: localhost
     gather_facts: false
     roles:
-      - role: k8s-hosts
+      - role: k8s-worker
         vars:
           deletehosts: false
           delete_pools:
