@@ -7,8 +7,8 @@
 
 - name: Ensure previous files and directories are clean before copy.
   command: rm -f /opt/bluedata/repositories/*
-  register: res
   warn: false
+  register: res
   failed_when: res.rc != 0
 
 - name: Ensure previous docker is removed.
