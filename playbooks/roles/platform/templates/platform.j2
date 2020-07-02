@@ -76,3 +76,28 @@ parameters:
     #keypair_name: private_key.pem
 platform: onprem
 
+---
+op: GatewaySetup
+platform: {{ common.platform }}
+parameters:
+  config:
+    gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+  host:
+    host_ip: 16.143.22.141
+  ssh:
+    access_type: password_access
+    password: {{ credentials.ssh.password }}
+    username: {{ credentials.ssh.username }}
+
+---
+op: GatewaySetup
+platform: {{ common.platform }}
+parameters:
+  config:
+    gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+  host:
+    host_ip: 16.143.22.157
+  ssh:
+    access_type: password_access
+    password: {{ credentials.ssh.password }}
+    username: {{ credentials.ssh.username }}
