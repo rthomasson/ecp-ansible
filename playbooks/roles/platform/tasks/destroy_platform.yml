@@ -37,10 +37,10 @@
 # Dangerous command, be careful before cleanup
 - name: Ensure storage disks are available.
   command:  "{{ item }}"
-  ansible_become: yes  # use sudo 
-  ansible_become_method: sudo 
-  ansible_become_user: root
-  ansible_become_password: admin123
+  become: yes  # use sudo 
+  become_method: sudo 
+  become_user: root
+  become_password: admin123
   register: res
   failed_when: false
   with_items:
