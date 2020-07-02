@@ -38,8 +38,6 @@
 - name: Ensure storage disks are available.
   command:  "{{ item }}"
   become: yes
-  become_method: sudo
-  become_user: root
   register: res
   failed_when: false
   with_items:
