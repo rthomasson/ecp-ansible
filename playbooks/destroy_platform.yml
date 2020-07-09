@@ -1,12 +1,13 @@
 ---
   - name: Copy epicctl
     hosts: primary_controller
-    copy: 
-      src: "{{ common.bin_dir }}epicctl"
-      dest: "/usr/local/bin/epicctl"
-      owner: root
-      group: root
-      mode: preserve
+    tasks:
+      - copy: 
+          src: "{{ common.bin_dir }}epicctl"
+          dest: "/usr/local/bin/epicctl"
+          owner: root
+          group: root
+          mode: preserve
   
   - name: Destroy platform
     hosts: localhost
