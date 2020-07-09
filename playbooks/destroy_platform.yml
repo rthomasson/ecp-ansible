@@ -2,7 +2,7 @@
   - name: Copy epicctl
     hosts: localhost
     tasks:
-      - command: scp {{ common.bin_dir }}epicctl {{ credentials.ssh.username }}@{{ hostvars[groups.primary_controller[0].ansible_host] }}
+      - command: scp {{ common.bin_dir }}epicctl {{ credentials.ssh.username }}@{{ hostvars[groups.primary_controller[0]].ansible_host }}
   
   - name: Destroy platform
     hosts: localhost
