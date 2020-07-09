@@ -28,7 +28,6 @@ parameters:
 {% endif %}    #url_bin_path: {{ common.bin_url }}
     url_bin_path: local://{{ common.bin_dir }}{{ common.bin_file }}
     install_type: {{ common.install_type }}
-    yum_update: {{ common.yum_update_flag }}
   host:
     host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
   ssh:
@@ -72,7 +71,6 @@ parameters:
   config:
     gateway_set_hostname: {{ gateway.gateway_set_hostname }}
     install_type: {{ common.install_type }}
-    yum_update: {{ common.yum_update_flag }}
   host:
     internal_ip: {{ hostvars[gw].ansible_host }}
   ssh:
@@ -93,7 +91,6 @@ parameters:
     hdfs_disks: {{ common.persistent_disks|join(',') }}
 {% endif %}
     install_type: {{ common.install_type }}
-    yum_update: {{ common.yum_update_flag }}
   host:
     internal_ip: {{ hostvars[ew].ansible_host }}
   ssh:
