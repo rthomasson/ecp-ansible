@@ -26,7 +26,7 @@ parameters:
 {% if common.ssl_cert_key_file is defined %}
     ssl_cert_file: {{ common.ssl_cert_key_file }}
 {% endif %}    #url_bin_path: {{ common.bin_url }}
-    url_bin_path: {{ common.bin_dir }}{{ common.bin_file }}
+    url_bin_path: local://{{ common.bin_dir }}{{ common.bin_file }}
     install_type: {{ common.install_type }}
     yum_update: {{ common.yum_update_flag }}
   host:
