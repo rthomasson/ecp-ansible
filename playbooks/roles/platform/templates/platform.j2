@@ -87,9 +87,6 @@ parameters:
     node_disks: {{ common.ephemeral_disks|join(',') }}
     {% if common.persistent_disks is defined %}
     hdfs_disks: {{ common.persistent_disks|join(',') }}
-    no_tenant_storage: false
-    {% else %}
-    no_tenant_storage: true
     {% endif %}
     install_type: {{ common.install_type }}
     yum_update: {{ common.yum_update_flag }}
