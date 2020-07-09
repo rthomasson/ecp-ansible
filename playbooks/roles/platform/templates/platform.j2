@@ -1,78 +1,95 @@
 ---
 op: Init
-platform: {{ common.platform }}
 parameters:
   config:
     api_scheme: http
   host:
-    host_ip: {{ controller_host_ip }}
+    host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
   ssh:
-    password: {{ credentials.ssh.password }}
     username: {{ credentials.ssh.username }}
+    password: {{ credentials.ssh.password }}
+    #access_type: {{ credentials.ssh.access_type }}
+    #keypair_file: {{ credentials.ssh.keypair_file }}
+    #keypair_name: {{ credentials.ssh.keypair_name }}
+platform: {{ common.platform }}
 ---
 op: ControllerSetup
-platform: {{ common.platform }}
 parameters:
   config:
     {% if common.proxy is defined %}
     proxy_url: {{ common.proxy.http }}
     {% endif %}
-    url_bin_path: {{ bin_dir }}/{{ bin_file }}
+    #ssl_cert_file: {{ common.ssl_cert_file }}
+    #ssl_cert_key_file: {{ common.ssl_cert_key_file }}
+    url_bin_path: {{ common.bin_url }}
+    install_type: {{ common.install_type }}
+    yum_update: {{ common.yum_update_flag }}
   host:
-    host_ip: {{ controller_host_ip }}
+    host_ip: {{ hostvars[groups.controllers[0]].ansibl_host }}
   ssh:
-    password: {{ credentials.ssh.password }}
     username: {{ credentials.ssh.username }}
+    password: {{ credentials.ssh.password }}
+    #access_type: {{ credentials.ssh.access_type }}
+    #keypair_file: {{ credentials.ssh.keypair_file }}
+    #keypair_name: {{ credentials.ssh.keypair_name }}
+platform: {{ common.platform }}
 ---
 op: ControllerConfig
-platform: {{ common.platform }}
 parameters:
   config:
-    bd_domain: {{ bd_domain }}
+    bd_domain: {{ common.bd_domain }}
     bd_prefix: {{ bd_prefix }}
-    hdfs_disks: {{ hdfs_disks }}
+    node_disks: {{ ephemeral_disks|join(',') }}
+    hdfs_disks: {{ persistent_disks|join(',') }}
     no_tenant_isolation: {{ no_tenant_isolation }}
     no_tenant_storage: {{ no_tenant_storage }}
-    node_disks: {{ node_disks }}
     int_start_ip: {{ int_start_ip }}
     int_end_ip: {{ int_end_ip }}
     int_gw_ip: {{ int_gw_ip }}
     int_nw_mask: {{ int_nw_mask }}
   host:
-    host_ip: {{ controller_host_ip }}
+    host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
   ssh:
-    password: {{ credentials.ssh.password }}
     username: {{ credentials.ssh.username }}
+    password: {{ credentials.ssh.password }}
+    #access_type: {{ credentials.ssh.access_type }}
+    #keypair_file: {{ credentials.ssh.keypair_file }}
+    #keypair_name: {{ credentials.ssh.keypair_name }}
+platform: {{ common.platform }}
+{% for gw in groups.gateways %}
 ---
 op: GatewayConfig
 parameters:
   config:
-    gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
-    install_type: non-agent-based-install
+    gateway_set_hostname: {{ gateway.gateway_set_hostname }}
+    install_type: {{ common.install_type }}
+    yum_update: {{ common.yum_update_flag }}
   host:
-    internal_ip: 16.143.22.141
+    internal_ip: {{ hostvars[gw].ansible_host }}
   ssh:
-    password: {{ credentials.ssh.password }}
     username: {{ credentials.ssh.username }}
-    access_type: password_access
-    #access_type: ssh_key_access
-    #keypair_file: /Users/jagadish/Downloads/private_key.pem
-    #keypair_name: private_key.pem
-platform: onprem
+    password: {{ credentials.ssh.password }}
+    #access_type: {{ credentials.ssh.access_type }}
+    #keypair_file: {{ credentials.ssh.keypair_file }}
+    #keypair_name: {{ credentials.ssh.keypair_name }}
+platform: {{ common.platform }}
+{% endfor %}
+{% for ew in groups.epic_workers %}
 ---
-op: GatewayConfig
+op: WorkerConfig
 parameters:
   config:
-    gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
-    install_type: non-agent-based-install
+    node_disks: {{ ephemeral_disks|join(',') }}
+    hdfs_disks: {{ persistent_disks|join(',') }}
+    install_type: {{ common.install_type }}
+    yum_update: {{ common.yum_update_flag }}
   host:
-    internal_ip: 16.143.22.157
+    internal_ip: {{ hostvars[ew].ansible_host }}
   ssh:
-    password: {{ credentials.ssh.password }}
     username: {{ credentials.ssh.username }}
-    access_type: password_access
-    #access_type: ssh_key_access
-    #keypair_file: /Users/jagadish/Downloads/private_key.pem
-    #keypair_name: private_key.pem
-platform: onprem
-
+    password: {{ credentials.ssh.password }}
+    #access_type: {{ credentials.ssh.access_type }}
+    #keypair_file: {{ credentials.ssh.keypair_file }}
+    #keypair_name: {{ credentials.ssh.keypair_name }}
+platform: {{ common.platform }}
+{% endfor %}
