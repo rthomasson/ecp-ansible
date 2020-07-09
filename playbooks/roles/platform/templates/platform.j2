@@ -38,15 +38,15 @@ op: ControllerConfig
 parameters:
   config:
     bd_domain: {{ common.bd_domain }}
-    bd_prefix: {{ bd_prefix }}
-    node_disks: {{ ephemeral_disks|join(',') }}
-    hdfs_disks: {{ persistent_disks|join(',') }}
-    no_tenant_isolation: {{ no_tenant_isolation }}
-    no_tenant_storage: {{ no_tenant_storage }}
-    int_start_ip: {{ int_start_ip }}
-    int_end_ip: {{ int_end_ip }}
-    int_gw_ip: {{ int_gw_ip }}
-    int_nw_mask: {{ int_nw_mask }}
+    bd_prefix: {{ common.bd_prefix }}
+    node_disks: {{ common.ephemeral_disks|join(',') }}
+    hdfs_disks: {{ common.persistent_disks|join(',') }}
+    no_tenant_isolation: {{ common.no_tenant_isolation }}
+    no_tenant_storage: {{ common.no_tenant_storage }}
+    int_start_ip: {{ common.int_start_ip }}
+    int_end_ip: {{ common.int_end_ip }}
+    int_gw_ip: {{ common.int_gw_ip }}
+    int_nw_mask: {{ common.int_nw_mask }}
   host:
     host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
   ssh:
@@ -79,8 +79,8 @@ platform: {{ common.platform }}
 op: WorkerConfig
 parameters:
   config:
-    node_disks: {{ ephemeral_disks|join(',') }}
-    hdfs_disks: {{ persistent_disks|join(',') }}
+    node_disks: {{ common.ephemeral_disks|join(',') }}
+    hdfs_disks: {{ common.persistent_disks|join(',') }}
     install_type: {{ common.install_type }}
     yum_update: {{ common.yum_update_flag }}
   host:
