@@ -19,8 +19,12 @@ parameters:
     {% if common.proxy is defined %}
     proxy_url: {{ common.proxy.http }}
     {% endif %}
-    #ssl_cert_file: {{ common.ssl_cert_file }}
-    #ssl_cert_key_file: {{ common.ssl_cert_key_file }}
+    {% if common.ssl_cert_file is defined %}
+    ssl_cert_file: {{ common.ssl_cert_file }}
+    {% endif %}
+    {% if common.ssl_cert_key_file is defined %}
+    ssl_cert_file: {{ common.ssl_cert_key_file }}
+    {% endif %}
     #url_bin_path: {{ common.bin_url }}
     url_bin_path: {{ common.bin_dir }}/{{ common.bin_file }}
     install_type: {{ common.install_type }}
