@@ -1,6 +1,6 @@
 ---
   - name: Configure platform HA
-    hosts: primary_controller
+    hosts: localhost
     gather_facts: false
     roles:
       - role: platform
