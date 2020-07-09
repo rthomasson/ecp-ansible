@@ -6,3 +6,7 @@
     when: run_checks is defined
   - include_tasks: install_platform.yml
     when: install is defined
+  - include_tasks: configure_ha.yml
+    when: configure_ha is defined
+  - include_tasks: configure_airgap.yml
+    when: configure_airgap is defined
