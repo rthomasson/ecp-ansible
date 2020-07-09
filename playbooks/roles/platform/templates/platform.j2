@@ -26,7 +26,7 @@ parameters:
     install_type: {{ common.install_type }}
     yum_update: {{ common.yum_update_flag }}
   host:
-    host_ip: {{ hostvars[groups.controllers[0]].ansibl_host }}
+    host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
   ssh:
     username: {{ credentials.ssh.username }}
     password: {{ credentials.ssh.password }}
