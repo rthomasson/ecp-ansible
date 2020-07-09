@@ -41,7 +41,9 @@ parameters:
     bd_domain: {{ common.bd_domain }}
     bd_prefix: {{ common.bd_prefix }}
     node_disks: {{ common.ephemeral_disks|join(',') }}
+    {% if common.persistent_disks is defined %}
     hdfs_disks: {{ common.persistent_disks|join(',') }}
+    {% endif %}
     no_tenant_isolation: {{ common.no_tenant_isolation }}
     no_tenant_storage: {{ common.no_tenant_storage }}
     int_start_ip: {{ common.int_start_ip }}
