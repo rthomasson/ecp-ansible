@@ -17,7 +17,7 @@
 # failed_when: res.status != 200   
     
 - name: Run epicctl command to place system in lockdown mode
-  command: 'epicctl api post -u "/api/v1/lock" -f "/tmp/{{ common.name }}_lockdown.json" -p "{{ common.platform }}" -n "{{ common.name }}"'
+  command: 'epicctl api post -u /api/v1/lock -f /tmp/{{ common.name }}_lockdown.json -p {{ common.platform }} -n {{ common.name }}'
   register: res
   failed_when: res.rc != 0
   #failed_when: false
