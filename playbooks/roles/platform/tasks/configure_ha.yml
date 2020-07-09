@@ -1,7 +1,7 @@
 ---
 - name: Prepare input file for epicctl.
   template:
-    src: lockdown_json.j2
+    src: lockdown.j2
     dest: "/tmp/lockdown.json"
     mode: 0777
   
