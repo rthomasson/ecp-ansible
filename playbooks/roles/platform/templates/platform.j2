@@ -1,5 +1,5 @@
 ---
-#Configure YAML file for epicctl
+#Configure platform installation YAML file for epicctl
 op: Init
 parameters:
   config:
@@ -17,16 +17,15 @@ platform: {{ common.platform }}
 op: ControllerSetup
 parameters:
   config:
-    {% if common.proxy is defined %}
+{% if common.proxy is defined %}
     proxy_url: {{ common.proxy.http }}
-    {% endif %}
-    {% if common.ssl_cert_file is defined %}
+{% endif %}
+{% if common.ssl_cert_file is defined %}
     ssl_cert_file: {{ common.ssl_cert_file }}
-    {% endif %}
-    {% if common.ssl_cert_key_file is defined %}
+{% endif %}
+{% if common.ssl_cert_key_file is defined %}
     ssl_cert_file: {{ common.ssl_cert_key_file }}
-    {% endif %}
-    #url_bin_path: {{ common.bin_url }}
+{% endif %}    #url_bin_path: {{ common.bin_url }}
     url_bin_path: {{ common.bin_dir }}/{{ common.bin_file }}
     install_type: {{ common.install_type }}
     yum_update: {{ common.yum_update_flag }}
@@ -46,12 +45,12 @@ parameters:
     bd_domain: {{ common.bd_domain }}
     bd_prefix: {{ common.bd_prefix }}
     node_disks: {{ common.ephemeral_disks|join(',') }}
-    {% if common.persistent_disks is defined %}
+{% if common.persistent_disks is defined %}
     hdfs_disks: {{ common.persistent_disks|join(',') }}
     no_tenant_storage: false
-    {% else %}
+{% else %}
     no_tenant_storage: true
-    {% endif %}
+{% endif %}
     no_tenant_isolation: {{ common.no_tenant_isolation }}
     int_start_ip: {{ common.int_start_ip }}
     int_end_ip: {{ common.int_end_ip }}
@@ -90,9 +89,9 @@ op: WorkerConfig
 parameters:
   config:
     node_disks: {{ common.ephemeral_disks|join(',') }}
-    {% if common.persistent_disks is defined %}
+{% if common.persistent_disks is defined %}
     hdfs_disks: {{ common.persistent_disks|join(',') }}
-    {% endif %}
+{% endif %}
     install_type: {{ common.install_type }}
     yum_update: {{ common.yum_update_flag }}
   host:
