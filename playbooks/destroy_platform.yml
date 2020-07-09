@@ -1,6 +1,6 @@
 ---
   - name: Destroy platform
-    hosts: controllers
+    hosts: primary_controller
     gather_facts: false
     roles:
       - role: platform
