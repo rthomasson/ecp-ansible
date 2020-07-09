@@ -4,12 +4,19 @@
     src: lockdown.j2
     dest: "/tmp/{{ common.name }}_lockdown.json"
     mode: 0777
-  
-- name: Run epicctl command to place system in lockdown mode
-  command: 'epicctl api post -a -u /api/v1/lock -f /tmp/{{ common.name }}_lockdown.json -p {{ common.platform }} -n {{ common.name }}'
-  register: res
-  #failed_when: res.rc != 0
-  failed_when: false
+
+- name: POST a Body to an Endpoint
+  win_uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/lock
+    method: POST
+    body: "{ 'reason': 'configuration test' }"
+    
+    
+#- name: Run epicctl command to place system in lockdown mode
+#  command: 'epicctl api post -a -u /api/v1/lock -f /tmp/{{ common.name }}_lockdown.json -p {{ common.platform }} -n {{ common.name }}'
+#  register: res
+#  #failed_when: res.rc != 0
+#  failed_when: false
 
 - name: Prepare configure HA JSON input file for epicctl.
   template:
