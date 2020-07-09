@@ -4,7 +4,7 @@ parameters:
   config:
     api_scheme: http
   host:
-    host_ip: {{ hostvars[controllers[0]].ansible_host }}
+    host_ip: {{ hostvars[controllers[0]] }}
   ssh:
     username: {{ credentials.ssh.username }}
     password: {{ credentials.ssh.password }}
