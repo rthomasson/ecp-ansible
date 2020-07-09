@@ -1,14 +1,14 @@
 ---
 - name: Copy the bin file from the automation server to the target server.
   copy: 
-    src: "/var/lib/awx/projects/_9__wf_lab/playbooks/roles/platform/files/{{ precheck_file }}"
-    dest: "/root/{{ precheck_file }}"
+    src: "/var/lib/awx/projects/_9__wf_lab/playbooks/roles/platform/files/{{ common.precheck_file }}"
+    dest: "/root/{{ common.precheck_file }}"
     owner: root
     group: root
     mode: preserve
 
 - name: Ensure pre-checks runs successfully.
-  shell: "/root/{{ precheck_file }} --proxy http://web-proxy.corp.hpecorp.net:8080"
+  shell: "/root/{{ common.precheck_file }} --proxy http://web-proxy.corp.hpecorp.net:8080"
   changed_when: false
   register: res
   failed_when: res.rc != 0
