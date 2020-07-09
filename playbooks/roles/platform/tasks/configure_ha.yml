@@ -2,11 +2,11 @@
 - name: Prepare input file for epicctl.
   template:
     src: login_json.j2
-    dest: "epicctl/login.json"
+    dest: "/tmp/login.json"
     mode: 0777
   
 - name: Run epicctl command to setup and configure controller node
-  command: "epicctl api post -u "/api/v1/login" -f  epicctl/login.json -p {{ common.platform }} -n {{ common.name }}"
+  command: "epicctl api post -u "/api/v1/login" -f  /tmp/login.json -p {{ common.platform }} -n {{ common.name }}"
   register: res
   #failed_when: res.rc != 0
   failed_when: false
