@@ -1,7 +1,7 @@
 ---
 - name: Copy the bin file from the automation server to the target server.
   copy: 
-    src: "/var/lib/awx/projects/_9__wf_lab/playbooks/roles/platform/files/{{ common.precheck_file }}"
+    src: "{{ common.bin_dir }}/{{ common.precheck_file }}"
     dest: "/root/{{ common.precheck_file }}"
     owner: root
     group: root
