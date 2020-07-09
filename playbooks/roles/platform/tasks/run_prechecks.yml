@@ -1,7 +1,7 @@
 ---
 - name: Copy the bin file from the automation server to the target server.
   copy: 
-    src: "{{ common.bin_dir }}/{{ common.precheck_file }}"
+    src: "{{ common.bin_dir }}{{ common.precheck_file }}"
     dest: "/root/{{ common.precheck_file }}"
     owner: root
     group: root
