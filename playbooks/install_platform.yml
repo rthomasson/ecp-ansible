@@ -6,3 +6,5 @@
       - role: platform
         vars:
           install: yes
+          configure_ha: yes
+          

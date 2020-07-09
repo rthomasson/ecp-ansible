@@ -1,12 +1,24 @@
 ---
-- name: Prepare input file for epicctl.
+- name: Prepare lockdown JSON input file for epicctl.
   template:
     src: lockdown.j2
     dest: "/tmp/lockdown.json"
     mode: 0777
   
-- name: Run epicctl command to setup and configure controller node
+- name: Run epicctl command to place system in lockdown mode
   command: 'epicctl api post -u /api/v1/lock -f /tmp/lockdown.json -p {{ common.platform }} -n {{ common.name }}'
+  register: res
+  #failed_when: res.rc != 0
+  failed_when: false
+
+- name: Prepare configure HA JSON input file for epicctl.
+  template:
+    src: configur_ha.j2
+    dest: "/tmp/configure_ha.json"
+    mode: 0777
+  
+- name: Run epicctl command to configure HA
+  command: 'epicctl api put -u /api/v1/install/?install_ha -f /tmp/configure_ha.json -p {{ common.platform }} -n {{ common.name }}'
   register: res
   #failed_when: res.rc != 0
   failed_when: false
