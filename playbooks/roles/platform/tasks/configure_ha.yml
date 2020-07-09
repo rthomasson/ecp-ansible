@@ -6,7 +6,7 @@
     mode: 0777
   
 - name: Run epicctl command to place system in lockdown mode
-  command: 'epicctl api post -a -u /api/v1/lock -f /tmp/{{ common.name }}_llockdown.json -p {{ common.platform }} -n {{ common.name }}'
+  command: 'epicctl api post -a -u /api/v1/lock -f /tmp/{{ common.name }}_lockdown.json -p {{ common.platform }} -n {{ common.name }}'
   register: res
   #failed_when: res.rc != 0
   failed_when: false
@@ -14,11 +14,11 @@
 - name: Prepare configure HA JSON input file for epicctl.
   template:
     src: configure_ha.j2
-    dest: "/tmp/{{ common.name }}_lconfigure_ha.json"
+    dest: "/tmp/{{ common.name }}_configure_ha.json"
     mode: 0777
   
 - name: Run epicctl command to configure HA
-  command: 'epicctl api put -a -u /api/v1/install/?install_ha -f /tmp/{{ common.name }}_lconfigure_ha.json -p {{ common.platform }} -n {{ common.name }}'
+  command: 'epicctl api put -a -u /api/v1/install/?install_ha -f /tmp/{{ common.name }}_configure_ha.json -p {{ common.platform }} -n {{ common.name }}'
   register: res
   #failed_when: res.rc != 0
   failed_when: false
