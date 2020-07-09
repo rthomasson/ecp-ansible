@@ -1,6 +1,6 @@
 ---
   - name: Destroy platform
-    hosts: groups.controllers[0]
+    hosts: controllers
     gather_facts: false
     roles:
       - role: platform
