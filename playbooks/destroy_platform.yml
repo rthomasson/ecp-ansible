@@ -1,13 +1,8 @@
 ---
   - name: Copy epicctl
-    hosts: primary_controller
+    hosts: localhost
     tasks:
-      - copy: 
-          src: "{{ common.bin_dir }}epicctl"
-          dest: "/usr/local/bin/epicctl"
-          owner: root
-          group: root
-          mode: preserve
+      - command: scp {{ common.bin_dir }}epicctl {{ credentials.ssh.username }}@{{ hostvars[groups.primary_controller.ansible_host }}
   
   - name: Destroy platform
     hosts: localhost
