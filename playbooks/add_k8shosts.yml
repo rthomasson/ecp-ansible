@@ -1,0 +1,9 @@
+---
+  - name: Add K8s hosts
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          add_k8shosts: yes
+          
