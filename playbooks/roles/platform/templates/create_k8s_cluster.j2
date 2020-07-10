@@ -1,0 +1,52 @@
+{
+  "label": {
+    "name": "{{ k8s.cluster_name }}",
+    "description": "{{ k8s.cluster_description }}"
+  },
+  "k8s_version": "{{ k8s.k8s_version }}",
+  "pod_network_range": "{{ k8s.pod_network_range }}",
+  "service_network_range": "{{ k8s.service_network_range }}",
+  "pod_dns_domain": "mycluster.local",
+  #"addons": [
+  #  "my_addon"
+  #],
+  "k8shosts_config": [
+    {
+      "node": "/api/v2/worker/k8shost/2",
+      "role": "master"
+    }
+  ],
+  "cert_data": {
+    "root_ca_cert": "string",
+    "root_ca_key": "string",
+    "front_proxy_ca_cert": "string",
+    "front_proxy_ca_key": "string",
+    "etcd_ca_cert": "string",
+    "etcd_ca_key": "string"
+  },
+  "external_identity_server": {
+    "type": "LDAP",
+    "host": "string",
+    "port": 0,
+    "auth_service_locations": [
+      {
+        "host": "string",
+        "port": 0
+      }
+    ],
+    "timeout_ms": 0,
+    "reorder_after_failover": true,
+    "user_attribute": "string",
+    "bind_type": "search_bind",
+    "base_dn": "string",
+    "security_protocol": "none",
+    "cacert_filename": "string",
+    "nt_domain": "string",
+    "bind_dn": "string",
+    "bind_pwd": "string",
+    "verify_peer": true
+  },
+  "external_groups": [
+    "cn=Common_Name,ou=Organizational_Unit,dc=Domain_Component"
+  ]
+}
