@@ -37,4 +37,4 @@
   #failed_when: false
 
 - debug:
-    msg: "{{ res.content }}"
+    msg: "{{ res.location }}"
