@@ -13,8 +13,8 @@
     method: POST
     body_format: json
     body: "{{ lookup('file','/tmp/CICL_lockdown.json') }}"
- register: res
- failed_when: res.status != 200   
+  register: res
+  failed_when: res.status != 200   
     
 #- name: Run epicctl command to place system in lockdown mode
 #  command: 'epicctl api post -a -u /api/v1/lock -f /tmp/{{ common.name }}_lockdown.json -p {{ common.platform }} -n {{ common.name }} -o /tmp/{{ common.name }}_lock'
