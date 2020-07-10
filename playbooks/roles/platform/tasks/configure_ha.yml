@@ -11,10 +11,8 @@
     return_content: yes
     method: POST
     # Change below once we confirm this works
-    body_format: form-urlencoded
-    body:
-      name: admin
-      password: admin123
+    body_format: json
+    body: { "name": "admin", "password": "admin" }
     status_code: 201
   register: session_res
 
