@@ -48,5 +48,5 @@
   #failed_when: false
 
 - debug:
-    msg: "{{ lock_res.content }} || {{ unlock_res.content }}"
+    msg: "{{ lock_res.content }} ---- {{ unlock_res.content }}"
      
