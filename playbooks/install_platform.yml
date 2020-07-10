@@ -8,4 +8,5 @@
           install: yes
           configure_ha: yes
           configure_airgap: yes
+          add_k8shosts: yes
           
