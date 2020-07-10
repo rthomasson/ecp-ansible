@@ -11,10 +11,24 @@
   #  "my_addon"
   #],
   "k8shosts_config": [
+{% for host in groups.k8s_master_nodes %}  
     {
-      "node": "/api/v2/worker/k8shost/2",
+      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
       "role": "master"
+    },
+{% endfor %}
+{% for host in groups.k8s_ingreses_nodes %}  
+    {
+      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
+      "role": "worker"
+    },
+{% endofr %}
+{% for host in groups.k8s_worker_nodes %}  
+    {
+      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
+      "role": "worker"
     }
+{% endofr %}
   ],
   "cert_data": {
     "root_ca_cert": "string",
