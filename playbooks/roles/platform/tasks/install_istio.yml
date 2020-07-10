@@ -1,0 +1,5 @@
+---
+- name: Install Istio.
+  command: istioctl install -f {{ istio_manifest_file }}
+  register: res
+  failed_when: res.rc != 0
