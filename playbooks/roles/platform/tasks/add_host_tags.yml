@@ -9,8 +9,7 @@
     status_code: 201
   register: session_res
 
-# To-do: Skip any tags that already exist -- 
-
+# status_code = 201 on success, 409 if tag/label already exists
 - name: Add each defined tag
   uri:
     url: http://{{ groups.primary_controller[0] }}:8080/api/v2/tag
@@ -23,7 +22,8 @@
     body_format: json
     body: "{{ item }}"
     status_code: 201, 409
-#  debug: msg="-- Added tag: {{ item }}"
+    debug:
+      msg: "-- Added tag: {{ item }}"
   with_items: "{{ lookup('file', 'files/host_tags.txt').splitlines() }}"
   register: tag_res
 
