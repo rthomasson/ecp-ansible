@@ -11,5 +11,7 @@
   failed_when: res.rc != 0
   #failed_when: false
 
+# Set hcp_host_id variable values in Ansible inventory
+
 - debug:
     msg: "{{ res.stdout }}"
