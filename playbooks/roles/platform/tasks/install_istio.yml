@@ -20,8 +20,30 @@
     status_code: 200
   register: kubeconfig_res
     
-- name: Install Istio.
+- name: Authenticate k8s cluster user
+  command: kubectl hpecp authenticate
+  register: res
+  failed_when: res.rc != 0
+
+
+- name: label istio ingress nodes
+  command: kubectl label nodes {{ item }} istio-ingressgateway=true
+  loop: "{{ groups['k8s_ingress_nodes'] }}"
+  register: res
+  failed_when: res.rc != 0
+
+- name: Install Istio
+  command: istioctl install 
+  register: res
+  failed_when: res.rc != 0
+  
+- name: Install istio addon manifest
   command: istioctl install -f {{ istio_manifest_file }}
+  register: res
+  failed_when: res.rc != 0
+
+- name: label splunk namespace
+  command: kubectl label namespace splunk istio-injection=enabled
   register: res
   failed_when: res.rc != 0
   
