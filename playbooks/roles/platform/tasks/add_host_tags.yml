@@ -40,4 +40,4 @@
   register: delsession_res
 
 - debug:
-    msg: Session: {{ session_res.location  | urlsplit('path') }} -- Add tags result: {{ tag_res.content }}
+    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Add tags result: {{ tag_res.content }}"
