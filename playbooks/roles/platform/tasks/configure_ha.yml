@@ -41,6 +41,17 @@
   register: unlock_res
   #failed_when: res.status != 200   
 
+
+- name: Log out of session
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080{{ session_res.location  | urlsplit('path') }}
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    status_code: 204
+  register: delsession_res
+
 #- name: Run epicctl command to place system in lockdown mode
 #  command: 'epicctl api post -a -u /api/v1/lock -f /tmp/{{ common.name }}_lockdown.json -p {{ common.platform }} -n {{ common.name }} -o /tmp/{{ common.name }}_lock'
 #  register: res
