@@ -1,0 +1,43 @@
+---
+- name: Obtain session token
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
+    return_content: yes
+    method: POST
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Add each defined tag
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/tag
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      accept: "*/*"
+      Content-Type: "application/json"
+    method: POST
+    body_format: json
+    body: "{{ item }}"
+    status_code: 201
+#  loop:
+#     - { "label": { "name": "label_1", "description": "Description 1"}
+#     - { "label": { "name": "label_2", "description": "Description 2"}
+#     - { "label": { "name": "label_3", "description": "Description 3"}
+#     - { "label": { "name": "label_4", "description": "Description 4"}
+  loop: "{{ lookup('file','files/host_tags.txt') }}"
+  register: tag_res
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    status_code: 204
+  register: delsession_res
+
+- debug:
+    msg: Session: {{ session_res.location  | urlsplit('path') }} -- Add tags result: {{ tag_res.content }}
