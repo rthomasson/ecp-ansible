@@ -36,4 +36,4 @@
   #failed_when: false
 
 - debug:
-    msg: "{{ res.stdout }}"
+    msg: "{{ res.msg }}"
