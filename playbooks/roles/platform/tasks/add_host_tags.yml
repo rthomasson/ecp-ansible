@@ -27,7 +27,7 @@
 #     - { "label": { "name": "label_3", "description": "Description 3"}
 #     - { "label": { "name": "label_4", "description": "Description 4"}
   debug: msg="-- Added tag: {{ item }}"
-  with_lines: "{{ lookup('file', 'files/host_tags.txt').splitlines() }}"
+  with_items: "{{ lookup('file', 'files/host_tags.txt').splitlines() }}"
   register: tag_res
 
 - name: Log out of session
