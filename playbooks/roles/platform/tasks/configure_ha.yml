@@ -15,6 +15,7 @@
     body: { "name": "admin", "password": "admin123" }
     status_code: 201
   register: session_res
+  session_token: "{{ session_res.location  | urlsplit('path') }}"
 
 - name: Put the site in lockdown
   uri:
@@ -59,5 +60,5 @@
   #failed_when: false
 
 - debug:
-    msg: "Session: {{ session_res.location }} -- Lockdown result: {{ lock_res.content }} ---- Unlock status: {{ unlock_res.status }}"
+    msg: "Session: {{ session_token }} -- Lockdown result: {{ lock_res.content }} ---- Unlock status: {{ unlock_res.status }}"
      
