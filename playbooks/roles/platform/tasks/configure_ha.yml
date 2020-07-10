@@ -5,6 +5,16 @@
     dest: "/tmp/{{ common.name }}_lockdown.json"
     mode: 0777
 
+- name: Obtain session token
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
+    return_content: yes
+    method: POST
+    # Change below once we confirm this works
+    name: admin
+    password: admin123
+  register: session_res
+
 - name: Put the site in lockdown
   uri:
     url: http://{{ groups.primary_controller[0] }}:8080/api/v1/lock
@@ -48,5 +58,5 @@
   #failed_when: false
 
 - debug:
-    msg: "Lockdown result: {{ lock_res.content }} ---- Unlock status: {{ unlock_res.status }}"
+    msg: "Session: {{ session_res.location }} -- Lockdown result: {{ lock_res.content }} ---- Unlock status: {{ unlock_res.status }}"
      
