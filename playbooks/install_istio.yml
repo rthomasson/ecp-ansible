@@ -1,5 +1,5 @@
 ---
-- name: Install Istio .
+  - name: Install Istio .
     hosts: localhost
     gather_facts: false
     roles:
