@@ -20,7 +20,7 @@
  
  - name: Exit site lockdown
   uri:
-    url: lock_res.location
+    url: {{ lock_res.location }}
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ lookup('file','/tmp/api_session_id') }}"  
