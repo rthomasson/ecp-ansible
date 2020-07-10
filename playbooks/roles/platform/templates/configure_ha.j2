@@ -1,5 +1,5 @@
 {
   "cluster_dns_name":"",
-  "shadow":"/api/v1/workers/4",
-  "arbiter":"/api/v1/workers/5"
+  "shadow":"/api/v1/workers/{{ groups.controllers[1].hcp_host_id }}",
+  "arbiter":"/api/v1/workers/{{ groups.controllers[2].hcp_host_id }}"
 }
