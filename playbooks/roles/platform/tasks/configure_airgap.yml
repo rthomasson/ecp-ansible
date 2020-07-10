@@ -3,7 +3,7 @@
 - name: Prepare configure air gap input file for epicctl.
   template:
     src: configure_airgap.j2
-    dest: "/tmp/{{ common.name }}_configure_air_gap.json"
+    dest: "/tmp/{{ common.name }}_configure_airgap.json"
     mode: 0777
  
 - name: Configure platform for air gap
