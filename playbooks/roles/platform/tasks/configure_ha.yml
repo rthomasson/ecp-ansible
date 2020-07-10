@@ -5,7 +5,7 @@
     dest: "/tmp/{{ common.name }}_lockdown.json"
     mode: 0777
 
-- name: POST a Body to an Endpoint
+- name: Put the site in lockdown
   uri:
     url: http://{{ groups.primary_controller[0] }}:8080/api/v1/lock
     return_content: yes
@@ -15,9 +15,20 @@
     body_format: json
     body: "{{ lookup('file','/tmp/CICL_lockdown.json') }}"
     status_code: 201
-  register: res
+  register: lock_res
   #failed_when: res.status != 200   
-    
+ 
+ - name: Exit site lockdown
+  uri:
+    url: lock_res.location
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ lookup('file','/tmp/api_session_id') }}"  
+    method: DELETE
+    status_code: 200
+  register: unlock_res
+  #failed_when: res.status != 200   
+
 #- name: Run epicctl command to place system in lockdown mode
 #  command: 'epicctl api post -a -u /api/v1/lock -f /tmp/{{ common.name }}_lockdown.json -p {{ common.platform }} -n {{ common.name }} -o /tmp/{{ common.name }}_lock'
 #  register: res
@@ -37,4 +48,6 @@
   #failed_when: false
 
 - debug:
-    msg: "{{ res.location }}"
+    msg: "{{ lock_res.content }}"
+    msg: "{{ unlock_res.content }}"
+    
