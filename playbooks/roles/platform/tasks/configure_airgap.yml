@@ -12,7 +12,6 @@
   failed_when: res.rc != 0
   #failed_when: false
 
-
 - debug:
-    msg: "res.stdout"
+    msg: "{{ res.stdout }}"
      
