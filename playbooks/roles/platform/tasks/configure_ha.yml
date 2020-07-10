@@ -21,7 +21,8 @@
     url: http://{{ groups.primary_controller[0] }}:8080/api/v1/lock
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ lookup('file','/tmp/api_session_id') }}"  
+#      X-BDS-SESSION: "{{ lookup('file','/tmp/api_session_id') }}"  
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
     method: POST
     body_format: json
     body: "{{ lookup('file','/tmp/CICL_lockdown.json') }}"
@@ -34,7 +35,7 @@
     url: "{{ lock_res.location }}"
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ lookup('file','/tmp/api_session_id') }}"  
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
     method: DELETE
     status_code: 204
   register: unlock_res
