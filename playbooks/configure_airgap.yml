@@ -1,8 +1,8 @@
 ---
-  - name: Configure platform HA
+  - name: Configure platform for air gap installation
     hosts: localhost
     gather_facts: false
     roles:
       - role: platform
         vars:
-          configure_ha: yes
+          configure_airgap: yes
