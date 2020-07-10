@@ -1,20 +1,19 @@
 ---
-- name: Prepare lockdown JSON input file for epicctl.
-  template:
-    src: lockdown.j2
-    dest: "/tmp/{{ common.name }}_lockdown.json"
-    mode: 0777
-
 - name: Obtain session token
   uri:
     url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
     return_content: yes
     method: POST
-    # Change below once we confirm this works
     body_format: json
-    body: { "name": "admin", "password": "admin123" }
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
+
+- name: Prepare lockdown JSON input file for epicctl.
+  template:
+    src: lockdown.j2
+    dest: "/tmp/{{ common.name }}_lockdown.json"
+    mode: 0777
 
 - name: Put the site in lockdown
   uri:
