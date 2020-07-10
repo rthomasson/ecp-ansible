@@ -1,52 +1,18 @@
 ---
-- name: Prepare lockdown JSON input file for epicctl.
-  template:
-    src: lockdown.j2
-    dest: "/tmp/{{ common.name }}_lockdown.json"
-    mode: 0777
-
-- name: Put the site in lockdown
-  uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/lock
-    return_content: yes
-    headers:
-      X-BDS-SESSION: "{{ lookup('file','/tmp/api_session_id') }}"  
-    method: POST
-    body_format: json
-    body: "{{ lookup('file','/tmp/CICL_lockdown.json') }}"
-    status_code: 201
-  register: lock_res
-  #failed_when: res.status != 200   
  
-#- name: Run epicctl command to place system in lockdown mode
-#  command: 'epicctl api post -a -u /api/v1/lock -f /tmp/{{ common.name }}_lockdown.json -p {{ common.platform }} -n {{ common.name }} -o /tmp/{{ common.name }}_lock'
-#  register: res
-#  failed_when: res.rc != 0
-  #failed_when: false
-
 - name: Prepare configure air gap input file for epicctl.
   template:
     src: configure_airgap.j2
     dest: "/tmp/{{ common.name }}_configure_air_gap.json"
     mode: 0777
   
-- name: Run epicctl command to configure HA
+- name: Run epicctl command to configure for air gap installation
   command: 'epicctl api put -a -u /api/v1/install/?install_ha -f /tmp/{{ common.name }}_configure_ha.json -p {{ common.platform }} -n {{ common.name }}'
   register: res
   failed_when: res.rc != 0
   #failed_when: false
 
-- name: Exit site lockdown
-  uri:
-    url: "{{ lock_res.location }}"
-    return_content: yes
-    headers:
-      X-BDS-SESSION: "{{ lookup('file','/tmp/api_session_id') }}"  
-    method: DELETE
-    status_code: 204
-  register: unlock_res
-  #failed_when: res.status != 200   
 
 - debug:
-    msg: "Lockdown result: {{ lock_res.content }} ---- Unlock status: {{ unlock_res.status }}"
+    msg: "res.stdout"
      
