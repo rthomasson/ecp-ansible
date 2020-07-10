@@ -1,6 +1,8 @@
 ---
 # Note: This playbook is additive only, meaning tags in the host_tags.txt file are added to ECP, but
 #       any tags that already exist in ECP that aren't in the host_tags.txt file won't be removed.
+#
+# To-so: Consider adding ability to remove tags from ECP that don't exist in the host_tags.txt file.
 
 - name: Obtain session token
   uri:
