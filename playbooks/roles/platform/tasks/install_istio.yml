@@ -33,7 +33,7 @@
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
     method: DELETE
     status_code: 204
- register: delsession_res
+  register: delsession_res
   
 - debug:
     msg: "End Istio Install Session: {{ session_res.location  | urlsplit('path') }}"
