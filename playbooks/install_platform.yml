@@ -7,4 +7,5 @@
         vars:
           install: yes
           configure_ha: yes
+          configure_airgap: yes
           
