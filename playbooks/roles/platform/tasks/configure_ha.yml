@@ -15,12 +15,13 @@
     body: { "name": "admin", "password": "admin123" }
     status_code: 201
   register: session_res
+  vars:
+    session_token: "{{ session_res.location  | urlsplit('path') }}"
 
 - name: Put the site in lockdown
   uri:
     url: http://{{ groups.primary_controller[0] }}:8080/api/v1/lock
     return_content: yes
-    session_token: "{{ session_res.location  | urlsplit('path') }}"
     headers:
       X-BDS-SESSION: "{{ lookup('file','/tmp/api_session_id') }}"  
     method: POST
