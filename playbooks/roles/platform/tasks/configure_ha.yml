@@ -13,7 +13,7 @@
     method: POST
     body_format: json
     body: "{{ lookup('file','/tmp/CICL_lockdown.json') }}"
-    status_code: 200
+    status_code: 201
   register: res
   #failed_when: res.status != 200   
     
