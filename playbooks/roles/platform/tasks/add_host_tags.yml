@@ -9,6 +9,8 @@
     status_code: 201
   register: session_res
 
+# To-do: Skip any tags that already exist -- 
+
 - name: Add each defined tag
   uri:
     url: http://{{ groups.primary_controller[0] }}:8080/api/v2/tag
@@ -36,4 +38,4 @@
   register: delsession_res
 
 - debug:
-    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Add tags result: {{ tag_res.content }}"
+    msg: "End Add Tags Session: {{ session_res.location  | urlsplit('path') }}"
