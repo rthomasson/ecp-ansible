@@ -29,6 +29,24 @@
   register: lock_res
   #failed_when: res.status != 200   
  
+#- name: Run epicctl command to place system in lockdown mode
+#  command: 'epicctl api post -a -u /api/v1/lock -f /tmp/{{ common.name }}_lockdown.json -p {{ common.platform }} -n {{ common.name }} -o /tmp/{{ common.name }}_lock'
+#  register: res
+#  failed_when: res.rc != 0
+  #failed_when: false
+
+#- name: Prepare configure HA JSON input file for epicctl.
+#  template:
+#    src: configure_ha.j2
+#    dest: "/tmp/{{ common.name }}_configure_ha.json"
+#    mode: 0777
+  
+#- name: Run epicctl command to configure HA
+#  command: 'epicctl api put -a -u /api/v1/install/?install_ha -f /tmp/{{ common.name }}_configure_ha.json -p {{ common.platform }} -n {{ common.name }}'
+#  register: res
+#  failed_when: res.rc != 0
+  #failed_when: false
+
 - name: Exit site lockdown
   uri:
     url: "{{ lock_res.location }}"
@@ -50,24 +68,6 @@
     method: DELETE
     status_code: 204
   register: delsession_res
-
-#- name: Run epicctl command to place system in lockdown mode
-#  command: 'epicctl api post -a -u /api/v1/lock -f /tmp/{{ common.name }}_lockdown.json -p {{ common.platform }} -n {{ common.name }} -o /tmp/{{ common.name }}_lock'
-#  register: res
-#  failed_when: res.rc != 0
-  #failed_when: false
-
-#- name: Prepare configure HA JSON input file for epicctl.
-#  template:
-#    src: configure_ha.j2
-#    dest: "/tmp/{{ common.name }}_configure_ha.json"
-#    mode: 0777
-  
-#- name: Run epicctl command to configure HA
-#  command: 'epicctl api put -a -u /api/v1/install/?install_ha -f /tmp/{{ common.name }}_configure_ha.json -p {{ common.platform }} -n {{ common.name }}'
-#  register: res
-#  failed_when: res.rc != 0
-  #failed_when: false
 
 - debug:
     msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Lockdown result: {{ lock_res.content }} ---- Unlock status: {{ unlock_res.status }}"
