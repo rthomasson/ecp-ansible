@@ -1,0 +1,9 @@
+---
+  - name: Add host tags
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          add_host_tags: yes
+          
