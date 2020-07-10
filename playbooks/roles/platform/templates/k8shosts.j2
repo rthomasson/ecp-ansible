@@ -1,0 +1,16 @@
+{% for k8w in groups.k8s_workers %}
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: {{ common.ephemeral_disks|join(',') }}
+  host:
+    internal_ip: {{ hostvars[k8w].ansible_host }}
+  ssh:
+    username: {{ credentials.ssh.username }}
+    password: {{ credentials.ssh.password }}
+    access_type: {{ credentials.ssh.access_type }}
+    #keypair_file: {{ credentials.ssh.keypair_file }}
+    #keypair_name: {{ credentials.ssh.keypair_name }} 
+platform: {{ common.platform }}
+{% endfor %}
