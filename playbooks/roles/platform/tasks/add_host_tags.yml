@@ -26,7 +26,7 @@
 #     - { "label": { "name": "label_2", "description": "Description 2"}
 #     - { "label": { "name": "label_3", "description": "Description 3"}
 #     - { "label": { "name": "label_4", "description": "Description 4"}
-  loop: "{{ lookup('file','files/host_tags.txt') }}"
+  loop: "{{ lookup('file','files/host_tags.txt')|list }}"
   register: tag_res
 
 - name: Log out of session
