@@ -12,7 +12,7 @@
     method: POST
     # Change below once we confirm this works
     body_format: json
-    body: { "name": "admin", "password": "admin" }
+    body: { "name": "admin", "password": "admin123" }
     status_code: 201
   register: session_res
 
