@@ -1,0 +1,7 @@
+- name: Install Istio .
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          install_istio: yes
