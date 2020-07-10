@@ -21,7 +21,7 @@
     body_format: json
     body: "{{ item }}"
     status_code: 201
-  debug: msg="-- Added tag: {{ item }}"
+#  debug: msg="-- Added tag: {{ item }}"
   with_items: "{{ lookup('file', 'files/host_tags.txt').splitlines() }}"
   register: tag_res
 
