@@ -12,3 +12,5 @@
     when: configure_airgap is defined
   - include_tasks: add_k8shosts.yml
     when: add_k8shosts is defined    
+  - include_tasks: add_host_tags.yml
+    when: add_host_tags is defined    
