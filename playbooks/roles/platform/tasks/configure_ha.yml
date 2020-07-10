@@ -11,9 +11,11 @@
     return_content: yes
     method: POST
     # Change below once we confirm this works
+    body_format: form-urlencoded
     body:
       name: admin
       password: admin123
+    status_code: 201
   register: session_res
 
 - name: Put the site in lockdown
