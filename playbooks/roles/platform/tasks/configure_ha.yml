@@ -11,8 +11,9 @@
     return_content: yes
     method: POST
     # Change below once we confirm this works
-    name: admin
-    password: admin123
+    body:
+      name: admin
+      password: admin123
   register: session_res
 
 - name: Put the site in lockdown
