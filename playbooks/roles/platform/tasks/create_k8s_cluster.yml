@@ -10,7 +10,7 @@
   register: session_res
 
 # Get the current set of k8shosts and update the host IDs in inventory
-- name: Create K8s Cluster
+- name: Get the current set of k8shosts 
   uri:
     url: http://{{ groups.primary_controller[0] }}:8080/api/v2/worker/k8shost
     return_content: yes
@@ -21,6 +21,22 @@
     status_code: 200
   register: k8shost_res
 
+# Parse the k8s Host ID and IP address from the JSON result of the GET k8shost call
+- name: Parse the k8s Host ID and IP address
+  debug:
+    msg: "{{ k8shost_res.content | json_query('_embedded.k8shosts[*]._links.self.href') }}"
+
+
+  "_embedded": {
+    "k8shosts": [
+      {
+        "_links": {
+          "self": {
+            "href": "/api/v2/worker/k8shost/29"
+          }
+        },
+        "ipaddr": "16.143.22.162",
+ 
 
 #- name: Create inputfile to create K8s Cluster.
 #  template:
