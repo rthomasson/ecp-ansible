@@ -17,7 +17,7 @@
  
 - name: Create K8s tenant
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
@@ -25,9 +25,9 @@
       Content-Type: "application/json"
     method: POST
     body_format: json
-    body: "{{ lookup('file','/tmp/CICL_create_k8s_cluster.json') }}"
+    body: "{{ lookup('file','/tmp/CICL_create_k8s_tenant.json') }}"
     status_code: 201
-  register: cluster_res
+  register: tenant_res
   
 
 - name: Log out of session
