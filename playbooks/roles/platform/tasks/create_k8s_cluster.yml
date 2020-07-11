@@ -24,7 +24,7 @@
 # Parse the k8s Host ID and IP address from the JSON result of the GET k8shost call
 - name: Parse the k8s Host ID and IP address
   debug:
-    msg: "K8s Host IDs: {{ k8shost_res.content | json_query('_embedded.k8shosts[*].ipaddr') }}"
+    msg: "K8s Host IDs: {{ k8shost_res.json | json_query('_embedded.k8shosts[*].ipaddr') }}"
 
 #- name: Create inputfile to create K8s Cluster.
 #  template:
