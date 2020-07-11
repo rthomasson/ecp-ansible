@@ -13,7 +13,8 @@
 {% if hostvars[host].is_ready %}
     {
       "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
-      "role": "master"
+      "role": "master",
+      "status": "{{ hostvars[host].is_ready }}"
     },
 {% endif %}    
 {% endfor %}
@@ -21,15 +22,17 @@
  {% if hostvars[host].is_ready %}
     {
       "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
-      "role": "worker"
-    },
+      "role": "worker",
+      "status": "{{ hostvars[host].is_ready }}"
+},
 {% endif %}    
 {% endfor %}
 {% if hostvars[host].is_ready %}
 {% for host in groups.k8s_worker_nodes %}  
     {
       "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
-      "role": "worker"
+      "role": "worker",
+      "status": "{{ hostvars[host].is_ready }}"
     },
 {% endif %}    
 {% endfor %}
