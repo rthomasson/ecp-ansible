@@ -17,7 +17,7 @@
       "role": "master"
     },
 {% endfor %}
-{% for host in groups.k8s_ingreses_nodes %}  
+{% for host in groups.k8s_ingress_nodes %}  
     {
       "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
       "role": "worker"
