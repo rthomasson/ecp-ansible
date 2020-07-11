@@ -40,6 +40,6 @@
     status_code: 204
   register: delsession_res
 
-- debug:
-    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ cluster_res.status }}"
+#- debug:
+#    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ cluster_res.status }}"
 
