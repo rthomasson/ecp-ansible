@@ -7,9 +7,7 @@
   "pod_network_range": "{{ k8s.pod_network_range }}",
   "service_network_range": "{{ k8s.service_network_range }}",
   "pod_dns_domain": "mycluster.local",
-  #"addons": [
-  #  "my_addon"
-  #],
+  "addons": [],
   "k8shosts_config": [
 {% for host in groups.k8s_master_nodes %}  
     {
