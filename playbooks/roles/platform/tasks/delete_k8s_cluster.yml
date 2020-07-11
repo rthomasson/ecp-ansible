@@ -12,7 +12,7 @@
 # Get the current list of K8s clusters 
 - name: Get the current set of K8s clusters 
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/worker/k8scluster
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
