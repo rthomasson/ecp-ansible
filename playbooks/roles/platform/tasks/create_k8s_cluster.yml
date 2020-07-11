@@ -33,7 +33,6 @@
   register: host_id_list
 
 - debug: 
-    var: item
     msg: "Worker Node: {{ item }} Host ID: {{ item.hcp_host_id }} Status: {{ item.is_ready }}"
     with_items: "{{ groups.k8s_workers }}" 
 
