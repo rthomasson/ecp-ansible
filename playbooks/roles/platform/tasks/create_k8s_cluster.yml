@@ -28,9 +28,9 @@
     status: "{{ item | json_query('status') }}"
     is_ready:  "{{ item | json_query('status') == 'ready' }}"
     cacheable: true    
-#  delegate_facts: yes
-#  delegate_to: "{{ item | json_query('ansible_host') }}"
-  loop: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
+  delegate_facts: True
+  delegate_to: "{{ item | json_query('ansible_host') }}"
+  with_items: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
   register: host_id_list
 
 - debug: 
