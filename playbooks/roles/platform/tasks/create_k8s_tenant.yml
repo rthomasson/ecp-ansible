@@ -1,0 +1,44 @@
+---
+- name: Obtain session token
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
+    return_content: yes
+    method: POST
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+ 
+- name: Create inputfile to create K8s tenant.
+  template:
+    src: create_k8s_tenant.j2
+    dest: "/tmp/{{ common.name }}_create_k8s_tenant.json"
+    mode: 0777
+ 
+- name: Create K8s tenant
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+      accept: "*/*"
+      Content-Type: "application/json"
+    method: POST
+    body_format: json
+    body: "{{ lookup('file','/tmp/CICL_create_k8s_cluster.json') }}"
+    status_code: 201
+  register: cluster_res
+  
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    status_code: 204
+  register: delsession_res
+
+- debug:
+    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ cluster_res.status }}"
