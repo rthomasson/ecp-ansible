@@ -9,7 +9,7 @@
     status_code: 201
   register: session_res
 
-# Get the current set of k8shosts and update the host IDs in inventory
+# Get the current set of k8shosts 
 - name: Get the current set of k8shosts 
   uri:
     url: http://{{ groups.primary_controller[0] }}:8080/api/v2/worker/k8shost
@@ -21,10 +21,10 @@
     status_code: 200
   register: k8shost_res
 
-# Parse the k8s Host ID and IP address from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
+# Parse the k8s Host ID, IP address and hostname from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
 - name: Parse the k8s Host ID and IP address
   set_fact:
-    hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
+    hcp_host_id: "{{ item | json_query('host_id') }}"
   delegate_facts: yes
   delegate_to: "{{ item | json_query('hostname') }}"
   loop: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname}') }}"
