@@ -25,7 +25,8 @@
 - name: Parse the k8s Host ID and IP address
   set_fact:
     hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
-    is_ready:  "{{ item | json_query('status') | default(false, true) == 'ready' }}"
+    status: "{{ item | json_query('status') }}"
+    is_ready:  "{{ item | json_query('status') == 'ready' }}"
     cacheable: true    
   delegate_facts: yes
   delegate_to: "{{ item | json_query('ansible_host') }}"
