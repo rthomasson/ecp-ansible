@@ -31,12 +31,12 @@
 {% endfor %}
   ],
   "cert_data": {
-    "root_ca_cert": "{{ k8s.root_ca_cert }}",
-    "root_ca_key": "{{ k8s.root_ca_key }}",
-    "front_proxy_ca_cert": "{{ k8s.front_proxy_ca_cert }}",
-    "front_proxy_ca_key": "{{ k8s.front_proxy_ca_key }}",
-    "etcd_ca_cert": "{{ k8s.etcd_ca_cert }}",
-    "etcd_ca_key": "{{ k8s.etcd_ca_key }}"
+    "root_ca_cert": "{{ k8s.cert_data.root_ca_cert }}",
+    "root_ca_key": "{{ k8s.cert_data.root_ca_key }}",
+    "front_proxy_ca_cert": "{{ k8s.cert_data.front_proxy_ca_cert }}",
+    "front_proxy_ca_key": "{{ k8s.cert_data.front_proxy_ca_key }}",
+    "etcd_ca_cert": "{{ k8s.cert_data.etcd_ca_cert }}",
+    "etcd_ca_key": "{{ k8s.cert_data.etcd_ca_key }}"
   },
   "external_identity_server": {
     "type": "{{ k8s.ext_identity_server.type }}",
@@ -49,7 +49,7 @@
       }
     ],
     "timeout_ms": {{ k8s.ext_identity_server.timeout_ms }},
-    "reorder_after_failover": {{ k8s.ext_identity_server.record_after_failover }},
+    "reorder_after_failover": {{ k8s.ext_identity_server.reorder_after_failover }},
     "user_attribute": "{{ k8s.ext_identity_server.user_attribute }}",
     "bind_type": "{{ k8s.ext_identity_server.bind_type }}",
     "base_dn": "{{ k8s.ext_identity_server.base_dn }}",
@@ -61,6 +61,6 @@
     "verify_peer": {{ k8s.ext_identity_server.verify_peer }}
   },
   "external_groups": [
-    "{{ k8s.ext_identity_server.external_groups }}"
+    "{{ k8s.external_groups }}"
   ]
 }
