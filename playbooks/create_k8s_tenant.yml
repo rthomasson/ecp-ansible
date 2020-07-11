@@ -1,0 +1,9 @@
+---
+  - name: Create K8s Tenant
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          create_k8s_tenant: yes
+          
