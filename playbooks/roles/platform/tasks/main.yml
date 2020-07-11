@@ -21,7 +21,7 @@
   - include_tasks: delete_k8s_cluster.yml
     when: delete_k8s_cluster is defined
   - include_tasks: create_k8s_tenant.yml
-    when: create_k8s_cluster is defined       
+    when: create_k8s_tenant is defined       
   - include_tasks: install_istio.yml
     when: install_istio is defined  
   - include_tasks: install_openebs.yml
