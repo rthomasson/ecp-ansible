@@ -10,10 +10,12 @@
   "addons": [],
   "k8shosts_config": [
 {% for host in groups.k8s_master_nodes %}  
+{% if hostvars[host].is_ready %}
     {
       "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
       "role": "master"
     },
+{% end if %}    
 {% endfor %}
 {% for host in groups.k8s_ingress_nodes %}  
     {
