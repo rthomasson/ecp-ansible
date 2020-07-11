@@ -33,7 +33,7 @@
   register: host_id_list
 
 - debug: 
-    msg: "Worker Node: {{ item }} Host ID: {{ item.hcp_host_id }} Status: {{ item.is_ready }}"
+    msg: "Worker Node: {{ item }} Host ID: {{ hostvars[item].hcp_host_id }} Status: {{ hostvars[item].is_ready }}"
     with_items: "{{ groups.k8s_workers }}" 
 
 - name: Create inputfile to create K8s Cluster.
