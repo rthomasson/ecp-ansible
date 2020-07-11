@@ -15,19 +15,23 @@
       "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
       "role": "master"
     },
-{% end if %}    
+{% endif %}    
 {% endfor %}
 {% for host in groups.k8s_ingress_nodes %}  
+ {% if hostvars[host].is_ready %}
     {
       "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
       "role": "worker"
     },
+{% endif %}    
 {% endfor %}
+{% if hostvars[host].is_ready %}
 {% for host in groups.k8s_worker_nodes %}  
     {
       "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
       "role": "worker"
     },
+{% endif %}    
 {% endfor %}
   ]
 }
