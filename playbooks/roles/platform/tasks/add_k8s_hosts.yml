@@ -6,7 +6,7 @@
     mode: 0777
   
 - name: Run epicctl command to add K8s hosts
-  command: "epicctl op -f /tmp/{{ common.name }}_k8shosts.yml -n {{ common.name }} -p {{common.platform}} "
+  command: "epicctl op -f /tmp/{{ common.name }}_k8shosts.yml -n {{ common.name }} "
   register: res
   failed_when: res.rc != 0
 
