@@ -1,0 +1,61 @@
+---
+- name: Obtain session token
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
+    return_content: yes
+    method: POST
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Get Kubeconfig for current user
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8skubeconfig
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      accept: "text/yaml"
+    method: GET
+    status_code: 200
+  register: kubeconfig_res
+    
+- name: Authenticate k8s cluster user
+  command: kubectl hpecp authenticate
+  register: res
+  failed_when: res.rc != 0
+
+
+- name: label istio ingress nodes
+  command: kubectl label nodes {{ item }} istio-ingressgateway=true
+  loop: "{{ groups['k8s_ingress_nodes'] }}"
+  register: res
+  failed_when: res.rc != 0
+
+- name: Install Istio
+  command: {{ common.istio_home}}/bin/istioctl install --skip-confirmation
+  register: res
+  failed_when: res.rc != 0
+  
+- name: Install istio addon manifest
+  command: {{ common.istio_home}}/bin/istioctl install -f {{ istio_manifest_file }} --skip-confirmation
+  register: res
+  failed_when: res.rc != 0
+
+- name: label splunk namespace
+  command: kubectl label namespace splunk istio-injection=enabled
+  register: res
+  failed_when: res.rc != 0
+  
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    status_code: 204
+  register: delsession_res
+  
+- debug:
+    msg: "End Istio Install Session: {{ session_res.location  | urlsplit('path') }}"

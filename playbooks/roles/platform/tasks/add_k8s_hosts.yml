@@ -19,17 +19,7 @@
   command: "epicctl op -f /tmp/{{ common.name }}_k8shosts.yml -n {{ common.name }}"
   register: res
   failed_when: res.rc != 0
-  #failed_when: false
 
-#- name: add k8shost list for setting ephemeral disk
-#  uri:
-#    url: http://{{ groups.primary_controller[0] }}:8080/v2/worker/k8shost
-#    return_content: yes
-#    method: GET
-#    body_format: json
-#    status_code: 201
-#  register: k8shost_data
-  
 - name: Log out of session
   uri:
     url: "{{ session_res.location }}"

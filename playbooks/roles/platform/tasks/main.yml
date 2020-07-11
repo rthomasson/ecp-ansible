@@ -10,13 +10,17 @@
     when: configure_ha is defined
   - include_tasks: configure_airgap.yml
     when: configure_airgap is defined
-  - include_tasks: add_k8shosts.yml
-    when: add_k8shosts is defined    
+  - include_tasks: add_k8s_hosts.yml
+    when: add_k8s_hosts is defined    
+  - include_tasks: delete_k8s_hosts.yml
+    when: delete_k8s_hosts is defined    
   - include_tasks: add_host_tags.yml
     when: add_host_tags is defined    
   - include_tasks: create_k8s_cluster.yml
     when: create_k8s_cluster is defined    
-  - include_tasks: install_istio.yml
-    when: install_istio is defined  
   - include_tasks: delete_k8s_cluster.yml
     when: delete_k8s_cluster is defined    
+  - include_tasks: install_istio.yml
+    when: install_istio is defined  
+  - include_tasks: install_openebs.yml
+    when: install_openebs is defined  

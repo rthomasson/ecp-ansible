@@ -5,13 +5,53 @@
     dest: "/tmp/{{ common.name }}_platform.yml"
     mode: 0777
   
-- name: Run epicctl command to setup and configure controller node
-  command: "epicctl op -f /tmp/{{ common.name }}_platform.yml -n {{ common.name }}"
-  register: res
-  failed_when: res.rc != 0
-  #failed_when: false
+#- name: Run epicctl command to setup and configure controller node
+#  command: "epicctl op -f /tmp/{{ common.name }}_platform.yml -n {{ common.name }}"
+#  register: res
+#  failed_when: res.rc != 0
+
+- name: Obtain session token
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
+    return_content: yes
+    method: POST
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
 
 # Set hcp_host_id variable values in Ansible inventory
+
+# Get the current set of k8shosts 
+- name: Get the current set of k8shosts 
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/worker/k8shost
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+      accept: "application/json"
+    method: GET
+    status_code: 200
+  register: k8shost_res
+
+# Parse the k8s Host ID, IP address and hostname from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
+- name: Parse the k8s Host ID and IP address
+  set_fact:
+    hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
+  delegate_facts: yes
+  delegate_to: "{{ item | json_query('hostname') }}"
+  loop: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname}') }}"
+  register: host_id_list
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    status_code: 204
+  register: delsession_res
 
 - debug:
     msg: "{{ res.stdout }}"
