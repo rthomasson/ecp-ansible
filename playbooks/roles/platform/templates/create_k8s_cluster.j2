@@ -15,6 +15,20 @@
       "role": "master",
       "status": "{{ hostvars[host].is_ready }}"
     },
-#{% endfor %}
+{% endfor %}
+{% for host in groups.k8s_ingress_nodes if hostvars[host].is_ready %}  
+    {
+      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
+      "role": "worker",
+      "status": "{{ hostvars[host].is_ready }}"
+    },
+{% endfor %}
+{% for host in groups.k8s_worker_nodes if hostvars[host].is_ready %}  
+    {
+      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
+      "role": "worker",
+      "status": "{{ hostvars[host].is_ready }}"
+    },
+{% endfor %}
   ]
 }
