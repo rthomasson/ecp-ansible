@@ -1,0 +1,9 @@
+---
+  - name: Delte K8s cluster
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          delete_k8s_cluster: yes
+          
