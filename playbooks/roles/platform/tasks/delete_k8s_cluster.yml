@@ -41,7 +41,7 @@
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
       accept: "*/*"
     method: DELETE
-    status_code: 202
+    status_code: 204
   register: del_cluster_res
 
 - name: Log out of session
