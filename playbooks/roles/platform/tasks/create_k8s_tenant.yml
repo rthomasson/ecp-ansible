@@ -41,4 +41,4 @@
   register: delsession_res
 
 - debug:
-    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ cluster_res.status }}"
+    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Tenant Result: {{ tenant_res.status }}"
