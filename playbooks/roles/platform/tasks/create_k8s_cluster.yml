@@ -35,7 +35,7 @@
 - debug: 
     var: item
     msg: "Worker Node: {{ item }} Host ID: {{ item.hcp_host_id }} Status: {{ item.is_ready }}"
-    with_items: {{ groups.k8s_workers }} 
+    with_items: "{{ groups.k8s_workers }}" 
 
 - name: Create inputfile to create K8s Cluster.
   template:
