@@ -33,12 +33,12 @@
   failed_when: res.rc != 0
 
 - name: Install Istio
-  command: istioctl install 
+  command: {{ common.istio_home}}/bin/istioctl install 
   register: res
   failed_when: res.rc != 0
   
 - name: Install istio addon manifest
-  command: istioctl install -f {{ istio_manifest_file }}
+  command: {{ common.istio_home}}/bin/istioctl install -f {{ istio_manifest_file }}
   register: res
   failed_when: res.rc != 0
 
