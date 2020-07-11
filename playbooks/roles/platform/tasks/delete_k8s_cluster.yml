@@ -44,6 +44,17 @@
     status_code: 204
   register: del_cluster_res
 
+#- name: Poll the status of cluster delete by making get call to /api/v2/k8scluster/k8scluster_id
+#  command: epicctl api get -u "{{ k8scluster_uri }}" -n "OnPremSetup" -p {{ common.platform }} -o /tmp/get-response.json
+#    vars:
+#      getResp: "{{ (lookup('file', '/tmp/get-response.json') | from_json)['status'] }}"
+#  register : res
+#  failed_when: false # when resource is deleted, last get call returns 404, don't want to fail it
+#  changed_when: false
+#  retries: 30
+#  delay: 10
+#  until:  '"deleting" != getResp'
+
 - name: Log out of session
   uri:
     url: "{{ session_res.location }}"

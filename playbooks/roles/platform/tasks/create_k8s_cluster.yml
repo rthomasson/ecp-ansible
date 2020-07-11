@@ -53,6 +53,20 @@
     status_code: 201
   register: cluster_res
 
+#  - name: Poll the status of cluster creation by making get call to /api/v2/k8scluster/k8scluster_id
+#    command: epicctl api get -u {{ jsonResp }} -n "OnPremSetup" -p {{ common.platform }} -o /tmp/get-response.json
+#    vars:
+#      getResp: "{{ (lookup('file', '/tmp/get-response.json') | from_json)['status'] }}"
+#    register : res
+#    failed_when: res.rc != 0
+#    changed_when: false
+#    retries: 30
+#    delay: 60
+#    until:  '"ready" == getResp'
+
+#  - debug:
+#      msg: "polling task finished"
+
 - name: Log out of session
   uri:
     url: "{{ session_res.location }}"

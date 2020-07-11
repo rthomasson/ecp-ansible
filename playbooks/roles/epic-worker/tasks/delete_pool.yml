@@ -1,3 +1,0 @@
----
-    - include_tasks: deleteworker.yml
-      with_items: "{{ delete_pools }}" # This variable is set in the upstream playbook
