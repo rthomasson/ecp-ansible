@@ -8,26 +8,39 @@
     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
- 
-- name: Create inputfile to create K8s Cluster.
-  template:
-    src: create_k8s_cluster.j2
-    dest: "/tmp/{{ common.name }}_create_k8s_cluster.json"
-    mode: 0777
- 
+
+# Get the current set of k8shosts and update the host IDs in inventory
 - name: Create K8s Cluster
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/worker/k8shost
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
-      accept: "*/*"
-      Content-Type: "application/json"
-    method: POST
-    body_format: json
-    body: "{{ lookup('file','/tmp/CICL_create_k8s_cluster.json') }}"
-    status_code: 201
-  register: cluster_res
+      accept: "application/json"
+    method: GET
+    status_code: 200
+  register: k8shost_res
+
+
+#- name: Create inputfile to create K8s Cluster.
+#  template:
+#    src: create_k8s_cluster.j2
+#    dest: "/tmp/{{ common.name }}_create_k8s_cluster.json"
+#    mode: 0777
+ 
+#- name: Create K8s Cluster
+#  uri:
+#    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster
+#    return_content: yes
+#    headers:
+#      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+#      accept: "*/*"
+#      Content-Type: "application/json"
+#    method: POST
+#    body_format: json
+#    body: "{{ lookup('file','/tmp/CICL_create_k8s_cluster.json') }}"
+#    status_code: 201
+#  register: cluster_res
   
 
 - name: Log out of session
@@ -41,5 +54,5 @@
   register: delsession_res
 
 - debug:
-    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ cluster_res.status }}"
+    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ k8shost_res.content }}"
 
