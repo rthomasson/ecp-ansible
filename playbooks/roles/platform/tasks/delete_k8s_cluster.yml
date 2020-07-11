@@ -35,7 +35,7 @@
  
 - name: Delete K8s Cluster
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster/{{ target_cluster_id }}
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster{{ target_cluster_id }}
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
