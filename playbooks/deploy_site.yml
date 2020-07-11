@@ -10,7 +10,7 @@
           configure_airgap: yes
           add_k8s_hosts: yes
           create_k8s_cluster: yes
-          create_k8s_cluster: yes
+          create_k8s_tenant: yes
           install_istio: yes
           install_openebs: yes
           
