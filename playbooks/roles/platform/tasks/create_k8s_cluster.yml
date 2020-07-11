@@ -25,23 +25,19 @@
 - name: Parse the k8s Host ID and IP address
   set_fact:
     hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
-    k8s_ip_addr: "{{ item | json_query('ansible_host') }}"
   delegate_facts: yes
   delegate_to: "{{ item | json_query('hostname') }}"
   loop: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname}') }}"
   register: host_id_list
 
-- debug: 
-    msg: "Hostname: {{ groups.k8s_master_nodes[0] }} Host ID: {{ hostvars[groups.k8s_master_nodes[0]].hcp_host_id }}"
+#- debug: 
+#    msg: "Hostname: {{ groups.k8s_master_nodes[0] }} Host ID: {{ hostvars[groups.k8s_master_nodes[0]].hcp_host_id }}"
 
-- debug:
-    msg: "List of Host IDs:{{ host_id_list.results }}"
-
-#- name: Create inputfile to create K8s Cluster.
-#  template:
-#    src: create_k8s_cluster.j2
-#    dest: "/tmp/{{ common.name }}_create_k8s_cluster.json"
-#    mode: 0777
+- name: Create inputfile to create K8s Cluster.
+  template:
+    src: create_k8s_cluster.j2
+    dest: "/tmp/{{ common.name }}_create_k8s_cluster.json"
+    mode: 0777
  
 #- name: Create K8s Cluster
 #  uri:
