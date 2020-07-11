@@ -29,38 +29,5 @@
       "role": "worker"
     },
 {% endfor %}
-  ],
-  "cert_data": {
-    "root_ca_cert": "{{ k8s.cert_data.root_ca_cert }}",
-    "root_ca_key": "{{ k8s.cert_data.root_ca_key }}",
-    "front_proxy_ca_cert": "{{ k8s.cert_data.front_proxy_ca_cert }}",
-    "front_proxy_ca_key": "{{ k8s.cert_data.front_proxy_ca_key }}",
-    "etcd_ca_cert": "{{ k8s.cert_data.etcd_ca_cert }}",
-    "etcd_ca_key": "{{ k8s.cert_data.etcd_ca_key }}"
-  },
-  "external_identity_server": {
-    "type": "{{ k8s.ext_identity_server.type }}",
-    "host": "{{ k8s.ext_identity_server.ip }}",
-    "port": {{ k8s.ext_identity_server.port }},
-    "auth_service_locations": [
-      {
-        "host": "{{ k8s.ext_identity_server.auth_service_location_host }}",
-        "port": {{ k8s.ext_identity_server.auth_service_location_port }}
-      }
-    ],
-    "timeout_ms": {{ k8s.ext_identity_server.timeout_ms }},
-    "reorder_after_failover": {{ k8s.ext_identity_server.reorder_after_failover }},
-    "user_attribute": "{{ k8s.ext_identity_server.user_attribute }}",
-    "bind_type": "{{ k8s.ext_identity_server.bind_type }}",
-    "base_dn": "{{ k8s.ext_identity_server.base_dn }}",
-    "security_protocol": "{{ k8s.ext_identity_server.security_protocol }}",
-    "cacert_filename": "{{ k8s.ext_identity_server.cacert_filename }}",
-    "nt_domain": "{{ k8s.ext_identity_server.nt_domain }}",
-    "bind_dn": "{{ k8s.ext_identity_server.bind_dn }}",
-    "bind_pwd": "{{ k8s.ext_identity_server.bind_pwd }}",
-    "verify_peer": {{ k8s.ext_identity_server.verify_peer }}
-  },
-  "external_groups": [
-    "{{ k8s.external_groups }}"
   ]
 }
