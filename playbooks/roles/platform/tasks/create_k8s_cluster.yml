@@ -24,8 +24,8 @@
 # Parse the k8s Host ID and IP address from the JSON result of the GET k8shost call
 - name: Parse the k8s Host ID and IP address
   set_fact:
-    hcp_host_id: "{{ item | json_query('host_id') | to_json }}"
-    k8s_ip_addr: "{{ item | json_query('ansible_host') | to_json }}"
+    hcp_host_id: "{{ item | json_query('host_id') | from_json }}"
+    k8s_ip_addr: "{{ item | json_query('ansible_host') | from_json }}"
   delegate_facts: yes
   delegate_to: "{{ item | json_query('hostname') }}"
   loop: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname}') }}"
