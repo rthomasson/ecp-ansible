@@ -9,7 +9,7 @@
   "pod_dns_domain": "mycluster.local",
   "addons": [],
   "k8shosts_config": [
-{% for host in groups.k8s_master_nodes if {{ hostvars[host]['ansible_facts']['is_ready'] }} %}  
+{% for host in groups.k8s_master_nodes if hostvars[host].ansible_facts.is_ready }} %}  
     {
       "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
       "role": "master",
