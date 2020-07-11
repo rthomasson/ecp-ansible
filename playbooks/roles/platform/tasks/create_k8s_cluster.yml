@@ -32,7 +32,7 @@
   register: host_id_list
 
 - debug: 
-    msg: "Hostname: {{ hostvars[groups.k8s_master_nodes[0]] }} Host ID: {{ hostvars[groups.k8s_master_nodes[0]].hcp_host_id }}"
+    msg: "Hostname: {{ hostvars[groups.k8s_master_nodes[0].inventory_hostname] }} Host ID: {{ hostvars[groups.k8s_master_nodes[0]].hcp_host_id }}"
 
 - debug:
     msg: "List of Host IDs:{{ host_id_list.results }}"
