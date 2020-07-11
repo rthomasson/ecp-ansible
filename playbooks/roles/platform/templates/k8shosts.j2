@@ -6,6 +6,15 @@ parameters:
     ephemeral_disks: {{ common.ephemeral_disks|join(',') }}
     persistent_disks: "{{ common.persistent_disks|join(',') }}"
     install_type: {{ common.install_type }}
+    tags:
+      - name: dc_tag
+        value: {{ hostvars[k8sw].dc_tag }}
+      - name: rack_tag
+        value: {{ hostvars[k8sw].rack_tag }}            
+      - name: ru_tag
+        value: {{ hostvars[k8sw].ru_tag }}    
+      - name: hcp_host_id
+        value: {{ hostvars[k8sw].hcp_host_id }}     
   host:
     internal_ip: {{ hostvars[k8sw].ansible_host }}
   ssh:
