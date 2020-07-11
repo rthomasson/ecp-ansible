@@ -33,10 +33,9 @@
   register: host_id_list
 
 - debug: 
-    msg: "Master Node: {{ groups.k8s_master_nodes[0] }} Host ID: {{ hostvars[groups.k8s_master_nodes[0]].hcp_host_id }} Status: {{ hostvars[groups.k8s_master_nodes[0]].is_ready }} "
-- debug: 
-    msg: "Worker Node: {{ groups.k8s_worker_nodes[0] }} Host ID: {{ hostvars[groups.k8s_worker_nodes[0]].hcp_host_id }} Status: {{ hostvars[groups.k8s_worker_nodes[0]].is_ready }} "
-
+    var: item
+    msg: "Worker Node: {{ item }} Host ID: {{ item.hcp_host_id }} Status: {{ item.is_ready }}"
+    with_items: {{ groups.k8s_workers }} 
 
 - name: Create inputfile to create K8s Cluster.
   template:
