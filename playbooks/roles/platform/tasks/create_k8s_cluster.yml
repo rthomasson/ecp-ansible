@@ -73,7 +73,7 @@
 
 - name: Log out of session
   uri:
-    url: "{{ ecp_session.location }}"
+    url: "{{ session_res.location }}"
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
