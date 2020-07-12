@@ -38,7 +38,7 @@
 - name: Parse the K8s cluster name and ID from the JSON result of the GET k8scluster call
   set_fact:
     # set the id of the cluster to delete if it matches the name of the supplied cluster
-    new_k8stenant_cluster_id: "{{ json_query(k8scluster_id_query) }}"
+    new_k8stenant_cluster_id: "{{ k8scluster_list | json_query(k8scluster_id_query) }}"
   cacheable: true
 
 - debug:
