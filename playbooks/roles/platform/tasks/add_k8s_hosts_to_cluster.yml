@@ -59,7 +59,7 @@
   set_fact:
     # set the id of the cluster to delete if it matches the name of the supplied cluster
     target_cluster_id: "{{ item | json_query('cluster_id') }}"
-  when: "{{ item | json_query('cluster_name') == cluster_name }}"  
+  when: "{{ item | json_query('cluster_name') == k8s.cluster_name }}"  
   loop: "{{ k8scluster_res.json | json_query('_embedded.k8sclusters[*].{cluster_name: label.name, cluster_id: _links.self.href}') }}"
   register: cluster_list
 
