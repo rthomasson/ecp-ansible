@@ -32,6 +32,10 @@
   delegate_facts: True
   delegate_to: "{{ item | json_query('ansible_host') }}"
   with_items: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
+  vars:
+    hcp_host_id: 0
+    status: unknown
+    is_ready: false
   register: host_list
 
 - debug: 
