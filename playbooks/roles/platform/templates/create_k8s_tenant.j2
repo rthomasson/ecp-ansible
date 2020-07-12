@@ -1,24 +1,10 @@
 {
-{% if new_k8stenant_enable_service_mesh_flag is defined %}    
-	"enable_service_mesh": "{{ new_k8stenant_enable_service_mesh_flag }}",
-{% else %} 
-	"enable_service_mesh": true }}",
-{% endif %}
 	"tenant_type": "k8s",
-	"features": {
-		"ml_project": false
-	},
-	"is_namespace_owner": "true",
 	"label": {
 		"name": "{{ new_k8stenant_name }}",
 		"description": "{{ new_k8stenant_description }}"
 	},
 	"k8s_cluster": "{{ new_k8stenant_cluster_id }}",
-{% if new_k8stenant_map_services_to_gateway_flag is defined %}    
-	"map_services_to_gateway": "{{ new_k8stenant_map_services_to_gateway_flag }}",
-{% else %}  
-	"map_services_to_gateway": false,
-{% endif %}
 {% if new_k8stenant_adopt_existing_namespace_flag is defined %}
 	"adopt_existing_namespace": "{{ new_k8stenant_adopt_existing_namespace_flag }}",
 {% else %}
@@ -27,6 +13,45 @@
 {% if new_k8stenant_namespace_name is defined %}    
 	"specified_namespace_name": "{{ new_k8stenant_specified_namespace_name }}",
 {% endif %}
+{% if new_k8stenant_namespace_owner_flag %}    
+	"is_namespace_owner": "{{ new_k8stenant_is_namespace_owner }}",
+{% else %} 
+	"is_namespace_owner": true,
+{% endif %}
+{% if new_k8stenant_map_services_to_gateway_flag is defined %}    
+	"map_services_to_gateway": "{{ new_k8stenant_map_services_to_gateway_flag }}",
+{% else %}  
+	"map_services_to_gateway": false,
+{% endif %}
+  "tenant_type_info": {
+{% if new_k8stenant_enable_service_mesh_flag is defined %}    
+     "enable_service_mesh": "{{ new_k8stenant_enable_service_mesh_flag }}",
+{% else %} 
+	   "enable_service_mesh": true,
+{% endif %}
+{% if new_k8stenant_map_services_to_gateway_flag is defined %}    
+	   "map_services_to_gateway": "{{ new_k8stenant_map_services_to_gateway_flag }}",
+{% else %}  
+	   "map_services_to_gateway": false,
+{% endif %}
+{% if new_k8stenant_namespace_name is defined %}    
+     "specified_namespace_name": "{{ new_k8stenant_specified_namespace_name }}",
+{% endif %}
+{% if new_k8stenant_namespace_owner_flag %}    
+	   "is_namespace_owner": "{{ new_k8stenant_is_namespace_owner }}",
+{% else %} 
+	   "is_namespace_owner": true,
+{% endif %}
+{% if new_k8stenant_adopt_existing_namespace_flag is defined %}
+	   "adopt_existing_namespace": "{{ new_k8stenant_adopt_existing_namespace_flag }}",
+{% else %}
+	   "adopt_existing_namespace": false,
+{% endif %}
+  }
+	"features": {
+     "ml_project": false
+  },
+{% if new_k8stenant_quota_cores is defined or new_k8stenant_quota_disk is defined or new_k8stenant_quota_persistent is defined or new_k8stenant_quota_gpus is defined or new_k8stenant_quota_mempory is defined %}
   "quota": {
   {% if new_k8stenant_quota_cores is defined and new_k8stenant_quota_cores > 0 %}    
   	 "cores": "{{ new_k8stenant_quota_cores }}",
@@ -53,5 +78,7 @@
   {% else %}  
   	"memory": 
   {% endif %}
-  }
-}
+  },
+{% endif %}  
+  "krb_enc_types": []
+}  
