@@ -21,6 +21,11 @@
     status_code: 200
   register: k8shost_res
 
+- name: Create a fact with the Json from k8shost_res  
+  set_fact:
+    k8shosts_list: "{{ k8shost_res.json }}"
+  cacheable: True  
+
   # Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
 - name: Parse the k8s IP, Host ID, hostname and status into a record
   set_fact:
@@ -32,7 +37,7 @@
     cacheable: true    
   delegate_facts: True
   delegate_to: "{{ item | json_query('ansible_host') }}"
-  with_items: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
+  with_items: "{{ k8shosts_list | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
 
 - debug: 
     msg: "Worker Node IP: {{ hostvars[item]['ansible_host'] }} Host ID: {{ hostvars[item]['hcp_host_id'] }} Status: {{ hostvars[item]['status'] }} Ready: {{ hostvars[item]['is_ready'] }}"
