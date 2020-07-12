@@ -32,6 +32,7 @@
     new_k8stenant_cluster_id: "{{ item | json_query('cluster_id') }}"
   when: "{{ item | json_query('cluster_name') == new_k8stenant_cluster_name }}"  
   loop: "{{ k8scluster_res.json | json_query('_embedded.k8sclusters[*].{cluster_name: label.name, cluster_id: _links.self.href}') }}"
+  cacheable: true
 
 - name: Create inputfile to create K8s tenant.
   template:
