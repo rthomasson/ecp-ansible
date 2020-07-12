@@ -23,12 +23,6 @@
 
   # Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
 - name: Parse the k8s IP, Host ID, hostname and status into a record
-  vars:
-    hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
-    status: "{{ item | json_query('status') }}"
-    is_ready:  "{{ item | json_query('status') == 'ready' }}"
-    host: "{{ item | json_query('ansible_host') }}"
-    test: test
   set_fact:
     hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
     status: "{{ item | json_query('status') }}"
@@ -39,10 +33,9 @@
   delegate_facts: True
   delegate_to: "{{ item | json_query('ansible_host') }}"
   with_items: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
-  register: host_list
 
 - debug: 
-    msg: "Test: {{ test }} Worker Node IP: {{ hostvars[item].ansible_host }} Host ID: {{ hostvars[item].hcp_host_id }} Status: {{ hostvars[item].status }} Ready: {{ hostvars[item].is_ready }}"
+    msg: "Worker Node IP: {{ hostvars[item]['ansible_host'] }} Host ID: {{ hostvars[item]['hcp_host_id'] }} Status: {{ hostvars[item]['status'] }} Ready: {{ hostvars[item]['is_ready'] }}"
   with_items: "{{ groups['k8s_workers'] }}"   
 
 - name: Create inputfile to create K8s Cluster.

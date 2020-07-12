@@ -1,83 +1,16 @@
 ---
-# Get the current set of k8shosts 
-- name: Get the current set of k8shosts 
-  uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/worker/k8shost
-    return_content: yes
-    headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
-      accept: "application/json"
-    method: GET
-    status_code: 200
-  register: k8shost_res
-  # Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
+# Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
 - name: Parse the k8s IP, Host ID, hostname and status into a record
-  vars:
-    hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
-    status: "{{ item | json_query('status') }}"
-    is_ready:  "{{ item | json_query('status') == 'ready' }}"
-    host: "{{ item | json_query('ansible_host') }}"
-    test: test
   set_fact:
     hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
     status: "{{ item | json_query('status') }}"
     is_ready:  "{{ item | json_query('status') == 'ready' }}"
     host: "{{ item | json_query('ansible_host') }}"
     test: test
-    cacheable: true   
+    cacheable: true    
   delegate_facts: True
   delegate_to: "{{ item | json_query('ansible_host') }}"
-  register: host_list
 
 - debug: 
-    msg: "Test: {{ test }} Worker Node IP: {{ hostvars[item].ansible_host }} Host ID: {{ hostvars[item].hcp_host_id }} Status: {{ hostvars[item].status }} Ready: {{ hostvars[item].is_ready }}"
-  with_items: "{{ groups['k8s_workers'] }}"   
-
-- name: Create inputfile to create K8s Cluster.
-  template:
-    src: create_k8s_cluster.j2
-    dest: "/tmp/{{ common.name }}_create_k8s_cluster.json"
-    mode: 0777
- 
-#- name: Create K8s Cluster
-#  uri:
-#    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster
-#    return_content: yes
-#    headers:
-#      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
-#      accept: "*/*"
-#      Content-Type: "application/json"
-#    method: POST
-#    body_format: json
-#    body: "{{ lookup('file','/tmp/CICL_create_k8s_cluster.json') }}"
-#    status_code: 201
-#  register: cluster_res
-
-#  - name: Poll the status of cluster creation by making get call to /api/v2/k8scluster/k8scluster_id
-#    command: epicctl api get -u {{ jsonResp }} -n "OnPremSetup" -p {{ common.platform }} -o /tmp/get-response.json
-#    vars:
-#      getResp: "{{ (lookup('file', '/tmp/get-response.json') | from_json)['status'] }}"
-#    register : res
-#    failed_when: res.rc != 0
-#    changed_when: false
-#    retries: 30
-#    delay: 60
-#    until:  '"ready" == getResp'
-
-#  - debug:
-#      msg: "polling task finished"
-
-- name: Log out of session
-  uri:
-    url: "{{ session_res.location }}"
-    return_content: yes
-    headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
-    method: DELETE
-    status_code: 204
-  register: delsession_res
-
-- debug:
-#    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ cluster_res.status }}"
-    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster finished."
-
+    # msg: "Test: {{ test }} Worker Node IP: {{ hostvars[item].ansible_host }} Host ID: {{ hostvars[item].hcp_host_id }} Status: {{ hostvars[item].status }} Ready: {{ hostvars[item].is_ready }}"
+    msg: "Test: {{ test }} "
