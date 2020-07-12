@@ -28,7 +28,7 @@
 - name: Create a fact with the list of K8s cluster from the API call  
   set_fact:
     k8scluster_list: "{{ k8scluster_res.json }}"
-    k8scluster_id_query: "_embedded.k8sclusters[?cluster_name=='{{ new_k8stenant_cluster_name }}'].cluster_id"
+    k8scluster_id_query: "json_query('_embedded.k8sclusters[?cluster_name=='{{ new_k8stenant_cluster_name }}'].cluster_id'"
     cacheable: True
     
 - debug:
