@@ -28,6 +28,8 @@
       # Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
       - name: Parse the k8s Host ID and IP address
         set_fact:
+          ecp_session: "{{ session_res }}"
+          k8s_hosts: "{{ k8shosts_res.json }}"
           hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
           status: "{{ item | json_query('status') }}"
           is_ready:  "{{ item | json_query('status') == 'ready' }}"
@@ -39,8 +41,6 @@
     roles:
       - role: platform
         vars:
-          ecp_session: "{{ session_res }}"
-          k8s_hosts: "{{ k8shosts_res.json }}"
           create_k8s_cluster: yes
           
           
