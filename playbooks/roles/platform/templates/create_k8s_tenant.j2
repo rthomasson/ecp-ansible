@@ -6,17 +6,17 @@
   },
   "k8s_cluster": "{{ k8s_tenant_cluster_id }}",
   {% if k8s.tenant.adopt_existing_namespace_flag is defined %}
-  "adopt_existing_namespace": "{{ k8s.tenant.adopt_existing_namespace_flag }}",
+nn"adopt_existing_namespace": "{{ k8s.tenant.adopt_existing_namespace_flag }}",
   {% else %}
-  "adopt_existing_namespace": false,
+nn"adopt_existing_namespace": false,
   {% endif %}
   {% if k8s.tenant.namespace_name is defined %}
   "specified_namespace_name": "{{ k8s.tenant.specified_namespace_name }}",
   {% endif %}
   {% if k8s.tenant.is_namespace_owner is defined %}
-  "is_namespace_owner": "{{ k8s.tenant.is_namespace_owner }}",
+nn"is_namespace_owner": "{{ k8s.tenant.is_namespace_owner }}",
   {% else %}
-  "is_namespace_owner": true,
+nn"is_namespace_owner": true,
   {% endif %}
   {% if k8s.tenant.map_services_to_gateway_flag is defined %}
   "map_services_to_gateway": "{{ k8s.tenant.map_services_to_gateway_flag }}",
@@ -24,29 +24,29 @@
   "map_services_to_gateway": false,
   {% endif %}
   "tenant_type_info": {
-     {% if k8s.tenant.enable_service_mesh_flag is defined %}
-     "enable_service_mesh": "{{ k8s.tenant.enable_service_mesh_flag }}",
-     {% else %}
-     "enable_service_mesh": true,
-     {% endif %}
-     {% if k8s.tenant.map_services_to_gateway_flag is defined %}
-     "map_services_to_gateway": "{{ k8s.tenant.map_services_to_gateway_flag }}",
-     {% else %}
-     "map_services_to_gateway": false,
-     {% endif %}
-     {% if k8s.tenant.namespace_name is defined %}
-     "specified_namespace_name": "{{ k8s.tenant.specified_namespace_name }}",
-     {% endif %}
-     {% if k8s.tenant.is_namespace_owner is defined %}
-     "is_namespace_owner": "{{ k8s.tenant.is_namespace_owner }}",
-     {% else %}
-     "is_namespace_owner": true,
-     {% endif %}
-     {% if k8s.tenant.adopt_existing_namespace_flag is defined %}
-     "adopt_existing_namespace": "{{ k8s.tenant.adopt_existing_namespace_flag }}",
-     {% else %}
-     "adopt_existing_namespace": false,
-     {% endif %}
+    {% if k8s.tenant.enable_service_mesh_flag is defined %}
+nnnn"enable_service_mesh": "{{ k8s.tenant.enable_service_mesh_flag }}",
+    {% else %}
+nnnn"enable_service_mesh": true,
+    {% endif %}
+    {% if k8s.tenant.map_services_to_gateway_flag is defined %}
+nnnn"map_services_to_gateway": "{{ k8s.tenant.map_services_to_gateway_flag }}",
+    {% else %}
+nnnn"map_services_to_gateway": false,
+    {% endif %}
+    {% if k8s.tenant.namespace_name is defined %}
+nnnn"specified_namespace_name": "{{ k8s.tenant.specified_namespace_name }}",
+    {% endif %}
+    {% if k8s.tenant.is_namespace_owner is defined %}
+nnnn"is_namespace_owner": "{{ k8s.tenant.is_namespace_owner }}",
+    {% else %}
+nnnn"is_namespace_owner": true,
+    {% endif %}
+    {% if k8s.tenant.adopt_existing_namespace_flag is defined %}
+nnnn"adopt_existing_namespace": "{{ k8s.tenant.adopt_existing_namespace_flag }}",
+    {% else %}
+nnnn"adopt_existing_namespace": false,
+    {% endif %}
   }
   "features": {
     "ml_project": false
@@ -70,5 +70,5 @@
      {% endif %}
   },
   {% endif %}
-  "krb_enc_types": []
+nn"krb_enc_types": []
 }  
