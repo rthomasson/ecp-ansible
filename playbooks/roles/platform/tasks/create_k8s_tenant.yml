@@ -25,13 +25,17 @@
     status_code: 200
   register: k8scluster_res
 
+- name: Create a fact with the list of K8s cluster from the API call  
+  set_fact:
+    k8scluster_list: "{{ k8scluster_res.json }}"
+
 # Parse the k8s cluster name and ID from the JSON result of the GET k8scluster call and set target cluster ID
-- name: Parse the K8s cluster name an ID from the JSON result of the GET k8scluster call
+- name: Parse the K8s cluster name and ID from the JSON result of the GET k8scluster call
   set_fact:
     # set the id of the cluster to delete if it matches the name of the supplied cluster
-    new_k8stenant_cluster_id: "{{ item | json_query('cluster_id') }}"
-  when: "{{ item | json_query('cluster_name') == new_k8stenant_cluster_name }}"  
-  loop: "{{ k8scluster_res.json | json_query('_embedded.k8sclusters[*].{cluster_name: label.name, cluster_id: _links.self.href}') }}"
+    new_k8stenant_cluster_id: "{{ json_query(cluster_id_query) }}"
+  vars: 
+    cluster_id_query:  "'_embedded.k8sclusters[?cluster_name=={{ new_k8stenant_cluster_name }}].cluster_id'"
   cacheable: true
 
 - name: Create inputfile to create K8s tenant.
