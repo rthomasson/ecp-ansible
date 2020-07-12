@@ -39,8 +39,8 @@
     roles:
       - role: platform
         vars:
-          ecp_session: {{ session_res }}
-          k8s_hosts: {{ k8shosts_res.json }}
+          ecp_session: "{{ session_res }}"
+          k8s_hosts: "{{ k8shosts_res.json }}"
           create_k8s_cluster: yes
           
           
