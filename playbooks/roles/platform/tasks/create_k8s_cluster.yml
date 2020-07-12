@@ -48,10 +48,6 @@
   delegate_to: "{{ item | json_query('ansible_host') }}"
   with_items: "{{ k8shosts_list }}"
 
-- debug: 
-    msg: "Worker Node IP: {{ hostvars[item].ansible_host }} Host ID: {{ hostvars[item].fact_hcp_host_id }} Status: {{ hostvars[item].fact_status }} Ready: {{ hostvars[item].fact_is_ready }}"
-  with_items: "{{ groups['k8s_workers'] }}"   
-
 - name: Create inputfile to create K8s Cluster.
   template:
     src: create_k8s_cluster.j2
