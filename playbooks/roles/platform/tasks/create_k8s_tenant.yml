@@ -31,7 +31,7 @@
     k8scluster_id_query: "'_embedded.k8sclusters[?cluster_name=={{ new_k8stenant_cluster_name }}].cluster_id"
     cacheable: True
     
-- Debug:
+- debug:
     msg: "Query string is: {{ k8scluster_id_query }}"    
 
 # Parse the k8s cluster name and ID from the JSON result of the GET k8scluster call and set target cluster ID
