@@ -18,6 +18,8 @@
     when: add_host_tags is defined    
   - include_tasks: create_k8s_cluster.yml
     when: create_k8s_cluster is defined    
+  - include_tasks: add_k8s_hosts_to_cluster.yml
+    when: add_k8s_hosts_to_cluster is defined     
   - include_tasks: delete_k8s_cluster.yml
     when: delete_k8s_cluster is defined
   - include_tasks: create_k8s_tenant.yml
@@ -26,3 +28,4 @@
     when: install_istio is defined  
   - include_tasks: install_openebs.yml
     when: install_openebs is defined  
+    
