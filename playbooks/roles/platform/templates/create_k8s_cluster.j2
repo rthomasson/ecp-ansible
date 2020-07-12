@@ -9,25 +9,22 @@
   "pod_dns_domain": "mycluster.local",
   "addons": [],
   "k8shosts_config": [
-{% for host in groups.k8s_master_nodes if hostvars[host].is_ready %}  
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('hostname') in groups[k8s_master_nodes]  %}  
     {
-      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
+      "node": "{{ item | json_query('host_id') }}",
       "role": "master",
-      "status": "{{ hostvars[host].is_ready }}"
     },
 {% endfor %}
-{% for host in groups.k8s_ingress_nodes if hostvars[host].is_ready %}  
+{% for host in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('hostname') in groups[k8s_ingress_nodes]  %}  
     {
-      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
+      "node": "{{ item | json_query('host_id') }}",
       "role": "worker",
-      "status": "{{ hostvars[host].is_ready }}"
     },
 {% endfor %}
-{% for host in groups.k8s_worker_nodes if hostvars[host].is_ready %}  
+{% for host in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('hostname') in groups[k8s_worker_nodes]  %}  
     {
-      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
+      "node": "{{ item | json_query('host_id') }}",
       "role": "worker",
-      "status": "{{ hostvars[host].is_ready }}"
     },
 {% endfor %}
   ]
