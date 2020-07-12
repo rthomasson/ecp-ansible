@@ -42,7 +42,7 @@
     url: "{{ ecp_session.location }}"
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ ecp_session.location  | urlsplit('path') }}"  
+      X-BDS-SESSION: "{{ hostvars[inventory_hostname].ecp_session.location  | urlsplit('path') }}"  
     method: DELETE
     status_code: 204
   register: delsession_res
