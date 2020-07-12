@@ -83,5 +83,5 @@
 
 - debug:
 #    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ cluster_res.status }}"
-    msg: "Session: {{ delsession_res.location  | urlsplit('path') }} -- Create K8s Cluster finished."
+    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster finished."
 
