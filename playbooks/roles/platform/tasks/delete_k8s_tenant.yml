@@ -1,0 +1,66 @@
+---
+- name: Obtain session token
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
+    return_content: yes
+    method: POST
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+ 
+   
+# Get the current list of K8s tenants 
+- name: Get the current set of K8s tenants 
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+      accept: "application/json"
+    method: GET
+    status_code: 200
+  register: k8stenants_res
+
+# Parse the k8s tenants names and ID from the JSON result of the GET k8stenant call and set target tenant ID
+- name: Parse the K8s tenant name and ID from the JSON result of the GET k8stenant call
+  set_fact:
+    # set the id of the clustenant ter to delete if it matches the name of the supplied cluster
+    target_tenant_id: "{{ item | json_query('cluster_id') }}"
+  when: "{{ item | json_query('tenant_name') == target_cluster_name }}"  
+  loop: "{{ k8stenants_res.json | json_query('_embedded.tenants[*].{tenant_name: label.name, tenant_id: _links.self.href}') }}"
+  register: tenant_list
+
+#- name: Create inputfile to delete K8s tenant.
+#  template:
+#    src: create_k8s_tenant.j2
+#    dest: "/tmp/{{ common.name }}_delete_k8s_tenant.json"
+#    mode: 0777
+    
+- name: Delete K8s tenant
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+      accept: "*/*"
+      Content-Type: "application/json"
+    method: DELETE
+    body_format: json
+    body: ""
+    status_code: 204
+  register: tenant_delete_res
+  
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    status_code: 204
+  register: delsession_res
+
+- debug:
+    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Delete K8s Tenant Result: {{ tenant_delete_res.status }}"
