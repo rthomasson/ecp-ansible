@@ -38,7 +38,7 @@
 
 - name: Create inputfile to create K8s Cluster.
   template:
-    src: create_k8s_cluster.j2
+    src: add_k8s_hosts_to_cluster.j2
     dest: "/tmp/{{ common.name }}_add_k8s_hosts_to_cluster.json"
     mode: 0777
     
