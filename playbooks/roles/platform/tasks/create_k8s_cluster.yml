@@ -21,10 +21,10 @@
     status_code: 200
   register: k8shost_res
 
-- name: Create a fact with the Json from k8shost_res  
+- name: Create a fact with the Json from the APPI call  
   set_fact:
     k8shosts_list: "{{ k8shost_res.json }}"
-  cacheable: True  
+    cacheable: True  
 
   # Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
 - name: Parse the k8s IP, Host ID, hostname and status into a record
