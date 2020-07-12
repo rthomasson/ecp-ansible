@@ -25,9 +25,6 @@
     status_code: 200
   register: k8scluster_res
 
-- debug: 
-    msg: " test query string: "_embedded.k8sclusters[?k8s_version=='1.17.5'].cluster_id
-    
 - name: Create a fact with the list of K8s cluster from the API call  
   set_fact:
     k8scluster_list: "{{ k8scluster_res.json }}"
