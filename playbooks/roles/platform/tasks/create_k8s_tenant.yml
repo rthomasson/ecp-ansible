@@ -37,11 +37,19 @@
 
 # Parse the k8s cluster name and ID from the JSON result of the GET k8scluster call and set target cluster ID
 - name: Parse the K8s cluster name and ID from the JSON result of the GET k8scluster call
+#  set_fact:
+    # set the id of the cluster to delete if it matches the name of the supplied cluster
+#    k8s_tenant_cluster_id: "{{ k8scluster_list | json_query(k8scluster_id_query) }}"
+#    new_k8stenant_cluster_id: "{{ k8scluster_list | json_query('_embedded.k8sclusters[?label.name=='new_k8stenant_cluster_name']._links.self.href') }}"
+#    cacheable: true
   set_fact:
     # set the id of the cluster to delete if it matches the name of the supplied cluster
-    k8s_tenant_cluster_id: "{{ k8scluster_list | json_query(k8scluster_id_query) | from json }}"
-#    new_k8stenant_cluster_id: "{{ k8scluster_list | json_query('_embedded.k8sclusters[?label.name=='new_k8stenant_cluster_name']._links.self.href') }}"
+    k8s_tenant_cluster_id: "{{ item | json_query('cluster_id') }}"
     cacheable: true
+  when: "{{ item | json_query('cluster_name') == k8s.tenant.cluster_name }}"  
+  loop: "{{ k8scluster_list | json_query('_embedded.k8sclusters[*].{cluster_name: label.name, cluster_id: _links.self.href}') }}"
+
+
 
 - name: Create inputfile to create K8s tenant.
   template:
