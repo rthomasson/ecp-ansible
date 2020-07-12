@@ -35,11 +35,11 @@
     msg: "Query string is: {{ k8scluster_id_query }}"    
 
 # Parse the k8s cluster name and ID from the JSON result of the GET k8scluster call and set target cluster ID
-#- name: Parse the K8s cluster name and ID from the JSON result of the GET k8scluster call
-#  set_fact:
+- name: Parse the K8s cluster name and ID from the JSON result of the GET k8scluster call
+  set_fact:
     # set the id of the cluster to delete if it matches the name of the supplied cluster
-#    new_k8stenant_cluster_id: "{{ k8scluster_list | json_query(k8scluster_id_query) }}"
-#  cacheable: true
+    new_k8stenant_cluster_id: "{{ k8scluster_list | k8scluster_id_query }}"
+  cacheable: true
 
 - debug:
     msg: "K8s cluster ID is: {{ new_k8stenant_cluster_id }}"    
