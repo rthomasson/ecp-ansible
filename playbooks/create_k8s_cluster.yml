@@ -5,8 +5,6 @@
     roles:
       - role: platform
         vars:
-          ecp_session: "{{ hostvars[inventory_hostname].ecp_session }}" 
-          k8s_hosts: "{{ hostvars[inventory_hostname].k8s_hosts }}"
           create_k8s_cluster: yes
           
           
