@@ -35,31 +35,31 @@
     msg: "Query string is: {{ k8scluster_id_query }}"    
 
 # Parse the k8s cluster name and ID from the JSON result of the GET k8scluster call and set target cluster ID
-- name: Parse the K8s cluster name and ID from the JSON result of the GET k8scluster call
-  set_fact:
-    # set the id of the cluster to delete if it matches the name of the supplied cluster
-    new_k8stenant_cluster_id: "{{ json_query(k8scluster_id_query) }}"
-  cacheable: true
+#- name: Parse the K8s cluster name and ID from the JSON result of the GET k8scluster call
+#  set_fact:
+#    # set the id of the cluster to delete if it matches the name of the supplied cluster
+#    new_k8stenant_cluster_id: "{{ json_query(k8scluster_id_query) }}"
+#  cacheable: true
 
-- name: Create inputfile to create K8s tenant.
-  template:
-    src: create_k8s_tenant.j2
-    dest: "/tmp/{{ common.name }}_create_k8s_tenant.json"
-    mode: 0777
+#- name: Create inputfile to create K8s tenant.
+#  template:
+#    src: create_k8s_tenant.j2
+#    dest: "/tmp/{{ common.name }}_create_k8s_tenant.json"
+#    mode: 0777
     
-- name: Create K8s tenant
-  uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
-    return_content: yes
-    headers:
-      X-BDS-SESSION: "{{ session_id }}" 
-      accept: "*/*"
-      Content-Type: "application/json"
-    method: POST
-    body_format: json
-    body: "{{ lookup('file','/tmp/CICL_create_k8s_tenant.json') }}"
-    status_code: 201
-  register: tenant_res
+#- name: Create K8s tenant
+#  uri:
+#    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
+#    return_content: yes
+#    headers:
+#      X-BDS-SESSION: "{{ session_id }}" 
+#      accept: "*/*"
+#      Content-Type: "application/json"
+#    method: POST
+#    body_format: json
+#    body: "{{ lookup('file','/tmp/CICL_create_k8s_tenant.json') }}"
+#    status_code: 201
+#  register: tenant_res
   
 
 - name: Log out of session
