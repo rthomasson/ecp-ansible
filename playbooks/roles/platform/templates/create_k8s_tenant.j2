@@ -13,7 +13,7 @@
 {% if new_k8stenant_namespace_name is defined %}    
 	"specified_namespace_name": "{{ new_k8stenant_specified_namespace_name }}",
 {% endif %}
-{% if new_k8stenant_is_namespace_owner %}    
+{% if new_k8stenant_is_namespace_owner is defined %}    
 	"is_namespace_owner": "{{ new_k8stenant_is_namespace_owner }}",
 {% else %} 
 	"is_namespace_owner": true,
@@ -37,7 +37,7 @@
 {% if new_k8stenant_namespace_name is defined %}    
      "specified_namespace_name": "{{ new_k8stenant_specified_namespace_name }}",
 {% endif %}
-{% if new_k8stenant_is_namespace_owner %}    
+{% if new_k8stenant_is_namespace_owner is defined %}    
 	   "is_namespace_owner": "{{ new_k8stenant_is_namespace_owner }}",
 {% else %} 
 	   "is_namespace_owner": true,
