@@ -1,0 +1,9 @@
+---
+  - name: Delte K8s tenant
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          delete_k8s_tenant: yes
+          
