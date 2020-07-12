@@ -35,7 +35,7 @@
     # set the id of the cluster to delete if it matches the name of the supplied cluster
     new_k8stenant_cluster_id: "{{ json_query(cluster_id_query) }}"
   vars: 
-    cluster_id_query:  "'_embedded.k8sclusters[?cluster_name=={{ new_k8stenant_cluster_name }}].cluster_id'"
+    cluster_id_query:  "_embedded.k8sclusters[?cluster_name=={{ new_k8stenant_cluster_name }}].cluster_id"
   cacheable: true
 
 - name: Create inputfile to create K8s tenant.
