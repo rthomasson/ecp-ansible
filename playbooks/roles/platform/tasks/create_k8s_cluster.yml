@@ -36,18 +36,6 @@
     k8shosts_list: "{{ k8shosts_list_raw | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
     cacheable: True  
 
-  # Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
-- name: Parse the k8s IP, Host ID, hostname and status into a record
-  set_fact:
-    fact_hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
-    fact_status: "{{ item | json_query('status') }}"
-    fact_is_ready:  "{{ item | json_query('status') == 'ready' }}"
-    fact_host: "{{ item | json_query('ansible_host') }}"
-    cacheable: true    
-  delegate_facts: True
-  delegate_to: "{{ item | json_query('ansible_host') }}"
-  with_items: "{{ k8shosts_list }}"
-
 - name: Create inputfile to create K8s Cluster.
   template:
     src: create_k8s_cluster.j2
