@@ -1,7 +1,7 @@
 ---
   - name: Create K8s cluster
     hosts: localhost
-    gather_facts: false
+    gather_facts: true
     tasks: 
       - name: Obtain session token
         uri:
@@ -24,16 +24,21 @@
           method: GET
           status_code: 200
         register: k8shost_res
-
-      # Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
+        
+      # Set the session and k8s_hosts variables
       - name: Parse the k8s Host ID and IP address
         set_fact:
           ecp_session: "{{ session_res }}"
           k8s_hosts: "{{ k8shosts_res.json }}"
+          cacheable: yes
+          
+      # Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
+      - name: Parse the k8s Host ID and IP address
+        set_fact:
           hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
           status: "{{ item | json_query('status') }}"
           is_ready:  "{{ item | json_query('status') == 'ready' }}"
-          cacheable: true    
+          cacheable: yes    
         delegate_facts: True
         delegate_to: "{{ item | json_query('ansible_host') }}"
         with_items: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
@@ -41,6 +46,8 @@
     roles:
       - role: platform
         vars:
+          ecp_session: "{{ hostvars[inventory_hostname].ecp_session }}" 
+          k8s_hosts: "{{ hostvars[inventory_hostname].k8s_hosts }}"
           create_k8s_cluster: yes
           
           
