@@ -1,49 +1,49 @@
 {
 	"tenant_type": "k8s",
 	"label": {
-		"name": "{{ new_k8stenant_name }}",
-		"description": "{{ new_k8stenant_description }}"
+		"name": "{{ k8s.tenant.name }}",
+		"description": "{{ k8s.tenant.description }}"
 	},
-	"k8s_cluster": "{{ new_k8stenant_cluster_id }}",
-{% if new_k8stenant_adopt_existing_namespace_flag is defined %}
-	"adopt_existing_namespace": "{{ new_k8stenant_adopt_existing_namespace_flag }}",
+	"k8s_cluster": "{{ k8s_tenant_cluster_id }}",
+{% if k8s.tenant.adopt_existing_namespace_flag is defined %}
+	"adopt_existing_namespace": "{{ k8s.tenant.adopt_existing_namespace_flag }}",
 {% else %}
 	"adopt_existing_namespace": false,
 {% endif %}
-{% if new_k8stenant_namespace_name is defined %}    
-	"specified_namespace_name": "{{ new_k8stenant_specified_namespace_name }}",
+{% if k8s.tenant.namespace_name is defined %}    
+	"specified_namespace_name": "{{ k8s.tenant.specified_namespace_name }}",
 {% endif %}
-{% if new_k8stenant_is_namespace_owner is defined %}    
-	"is_namespace_owner": "{{ new_k8stenant_is_namespace_owner }}",
+{% if k8s.tenant.is_namespace_owner is defined %}    
+	"is_namespace_owner": "{{ k8s.tenant.is_namespace_owner }}",
 {% else %} 
 	"is_namespace_owner": true,
 {% endif %}
-{% if new_k8stenant_map_services_to_gateway_flag is defined %}    
-	"map_services_to_gateway": "{{ new_k8stenant_map_services_to_gateway_flag }}",
+{% if k8s.tenant.map_services_to_gateway_flag is defined %}    
+	"map_services_to_gateway": "{{ k8s.tenant.map_services_to_gateway_flag }}",
 {% else %}  
 	"map_services_to_gateway": false,
 {% endif %}
   "tenant_type_info": {
-{% if new_k8stenant_enable_service_mesh_flag is defined %}    
-     "enable_service_mesh": "{{ new_k8stenant_enable_service_mesh_flag }}",
+{% if k8s.tenant.enable_service_mesh_flag is defined %}    
+     "enable_service_mesh": "{{ k8s.tenant.enable_service_mesh_flag }}",
 {% else %} 
 	   "enable_service_mesh": true,
 {% endif %}
-{% if new_k8stenant_map_services_to_gateway_flag is defined %}    
-	   "map_services_to_gateway": "{{ new_k8stenant_map_services_to_gateway_flag }}",
+{% if k8s.tenant.map_services_to_gateway_flag is defined %}    
+	   "map_services_to_gateway": "{{ k8s.tenant.map_services_to_gateway_flag }}",
 {% else %}  
 	   "map_services_to_gateway": false,
 {% endif %}
-{% if new_k8stenant_namespace_name is defined %}    
-     "specified_namespace_name": "{{ new_k8stenant_specified_namespace_name }}",
+{% if k8s.tenant.namespace_name is defined %}    
+     "specified_namespace_name": "{{ k8s.tenant.specified_namespace_name }}",
 {% endif %}
-{% if new_k8stenant_is_namespace_owner is defined %}    
-	   "is_namespace_owner": "{{ new_k8stenant_is_namespace_owner }}",
+{% if k8s.tenant.is_namespace_owner is defined %}    
+	   "is_namespace_owner": "{{ k8s.tenant.is_namespace_owner }}",
 {% else %} 
 	   "is_namespace_owner": true,
 {% endif %}
-{% if new_k8stenant_adopt_existing_namespace_flag is defined %}
-	   "adopt_existing_namespace": "{{ new_k8stenant_adopt_existing_namespace_flag }}",
+{% if k8s.tenant.adopt_existing_namespace_flag is defined %}
+	   "adopt_existing_namespace": "{{ k8s.tenant.adopt_existing_namespace_flag }}",
 {% else %}
 	   "adopt_existing_namespace": false,
 {% endif %}
@@ -51,30 +51,30 @@
 	"features": {
      "ml_project": false
   },
-{% if new_k8stenant_quota_cores is defined or new_k8stenant_quota_disk is defined or new_k8stenant_quota_persistent is defined or new_k8stenant_quota_gpus is defined or new_k8stenant_quota_mempory is defined %}
+{% if k8s.tenant.quotas.cores is defined or k8s.tenant.quotas.disk is defined or k8s.tenant.quotas.persistent is defined or k8s.tenant.quotas.gpus is defined or k8s.tenant.quotas.mempory is defined %}
   "quota": {
-  {% if new_k8stenant_quota_cores is defined and new_k8stenant_quota_cores > 0 %}    
-  	 "cores": "{{ new_k8stenant_quota_cores }}",
+  {% if k8s.tenant.quotas.cores is defined and k8s.tenant.quotas.cores > 0 %}    
+  	 "cores": "{{ k8s.tenant.quotas.cores }}",
   {% else %}  
   	"cores": ,
   {% endif %}
-  {% if new_k8stenant_quota_disk is defined and new_k8stenant_quota_disk > 0 %}    
-  	 "disk": "{{ new_k8stenant_quota_disk }}",
+  {% if k8s.tenant.quotas.disk is defined and k8s.tenant.quotas.disk > 0 %}    
+  	 "disk": "{{ k8s.tenant.quotas.disk }}",
   {% else %}  
   	"disk": ,
   {% endif %}
-  {% if new_k8stenant_quota_persistent is defined and new_k8stenant_quota_persistent > 0 %}    
-  	 "persistent": "{{ new_k8stenant_quota_persistent }}",
+  {% if k8s.tenant.quotas.persistent is defined and k8s.tenant.quotas.persistent > 0 %}    
+  	 "persistent": "{{ k8s.tenant.quotas.persistent }}",
   {% else %}  
   	"persistent": ,
   {% endif %}
-  {% if new_k8stenant_quota_gpus is defined and new_k8stenant_quota_gpus > 0 %}    
-  	 "gpus": "{{ new_k8stenant_quota_gpus }}",
+  {% if k8s.tenant.quotas.gpus is defined and k8s.tenant.quotas.gpus > 0 %}    
+  	 "gpus": "{{ k8s.tenant.quotas.gpus }}",
   {% else %}  
   	"persistent": ,
   {% endif %}
-  {% if new_k8stenant_quota_mempory is defined and new_k8stenant_quota_memory > 0 %}    
-  	 "memory": "{{ new_k8stenant_quota_gpus }}",
+  {% if k8s.tenant.quotas.memory is defined and k8s.tenant.quotas.memory > 0 %}    
+  	 "memory": "{{ k8s.tenant.quotas.gpus }}",
   {% else %}  
   	"memory": 
   {% endif %}
