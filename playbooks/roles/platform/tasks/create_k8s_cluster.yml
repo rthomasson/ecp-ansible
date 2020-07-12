@@ -1,52 +1,49 @@
 ---
-- name: Obtain session token
-  uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
-    return_content: yes
-    method: POST
-    body_format: json
-    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
-    status_code: 201
-  register: session_res
+- block:
+  - name: Obtain session token
+    uri:
+      url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
+      return_content: yes
+      method: POST
+      body_format: json
+      body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+      status_code: 201
+    register: session_res
 
-# Get the current set of k8shosts 
-- name: Get the current set of k8shosts 
-  uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/worker/k8shost
-    return_content: yes
-    headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
-      accept: "application/json"
-    method: GET
-    status_code: 200
-  register: k8shost_res
+  # Get the current set of k8shosts 
+  - name: Get the current set of k8shosts 
+    uri:
+      url: http://{{ groups.primary_controller[0] }}:8080/api/v2/worker/k8shost
+      return_content: yes
+      headers:
+        X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+        accept: "application/json"
+      method: GET
+      status_code: 200
+    register: k8shost_res
 
-# Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
-- name: Parse the k8s IP, Host ID, hostname and status into a record
-  set_fact:
-    hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
-    status: "{{ item | json_query('status') }}"
-    is_ready:  "{{ item | json_query('status') == 'ready' }}"
-    host: "{{ item | json_query('ansible_host') }}"
-    cacheable: true    
-  delegate_facts: True
-  delegate_to: "{{ item | json_query('ansible_host') }}"
-  with_items: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
-  vars:
-    hcp_host_id: 0
-    status: unknown
-    is_ready: false
-  register: host_list
+  # Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
+  - name: Parse the k8s IP, Host ID, hostname and status into a record
+    set_fact:
+      hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
+      status: "{{ item | json_query('status') }}"
+      is_ready:  "{{ item | json_query('status') == 'ready' }}"
+      host: "{{ item | json_query('ansible_host') }}"
+      cacheable: true    
+    delegate_facts: True
+    delegate_to: "{{ item | json_query('ansible_host') }}"
+    with_items: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
+    register: host_list
 
-- debug: 
-    msg: "Worker Node IP: {{ hostvars[item].ansible_host }} Host ID: {{ hostvars[item]['ansible_facts']['hcp_host_id'] }} Status: {{ hostvars[item].status }} Ready: {{ hostvars[item].is_ready }}"
-  with_items: "{{ groups['k8s_workers'] }}" 
+  - debug: 
+      msg: "Worker Node IP: {{ hostvars[item].ansible_host }} Host ID: {{ hostvars[item].hcp_host_id }} Status: {{ hostvars[item].status }} Ready: {{ hostvars[item].is_ready }}"
+    with_items: "{{ groups['k8s_workers'] }}" 
 
-- name: Create inputfile to create K8s Cluster.
-  template:
-    src: create_k8s_cluster.j2
-    dest: "/tmp/{{ common.name }}_create_k8s_cluster.json"
-    mode: 0777
+  - name: Create inputfile to create K8s Cluster.
+    template:
+      src: create_k8s_cluster.j2
+      dest: "/tmp/{{ common.name }}_create_k8s_cluster.json"
+      mode: 0777
  
 #- name: Create K8s Cluster
 #  uri:
@@ -76,17 +73,17 @@
 #  - debug:
 #      msg: "polling task finished"
 
-- name: Log out of session
-  uri:
-    url: "{{ session_res.location }}"
-    return_content: yes
-    headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
-    method: DELETE
-    status_code: 204
-  register: delsession_res
+  - name: Log out of session
+    uri:
+      url: "{{ session_res.location }}"
+      return_content: yes
+      headers:
+        X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      method: DELETE
+      status_code: 204
+    register: delsession_res
 
-- debug:
-#    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ cluster_res.status }}"
-    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster finished."
+  - debug:
+  #    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ cluster_res.status }}"
+      msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster finished."
 
