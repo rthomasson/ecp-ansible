@@ -9,38 +9,47 @@
     status_code: 201
   register: session_res
 
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
+    cacheable: True  
+
 # Get the current set of k8shosts 
 - name: Get the current set of k8shosts 
   uri:
     url: http://{{ groups.primary_controller[0] }}:8080/api/v2/worker/k8shost
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+      X-BDS-SESSION: "{{ session_id }}" 
       accept: "application/json"
     method: GET
     status_code: 200
   register: k8shost_res
 
-- name: Create a fact with the Json from the APPI call  
+- name: Create a fact with the Json from the API call  
   set_fact:
-    k8shosts_list: "{{ k8shost_res.json }}"
+    k8shosts_list_raw: "{{ k8shost_res.json }}"
+    cacheable: True  
+
+- name: Create a fact with parsed list of k8s hosts from the APPI call  
+  set_fact:
+    k8shosts_list: "{{ k8shosts_list_raw | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
     cacheable: True  
 
   # Parse the k8s Host ID, IP address, hostname and status from the JSON result of the GET k8shost call and set the hcp_host_id variable for each host
 - name: Parse the k8s IP, Host ID, hostname and status into a record
   set_fact:
-    hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
-    status: "{{ item | json_query('status') }}"
-    is_ready:  "{{ item | json_query('status') == 'ready' }}"
-    host: "{{ item | json_query('ansible_host') }}"
-    test: test
+    fact_hcp_host_id: "{{ item | json_query('host_id') | regex_replace('/api/v2/worker/k8shost/') }}"
+    fact_status: "{{ item | json_query('status') }}"
+    fact_is_ready:  "{{ item | json_query('status') == 'ready' }}"
+    fact_host: "{{ item | json_query('ansible_host') }}"
     cacheable: true    
   delegate_facts: True
   delegate_to: "{{ item | json_query('ansible_host') }}"
-  with_items: "{{ k8shosts_list | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
+  with_items: "{{ k8shosts_list }}"
 
 - debug: 
-    msg: "Worker Node IP: {{ hostvars[item]['ansible_host'] }} Host ID: {{ hostvars[item]['hcp_host_id'] }} Status: {{ hostvars[item]['status'] }} Ready: {{ hostvars[item]['is_ready'] }}"
+    msg: "Worker Node IP: {{ hostvars[item].ansible_host }} Host ID: {{ hostvars[item].fact_hcp_host_id }} Status: {{ hostvars[item].fact_status }} Ready: {{ hostvars[item].fact_is_ready }}"
   with_items: "{{ groups['k8s_workers'] }}"   
 
 - name: Create inputfile to create K8s Cluster.
@@ -54,7 +63,7 @@
 #    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster
 #    return_content: yes
 #    headers:
-#      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+#      X-BDS-SESSION: "{{ session_id }}" 
 #      accept: "*/*"
 #      Content-Type: "application/json"
 #    method: POST
@@ -82,7 +91,7 @@
     url: "{{ session_res.location }}"
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      X-BDS-SESSION: "{{ session_id }}" 
     method: DELETE
     status_code: 204
   register: delsession_res
