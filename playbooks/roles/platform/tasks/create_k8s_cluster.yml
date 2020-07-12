@@ -34,7 +34,7 @@
   register: host_id_list
 
 - debug: 
-    msg: "Worker Node IP: {{ hostvars[item].ansible_host }} Host ID: {{ hostvars[item].hcp_host_id }} Status: {{ hostvars[item].status }} Ready: {{ hostvars[item].is_ready }}"
+    msg: "Worker Node IP: {{ hostvars[item]['ansible_facts']['ansible_host'] }} Host ID: {{ hostvars[item]['ansible_facts']['hcp_host_id'] }} Status: {{ hostvars[item].status }} Ready: {{ hostvars[item].is_ready }}"
   with_items: "{{ groups['k8s_workers'] }}" 
 
 - name: Create inputfile to create K8s Cluster.
