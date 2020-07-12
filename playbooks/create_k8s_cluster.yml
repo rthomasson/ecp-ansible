@@ -2,7 +2,6 @@
   - name: Create K8s cluster
     hosts: localhost
     gather_facts: true
-    become: yes
     roles:
       - role: platform
         vars:
