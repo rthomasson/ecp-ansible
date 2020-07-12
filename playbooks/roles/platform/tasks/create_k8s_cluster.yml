@@ -40,7 +40,7 @@
 
 - name: Create inputfile to create K8s Cluster.
   template:
-  src: create_k8s_cluster.j2
+    src: create_k8s_cluster.j2
     dest: "/tmp/{{ common.name }}_create_k8s_cluster.json"
     mode: 0777
  
