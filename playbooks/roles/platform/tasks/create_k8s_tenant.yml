@@ -8,7 +8,10 @@
     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
- 
+
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
    
 # Get the current list of K8s clusters 
 - name: Get the current set of K8s clusters 
@@ -26,10 +29,9 @@
 - name: Parse the K8s cluster name an ID from the JSON result of the GET k8scluster call
   set_fact:
     # set the id of the cluster to delete if it matches the name of the supplied cluster
-    target_cluster_id: "{{ item | json_query('cluster_id') }}"
-  when: "{{ item | json_query('cluster_name') == target_cluster_name }}"  
+    new_k8stenant_cluster_id: "{{ item | json_query('cluster_id') }}"
+  when: "{{ item | json_query('cluster_name') == new_k8stenant_cluster_name }}"  
   loop: "{{ k8scluster_res.json | json_query('_embedded.k8sclusters[*].{cluster_name: label.name, cluster_id: _links.self.href}') }}"
-  register: cluster_list
 
 - name: Create inputfile to create K8s tenant.
   template:
@@ -37,19 +39,19 @@
     dest: "/tmp/{{ common.name }}_create_k8s_tenant.json"
     mode: 0777
     
-#- name: Create K8s tenant
-#  uri:
-#    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
-#    return_content: yes
-#    headers:
-#      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
-#      accept: "*/*"
-#      Content-Type: "application/json"
-#    method: POST
-#    body_format: json
-#    body: "{{ lookup('file','/tmp/CICL_create_k8s_tenant.json') }}"
-#    status_code: 201
-#  register: tenant_res
+- name: Create K8s tenant
+  uri:
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+      accept: "*/*"
+      Content-Type: "application/json"
+    method: POST
+    body_format: json
+    body: "{{ lookup('file','/tmp/CICL_create_k8s_tenant.json') }}"
+    status_code: 201
+  register: tenant_res
   
 
 - name: Log out of session
@@ -57,7 +59,7 @@
     url: "{{ session_res.location }}"
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      X-BDS-SESSION: "{{ session_id }}"  
     method: DELETE
     status_code: 204
   register: delsession_res
