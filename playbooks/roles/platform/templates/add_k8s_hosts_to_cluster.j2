@@ -1,0 +1,14 @@
+{
+  "change_spec": {
+     "add_k8shosts_config": [
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('hostname') in groups['k8s_ingress_nodes']  %}  
+       {
+          "node": "{{ item | json_query('host_id') }}",
+          "role": "worker",
+       },
+{% endfor %}
+     ]
+  }, 
+  "operation": "reconfigure", 
+  "reason": "adding k8s hosts to cluster "
+}
