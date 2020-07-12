@@ -9,7 +9,7 @@
 		"name": "{{ k8s.cluster_name }}",
 		"description": "{{ k8s.cluster_description }}"
 	},
-	"k8s_cluster": "/api/v2/k8scluster/19",
+	"k8s_cluster": "/api/v2/k8scluster/{{target_cluster_id}}",
 	"specified_namespace_name": "{{ k8s.cluster_name }}",
 	"map_services_to_gateway": false,
 	"adopt_existing_namespace": false
