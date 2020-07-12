@@ -8,41 +8,42 @@
     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
- 
+
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
    
-# Get the current list of K8s tenants 
-- name: Get the current set of K8s tenants 
+# Get the current list of tenants
+- name: Get the current set of tenants 
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/tenant
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
       accept: "application/json"
     method: GET
     status_code: 200
-  register: k8stenants_res
+  register: tenant_res
 
-# Parse the k8s tenants names and ID from the JSON result of the GET k8stenant call and set target tenant ID
-- name: Parse the K8s tenant name and ID from the JSON result of the GET k8stenant call
+- name: Create a fact with parsed list of tenants from the APPI call  
   set_fact:
-    # set the id of the clustenant ter to delete if it matches the name of the supplied cluster
-    target_tenant_id: "{{ item | json_query('cluster_id') }}"
-  when: "{{ item | json_query('tenant_name') == target_cluster_name }}"  
-  loop: "{{ k8stenants_res.json | json_query('_embedded.tenants[*].{tenant_name: label.name, tenant_id: _links.self.href}') }}"
-  register: tenant_list
+    tenants_list: "{{ tenant_res.json | json_query('_embedded.tenants[*].{tenant_id: _links.self.href, tenant_name: label.name, tenant_description: label.description, status: status}') }}"
+    cacheable: True  
 
-#- name: Create inputfile to delete K8s tenant.
-#  template:
-#    src: create_k8s_tenant.j2
-#    dest: "/tmp/{{ common.name }}_delete_k8s_tenant.json"
-#    mode: 0777
-    
+# Parse the tenant names and IDs from the list of tenants and set target tenant ID
+- name: Create a fact with for the Parse the K8s tenant name and ID from the JSON result of the GET tenant call
+  set_fact:
+    # set the id of the tenant to delete if it matches the name of the supplied tenant
+    target_tenant_id: "{{ item | json_query('tenant_id') }}"
+  when: "{{ item | json_query('tenant_name') == target_tenant_name }}"  
+  loop: "{{ tenants_list| json_query('_embedded.tenants[*].{tenant_name: label.name, tenant_id: _links.self.href}') }}"
+
 - name: Delete K8s tenant
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/tenant
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+      X-BDS-SESSION: "{{ session_id }}" 
       accept: "*/*"
       Content-Type: "application/json"
     method: DELETE
@@ -50,17 +51,16 @@
     body: ""
     status_code: 204
   register: tenant_delete_res
-  
 
 - name: Log out of session
   uri:
     url: "{{ session_res.location }}"
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      X-BDS-SESSION: "{{ session_id }}"  
     method: DELETE
     status_code: 204
   register: delsession_res
 
 - debug:
-    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Delete K8s Tenant Result: {{ tenant_delete_res.status }}"
+    msg: "Session: {{ session_id }} -- Delete Tenant Result: {{ tenant_delete_res.status }}"
