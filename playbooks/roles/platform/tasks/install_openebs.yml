@@ -20,10 +20,10 @@
     status_code: 200
   register: kubeconfig_res
     
-- name: Authenticate k8s cluster user
-  command: kubectl hpecp authenticate
-  register: res
-  failed_when: res.rc != 0
+#- name: Authenticate k8s cluster user
+#  command: kubectl hpecp authenticate
+#  register: res
+#  failed_when: res.rc != 0
 
 
 - name: label openebs controlplane nodes
