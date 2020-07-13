@@ -19,7 +19,16 @@
         template_name: "templates/add_k8s_host.j2"
         cacheable: True  
   
-    - name: Call the API to add each host in new_k8s_hosts
+    - name: Create a fact with parsed list of k8s hosts from the API call  
+      set_fact:
+        host_tags: "{{ host_tags_res.json | json_query('_embedded.tags[*].{tag_id: _links.self.href, name: label.name, description: label.description}') }}"
+        cacheable: True  
+
+    - debug:
+        msg: "Host Tag: {{ item }} "
+      loop: "{{ host_tags }}"
+    
+     - name: Call the API to add each host in new_k8s_hosts
       include_tasks: add_k8s_host_block.yml
       loop: "{{ new_k8s_hosts }}"
 
