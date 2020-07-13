@@ -32,29 +32,29 @@
   register: res
   failed_when: res.rc != 0
   
-- name: label openebs storage nodes
-  command: kubectl label nodes {{ item }} "openebs.io/nodegroup"="storage-node"
-  loop: "{{ groups['k8s_openebs_storage_nodes'] }}"
-  register: res
-  failed_when: res.rc != 0
+ #- name: label openebs storage nodes
+ # command: kubectl label nodes {{ item }} "openebs.io/nodegroup"="storage-node"
+ # loop: "{{ groups['k8s_openebs_storage_nodes'] }}"
+ # register: res
+ # failed_when: res.rc != 0
   
-- name: label openebs namespace
-  command: kubectl label namespace openebs
-  register: res
-  failed_when: res.rc != 0
+ #- name: label openebs namespace
+ # command: kubectl label  namespace openebs
+ # register: res
+ # failed_when: res.rc != 0
   
 - name: Install openebs 
-  command: kubectl apply -f {{ openebs_manifest_file }} --skip-confirmation
+  command: kubectl apply -f {{ k8s.openebs.openebs_manifest_file }}
   register: res
   failed_when: res.rc != 0 
   
 - name: Create Openebs Stroage class 
-  command: kubectl apply -f {{ openebs_storage_class_file }} --skip-confirmation
+  command: kubectl apply -f {{ k8s.openebs.openebs_storage_class_file }} 
   register: res
   failed_when: res.rc != 0
  
 - name: Create Openebs Persistant Volume Claim 
-  command: kubectl apply -f {{ openebs_persistant_volume_claim_file }} --skip-confirmation
+  command: kubectl apply -f {{ k8s.openebs.openebs_persistant_volume_claim_file }} 
   register: res
   failed_when: res.rc != 0
   
