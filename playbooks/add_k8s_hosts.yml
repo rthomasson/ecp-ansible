@@ -28,8 +28,8 @@
         msg: "Host Tag: {{ item }} "
       loop: "{{ host_tags }}"
     
-     - name: Call the API to add each host in new_k8s_hosts
-      include_tasks: add_k8s_host_block.yml
+    - name: Call the API to add each host in new_k8s_hosts
+        include_tasks: add_k8s_host_block.yml
       loop: "{{ new_k8s_hosts }}"
 
     - name: Log out of session
