@@ -46,7 +46,17 @@
 - name: Install openebs 
   command: kubectl apply -f {{ openebs_manifest_file }} --skip-confirmation
   register: res
-  failed_when: res.rc != 0  
+  failed_when: res.rc != 0 
+  
+ - name: Create Openebs Stroage class 
+  command: kubectl apply -f {{ openebs_storage_class_file }} --skip-confirmation
+  register: res
+  failed_when: res.rc != 0
+ 
+ - name: Create Openebs Persistant Volume Claim 
+  command: kubectl apply -f {{ openebs_persistant_volume_claim_file }} --skip-confirmation
+  register: res
+  failed_when: res.rc != 0
   
 - name: Log out of session
   uri:
