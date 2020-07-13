@@ -35,6 +35,7 @@
   set_fact:
     # set the id of the tenant to delete if it matches the name of the supplied tenant
     target_tenant_id: "{{ item | json_query('tenant_id') }}"
+    cacheable: True
   when: "{{ item | json_query('tenant_name') == target_tenant_name }}"  
   loop: "{{ tenants_list| json_query('_embedded.tenants[*].{tenant_name: label.name, tenant_id: _links.self.href}') }}"
 
