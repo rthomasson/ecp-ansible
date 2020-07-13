@@ -29,23 +29,23 @@
 
 
 - name: label istio ingress nodes
-  command: kubectl  --kubeconfig=/tmp/kubeconfig_splunk2.conf label nodes {{ item }} istio-ingressgateway=true
+  command: kubectl  --kubeconfig=/tmp/kubeconfig_splunk2.conf --context CICL-splunk2-admin label nodes {{ item }} istio-ingressgateway=true
   loop: "{{ groups['k8s_ingress_nodes'] }}"
   register: res
   failed_when: res.rc != 0
 
 - name: Install Istio
-  command: "{{ common.istio_home}}/bin/istioctl --kubeconfig=/tmp/kubeconfig_splunk2.conf install --skip-confirmation"
+  command: "{{ common.istio_home}}/bin/istioctl --kubeconfig=/tmp/kubeconfig_splunk2.conf --context CICL-splunk2-admin install --skip-confirmation"
   register: res
   failed_when: res.rc != 0
   
 - name: Install istio addon manifest
-  command: "{{ common.istio_home}}/bin/istioctl  --kubeconfig=/tmp/kubeconfig_splunk2.conf install -f {{ istio_manifest_file }} --skip-confirmation"
+  command: "{{ common.istio_home}}/bin/istioctl  --kubeconfig=/tmp/kubeconfig_splunk2.conf --context CICL-splunk2-admin install -f {{ istio_manifest_file }} --skip-confirmation"
   register: res
   failed_when: res.rc != 0
 
 - name: label splunk namespace
-  command: kubectl  --kubeconfig=/tmp/kubeconfig_splunk2.conf label namespace {{ k8s.cluster.name }} istio-injection=enabled
+  command: kubectl  --kubeconfig=/tmp/kubeconfig_splunk2.conf  --context CICL-splunk2-admin label namespace {{ k8s.cluster.name }} istio-injection=enabled
   register: res
   failed_when: res.rc != 0
   
