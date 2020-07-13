@@ -31,6 +31,15 @@
     k8shosts_list: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
     cacheable: True  
 
+- debug:
+  loop: "Cluster Master: {{ cluster_master_nodes }}"
+
+- debug:
+  loop: "Cluster Ingress: {{ cluster_ingress_nodes }}"
+
+- debug:
+  loop: "Cluster Worker: {{ cluster_worker_nodes }}"
+      
 - name: Create inputfile to create K8s Cluster.
   template:
     src: create_k8s_cluster.j2
