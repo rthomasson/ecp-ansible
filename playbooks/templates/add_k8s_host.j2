@@ -13,20 +13,20 @@
   },
   "tags": [
     {
-      "tag_id": "{{ host_tags | json_query('[?tag_name=='dc_tag"].tag_id') }}",
+      "tag_id": "{{ host_tags | json_query('json[?tag_name=='dc_tag'].tag_id') }}",
       "tag_value": "{{ hostvars[item].dc_tag }}"
     },
     {
-      "tag_id": "{{ host_tags | json_query('[?tag_name=='rack_tag"].tag_id') }}",
+      "tag_id": "{{ host_tags | json_query('json[?tag_name=='rack_tag'].tag_id') }}",
       "tag_value": "{{ hostvars[item].rack_tag }}"
     },
     {
-      "tag_id": "{{ host_tags | json_query('[?tag_name=='ru_tag"].tag_id') }}",
+      "tag_id": "{{ host_tags | json_query('json[?tag_name=='ru_tag'].tag_id') }}",
       "tag_value": "{{ hostvars[item].ru_tag }}"
 {% if item in groups['k8s_ingress_nodes'] %}
     },
     {
-      "tag_id": "{{ host_tags | json_query('[?tag_name=='istio-ingressgateway"].tag_id') }}",
+      "tag_id": "{{ host_tags | json_query('json[?tag_name=='istio-ingressgateway'].tag_id') }}",
       "tag_value": true
     }
 {% else %}
