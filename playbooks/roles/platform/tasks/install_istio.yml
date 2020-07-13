@@ -35,7 +35,7 @@
   failed_when: res.rc != 0
 
 - name: Install Istio
-  command: "{{ k8s.istio.istio_home}}/bin/istioctl --kubeconfig=/tmp/kubeconfig_{{ k8s.cluster.name }}.conf --context {{common.name}}-{{ k8s.cluster.name }}-{{credentials.site_admin_id}} install --skip-confirmation"
+  command: "/var/lib/awx/istio-1.6.5/bin/istioctl --kubeconfig=/tmp/kubeconfig_{{ k8s.cluster.name }}.conf --context {{common.name}}-{{ k8s.cluster.name }}-{{credentials.site_admin_id}} install --skip-confirmation"
   register: res
   failed_when: res.rc != 0
   
