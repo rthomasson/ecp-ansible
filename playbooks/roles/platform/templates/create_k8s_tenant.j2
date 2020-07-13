@@ -23,26 +23,6 @@ nn"adopt_existing_namespace": "{{ k8s.tenant.adopt_existing_namespace_flag }}",
 {% else %}
   "map_services_to_gateway": false,
 {% endif %}
-  "tenant_type_info": {
-{% if k8s.tenant.map_services_to_gateway_flag is defined %}
-    "map_services_to_gateway": "{{ k8s.tenant.map_services_to_gateway_flag }}",
-{% else %}
-    "map_services_to_gateway": false,
-{% endif %}
-{% if k8s.tenant.namespace_name is defined %}
-    "specified_namespace_name": "{{ k8s.tenant.specified_namespace_name }}",
-{% endif %}
-{% if k8s.tenant.is_namespace_owner is defined %}
-    "is_namespace_owner": "{{ k8s.tenant.is_namespace_owner }}",
-{% else %}
-    "is_namespace_owner": true,
-{% endif %}
-{% if k8s.tenant.adopt_existing_namespace_flag is defined %}
-    "adopt_existing_namespace": "{{ k8s.tenant.adopt_existing_namespace_flag }}",
-{% else %}
-    "adopt_existing_namespace": false,
-{% endif %}
-  }
   "features": {
     "ml_project": false
   },
