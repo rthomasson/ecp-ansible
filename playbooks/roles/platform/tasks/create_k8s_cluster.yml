@@ -34,17 +34,17 @@
 - debug:
     var: item
     msg: "Cluster Master Node: {{ item }}"
-  loop: "{{ cluster_master_nodes }}"
+  loop: "{{ cluster_master_nodesv | dict2items }}"
 
 - debug:
     var: item
     msg: "Cluster Ingress Node: {{ item }}"
-  loop: "{{ cluster_ingress_nodes }}"
+  loop: "{{ cluster_ingress_nodes | dict2items }}"
 
 - debug:
     var: item
     msg: "Cluster Worker Node: {{ item }}"
-  loop: "{{ cluster_worker_nodes }}"
+  loop: "{{ cluster_worker_nodes | dict2items }}"
       
 - name: Create inputfile to create K8s Cluster.
   template:
