@@ -2,31 +2,30 @@
   "ipaddr": "{{ hostvars[item].ansible_host }}",
   "credentials": {
     "type": "{{ credentials.ssh.access_type }}",
-{% if credentials.ssh.access_type == 'password_access' %}    
     "password": "{{ credentials.ssh.password }}"
-{% else %}
     "ssh_key_data": "{{ lookup('file', credentials.ssh.keypair_file) }}",
     "ssh_key_passphrase": "{{ credentials.ssh.key_passphrase }}"
-{% endif %}
   },
   "tags": [
     {
       "tag_id": "dc_tag",
       "tag_value": "{{ hostvars[item].dc_tag }}"
-    }
+    },
     {
       "tag_id": "rack_tag",
       "tag_value": "{{ hostvars[item].rack_tag }}"
-    }
+    },
     {
       "tag_id": "ru_tag",
       "tag_value": "{{ hostvars[item].ru_tag }}"
-    }
 {% if item in groups['k8s_ingress_nodes'] %}
+    },
     {
       "tag_id": "istio-ingressgateway",
       "tag_value": true
     }
+{% else %}
+    }    
 {% endif %}    
   ]
 }
