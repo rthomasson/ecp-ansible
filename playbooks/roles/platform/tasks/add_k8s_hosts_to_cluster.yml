@@ -60,7 +60,7 @@
     # set the id of the cluster to delete if it matches the name of the supplied cluster
     target_cluster_id: "{{ item | json_query('cluster_id') }}"
     cacheable: true
-  when: "{{ item | json_query('cluster_name') == k8s.cluster_name }}"  
+  when: "{{ item | json_query('cluster_name') == k8s.cluster.name }}"  
   loop: "{{ k8scluster_list | json_query('_embedded.k8sclusters[*].{cluster_name: label.name, cluster_id: _links.self.href}') }}"
 
 - name: Add K8s host to Cluster
