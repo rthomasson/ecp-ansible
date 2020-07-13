@@ -43,7 +43,7 @@
   failed_when: res.rc != 0
 
 - name: label splunk namespace
-  command: kubectl label namespace splunk istio-injection=enabled
+  command: kubectl label namespace {{ k8s.cluster.name }} istio-injection=enabled
   register: res
   failed_when: res.rc != 0
   
