@@ -1,0 +1,53 @@
+{
+  "ipaddr": "string",
+  "credentials": {
+    "type": "password_access",
+    "password": "string",
+    "ssh_key_data": "string",
+    "ssh_key_passphrase": "string"
+  },
+  "tags": [
+    {
+      "tag_id": "string",
+      "tag_value": "string"
+    }
+  ]
+}
+
+
+{
+  "change_spec": {
+     "add_k8shosts_config": [
+{% if cluster_master_nodes is defined %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in cluster_master_nodes %}
+        {
+          "node": "{{ item | json_query('host_id') }}",
+          "role": "master",
+        },
+{% endfor %}
+{% endif %}
+{% if cluster_ingress_nodes is defined %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in cluster_ingress_nodes %}
+        {
+          "node": "{{ item | json_query('host_id') }}",
+          "role": "worker",
+        },
+{% endfor %}
+{% endif %}
+{% if cluster_worker_nodes is defined %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in cluster_worker_nodes %}
+        {
+          "node": "{{ item | json_query('host_id') }}",
+          "role": "worker",
+{% if loop.last %}
+        }
+{% else %}    
+        },
+{% endif %}
+{% endfor %}
+{% endif %}
+     ]
+  }, 
+  "operation": "reconfigure", 
+  "reason": "adding k8s hosts to cluster "
+}

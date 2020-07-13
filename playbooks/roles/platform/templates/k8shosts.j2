@@ -1,4 +1,5 @@
-{% for k8sw in groups.k8s_workers %}
+{% if new_k8s_hosts is defined %}
+{% for hostname in new_k8s_hosts %}
 ---
 op: K8sHostConfig
 parameters:
@@ -8,15 +9,15 @@ parameters:
     install_type: {{ common.install_type }}
     tags:
       - name: dc_tag
-        value: {{ hostvars[k8sw].dc_tag }}
+        value: {{ hostvars[hostname].dc_tag }}
       - name: rack_tag
-        value: {{ hostvars[k8sw].rack_tag }}            
+        value: {{ hostvars[hostname].rack_tag }}            
       - name: ru_tag
-        value: {{ hostvars[k8sw].ru_tag }}    
+        value: {{ hostvars[hostname].ru_tag }}    
       - name: hcp_host_id
-        value: {{ hostvars[k8sw].hcp_host_id }}     
+        value: {{ hostvars[hostname].hcp_host_id }}     
   host:
-    internal_ip: {{ hostvars[k8sw].ansible_host }}
+    internal_ip: {{ hostvars[hostname].ansible_host }}
   ssh:
     username: {{ credentials.ssh.username }}
     password: {{ credentials.ssh.password }}
@@ -25,3 +26,32 @@ parameters:
     #keypair_name: {{ credentials.ssh.keypair_name }} 
 platform: {{ common.platform }}
 {% endfor %}
+{% else %}
+{% for hostname in groups['k8s_workers'] %}
+---
+op: K8sHostConfig
+parameters:
+  config:
+    ephemeral_disks: {{ common.ephemeral_disks|join(',') }}
+    persistent_disks: "{{ common.persistent_disks|join(',') }}"
+    install_type: {{ common.install_type }}
+    tags:
+      - name: dc_tag
+        value: {{ hostvars[hostname].dc_tag }}
+      - name: rack_tag
+        value: {{ hostvars[hostname].rack_tag }}            
+      - name: ru_tag
+        value: {{ hostvars[hostname].ru_tag }}    
+      - name: hcp_host_id
+        value: {{ hostvars[hostname].hcp_host_id }}     
+  host:
+    internal_ip: {{ hostvars[hostname].ansible_host }}
+  ssh:
+    username: {{ credentials.ssh.username }}
+    password: {{ credentials.ssh.password }}
+    access_type: {{ credentials.ssh.access_type }}
+    #keypair_file: {{ credentials.ssh.keypair_file }}
+    #keypair_name: {{ credentials.ssh.keypair_name }} 
+platform: {{ common.platform }}
+{% endfor %}
+{% endif %}

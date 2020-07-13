@@ -2,8 +2,39 @@
   - name: Add K8s hosts
     hosts: localhost
     gather_facts: false
-    roles:
-      - role: platform
-        vars:
-          add_k8s_hosts: yes
+    tasks:
+    - name: Obtain session token
+      uri:
+        url: http://{{ primary_controller }}:8080/api/v1/login
+        return_content: yes
+        method: POST
+        body_format: json
+        body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+        status_code: 201
+      register: session_res
+
+    - name: Create a fact with the session info from the API call  
+      set_fact:
+        session_id: "{{ session_res.location  | urlsplit('path') }}"
+        template_name: "'/tmp/{{ common.name }}_add_k8s_hosts.json }}'"
+        cacheable: True  
+    
+    - name: Call the API to add each host in new_k8s_hosts
+      include_tasks: /roles/platform/tasks/add_k8s_host_block.yml
+      loop: "{{ new_k8s_hosts }}"
+
+    - name: Log out of session
+      uri:
+        url: "{{ session_res.location }}"
+        return_content: yes
+        headers:
+          X-BDS-SESSION: "{{ session_id }}" 
+        method: DELETE
+        status_code: 204
+      register: delsession_res
+
+    - debug:
+        msg: "Session: {{ session_res.location  | urlsplit('path') }} -- K8s hosts result: {{ res.stdout }}"
+        
+        
           

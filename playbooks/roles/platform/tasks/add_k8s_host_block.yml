@@ -1,20 +1,4 @@
 ---
-- name: Obtain session token
-  uri:
-    url: http://{{ primary_controller }}:8080/api/v1/login
-    return_content: yes
-    method: POST
-    body_format: json
-    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
-    status_code: 201
-  register: session_res
-
-- name: Create a fact with the session info from the API call  
-  set_fact:
-    session_id: "{{ session_res.location  | urlsplit('path') }}"
-    template_name: "'/tmp/{{ common.name }}_add_k8s_hosts.json }}'"
-    cacheable: True  
-
 # Template makes use new_k8s_hosts variable. If this variable isn't defined, then it will add all hosts in the k8s_workers host group  
 - name: Prepare input file for epicctl.
   template:
@@ -44,4 +28,4 @@
 #  failed_when: res.rc != 0
 
 - debug:
-    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- K8s hosts result: {{ res.stdout }}"
+    msg: "Add K8s host result: {{ k8shost.stdout }}"
