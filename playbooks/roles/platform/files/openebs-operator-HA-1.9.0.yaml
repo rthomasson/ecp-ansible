@@ -95,7 +95,7 @@ spec:
         openebs.io/component-name: maya-apiserver
         openebs.io/version: 1.9.0
         serviceAccountName: openebs-maya-operator
-     spec:
+    spec:
       nodeSelector:
         openebs.io/nodegroup: openebs-controlplane
       containers:
@@ -259,7 +259,7 @@ spec:
       labels:
         name: openebs-provisioner
        serviceAccountName: openebs-maya-operator
-     spec:
+    spec:
       nodeSelector:
         openebs.io/nodegroup: openebs-controlplane
       containers:
@@ -329,7 +329,7 @@ spec:
         name: openebs-snapshot-operator
         openebs.io/component-name: openebs-snapshot-operator
         openebs.io/version: 1.9.0
-     spec:
+    spec:
       nodeSelector:
         openebs.io/nodegroup: openebs-controlplane
       serviceAccountName: openebs-maya-operator
@@ -560,7 +560,7 @@ spec:
         openebs.io/component-name: ndm-operator
         openebs.io/version: 1.9.0
       serviceAccountName: openebs-maya-operator
-     spec:
+    spec:
       nodeSelector:
         openebs.io/nodegroup: openebs-controlplane
       containers:
@@ -627,7 +627,7 @@ spec:
         app: admission-webhook
         openebs.io/component-name: admission-webhook
         openebs.io/version: 1.9.0
-      spec:
+    spec:
       nodeSelector:
         openebs.io/nodegroup: openebs-controlplane
       serviceAccountName: openebs-maya-operator
@@ -684,7 +684,7 @@ spec:
         name: openebs-localpv-provisioner
         openebs.io/component-name: openebs-localpv-provisioner
         openebs.io/version: 1.9.0
-      spec:
+    spec:
       nodeSelector:
         openebs.io/nodegroup: openebs-controlplane
       serviceAccountName: openebs-maya-operator
