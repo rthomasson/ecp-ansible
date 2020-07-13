@@ -38,10 +38,6 @@
         cacheable: True  
 
     - debug:
-        msg: "Host Tag: {{ item }} "
-      loop: "{{ host_tags }}"
-    
-    - debug:
         msg: "Tag Id: {{ host_tags | json_query('_embedded.tags[?label.name==`dc_tag`]._links.self.href') }}"
     
 #    - name: Add hosts to the current set of k8s hosts
