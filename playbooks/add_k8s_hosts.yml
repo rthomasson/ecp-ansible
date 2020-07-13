@@ -18,7 +18,7 @@
         session_id: "{{ session_res.location  | urlsplit('path') }}"
         template_name: "templates/add_k8s_host.j2"
         cacheable: True  
-    
+  
     - name: Call the API to add each host in new_k8s_hosts
       include_tasks: add_k8s_host_block.yml
       loop: "{{ new_k8s_hosts }}"
