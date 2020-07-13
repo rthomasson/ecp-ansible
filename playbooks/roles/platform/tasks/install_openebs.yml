@@ -43,6 +43,11 @@
   register: res
   failed_when: res.rc != 0
   
+- name: Install openebs 
+  command: kubectl apply -f {{ openebs_manifest_file }} --skip-confirmation
+  register: res
+  failed_when: res.rc != 0  
+  
 - name: Log out of session
   uri:
     url: "{{ session_res.location }}"
