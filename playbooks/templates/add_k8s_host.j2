@@ -4,7 +4,7 @@
     "type": "{{ credentials.ssh.access_type }}",
     "password": "{{ credentials.ssh.password }}"
 {% if credentials.ssh.keypair_file is none %} 
-    "ssh_key_data": "{{ lookup('file', credentials.ssh.keypair_file) }}",
+    "ssh_key_data": 
 {% else %}
     "ssh_key_data": "{{ lookup('file', credentials.ssh.keypair_file) }}",
 {% endif %}
