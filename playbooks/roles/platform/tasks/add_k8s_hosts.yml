@@ -29,9 +29,13 @@
 
 - name: Create a fact with parsed list of k8s hosts from the API call  
   set_fact:
-    host_tags: "{{ host_tags_res.json | json_query('_embedded.tags[*].{tag_id: _links.self.href, name: label.name}') }}"
+    host_tags: "{{ host_tags_res.json | json_query('_embedded.tags[*].{tag_id: _links.self.href, name: label.name, description: label.description}') }}"
     cacheable: True  
 
+- debug:
+    msg: "Host Tag: {{ item }} "
+  loop: "{{ host_tags }}"
+    
 - block:
   # Template makes use new_k8s_hosts variable. If this variable isn't defined, then it will add all hosts in the k8s_workers host group  
   - name: Prepare input file for epicctl.
