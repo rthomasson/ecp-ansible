@@ -19,7 +19,19 @@
         template_name: "templates/add_k8s_host.j2"
         cacheable: True  
   
-    - name: Create a fact with parsed list of k8s hosts from the API call  
+    # Get the current list of Host tages 
+    - name: Get the current set of host tags 
+      uri:
+        url: http://{{ primary_controller }}:8080/api/v2/tag
+        return_content: yes
+        headers:
+          X-BDS-SESSION: "{{ session_id }}" 
+          accept: "application/json"
+        method: GET
+        status_code: 200
+      register: host_tags_res
+   
+    - name: Create a fact with parsed list of host tags from the API call  
       set_fact:
         host_tags: "{{ host_tags_res.json | json_query('_embedded.tags[*].{tag_id: _links.self.href, name: label.name, description: label.description}') }}"
         cacheable: True  
