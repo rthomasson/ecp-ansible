@@ -3,15 +3,15 @@
   "credentials": {
     "type": "{{ credentials.ssh.access_type }}",
     "password": "{{ credentials.ssh.password }}",
-{% if credentials.ssh.keypair_file is defined and credentials.ssh.keypair_file | length %}
-    "ssh_key_data": "{{ lookup('file', credentials.ssh.keypair_file) }}",
-{% else %}
+{% if credentials.ssh.keypair_file is none or credentials.ssh.keypair_file|length == 0 %}
     "ssh_key_data": "",
-{% endif %}
-{% if credentials.ssh.key_passphrase is defined and credentials.ssh.key_passphrase | length %}
-    "ssh_key_passphrase": "{{ credentials.ssh.key_passphrase }}"
 {% else %}
+    "ssh_key_data": "{{ lookup('file', credentials.ssh.keypair_file) }}",
+{% endif %}
+{% if credentials.ssh.key_passphrase is none or credentials.ssh.key_passphrase|length == 0 %}
     "ssh_key_passphrase": ""
+{% else %}
+    "ssh_key_passphrase": "{{ credentials.ssh.key_passphrase }}"
 {% endif %}
   },
   "tags": [
