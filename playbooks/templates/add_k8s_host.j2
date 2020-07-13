@@ -26,7 +26,7 @@
 {% if item in groups['k8s_ingress_nodes'] %}
     },
     {
-      "tag_id": "{{ host_tags | json_query('json[?tag_name=='istio-ingressgateway'].tag_id') }}",
+      "tag_id": "{{ host_tags | json_query('json[?tag_name==`istio-ingressgateway`].tag_id') }}",
       "tag_value": true
     }
 {% else %}
