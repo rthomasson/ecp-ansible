@@ -8,6 +8,7 @@
           install: yes
           configure_ha: yes
           configure_airgap: yes
+          add_host_tags: yes
           add_k8s_hosts: yes
           create_k8s_cluster: yes
           create_k8s_tenant: yes
