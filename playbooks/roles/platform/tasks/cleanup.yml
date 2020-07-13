@@ -18,6 +18,7 @@
   - "pkill -9 haproxy"
   - "pkill -9 beam.smp"
 
+#
 # Dangerous command, be careful before cleanup
 - name: Ensure storage disks are available.
   command:  "{{ item }}"
