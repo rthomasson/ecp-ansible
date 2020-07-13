@@ -8,7 +8,11 @@
 {% else %}
     "ssh_key_data": "{{ lookup('file', credentials.ssh.keypair_file) }}",
 {% endif %}
+{% if credentials.ssh.key_passphrase is none %}
+    "ssh_key_passphrase": 
+{% else %} 
     "ssh_key_passphrase": "{{ credentials.ssh.key_passphrase }}"
+{% endif %}
   },
   "tags": [
     {
