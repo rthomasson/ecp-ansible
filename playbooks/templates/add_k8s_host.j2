@@ -2,16 +2,13 @@
   "ipaddr": "{{ hostvars[item].ansible_host }}",
   "credentials": {
     "type": "{{ credentials.ssh.access_type }}",
+{% if credentials.ssh.access_type == 'password_access' %}
     "password": "{{ credentials.ssh.password }}",
-{% if credentials.ssh.keypair_file is none %} 
-    "ssh_key_data": ,
-{% else %}
+{% else %}    
     "ssh_key_data": "{{ lookup('file', credentials.ssh.keypair_file) }}",
-{% endif %}
-{% if credentials.ssh.key_passphrase is none %}
-    "ssh_key_passphrase": 
-{% else %} 
+{% if credentials.ssh.key_passphrase is string %}
     "ssh_key_passphrase": "{{ credentials.ssh.key_passphrase }}"
+{% endif %}
 {% endif %}
   },
   "tags": [
@@ -34,6 +31,6 @@
     }
 {% else %}
     }
-{% endif %}    
+{% endif %}
   ]
 }
