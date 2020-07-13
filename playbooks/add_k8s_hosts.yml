@@ -20,7 +20,7 @@
         cacheable: True  
     
     - name: Call the API to add each host in new_k8s_hosts
-      include_tasks: /roles/platform/tasks/add_k8s_host_block.yml
+      include_tasks: roles/platform/tasks/add_k8s_host_block.yml
       loop: "{{ new_k8s_hosts }}"
 
     - name: Log out of session
