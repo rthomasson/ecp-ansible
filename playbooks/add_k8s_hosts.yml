@@ -28,29 +28,8 @@
         msg: "Host Tag: {{ item }} "
       loop: "{{ host_tags }}"
     
-    - block:
-      # Template makes use new_k8s_hosts variable. If this variable isn't defined, then it will add all hosts in the k8s_workers host group  
-      - name: Prepare input file for epicctl.
-        template:
-          src: add_k8s_host.j2
-          dest: "{{ template_name }}"
-          mode: 0777
-
-      # Add the designated hosts to the set of k8s hosts 
-      - name: Add hosts to the current set of k8shosts 
-        uri:
-          url: http://{{ primary_controller }}:8080/api/v2/worker/k8shost
-          return_content: yes
-          headers:
-            X-BDS-SESSION: "{{ session_id }}" 
-            accept: "*/*"
-            Content-Type: "application/json"
-          method: POST
-          status_code: 200
-          body_format: json
-          body: "{{ lookup('file', template_name) }}"
-          status_code: 201
-        register: k8shost_res
+    - name: Add hosts to the current set of k8s hosts
+      include_tasks: add_k8s_host_block.yml   
       loop: "{{ new_k8s_hosts }}"
 
     - name: Log out of session
