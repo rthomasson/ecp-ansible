@@ -1,0 +1,70 @@
+---
+- name: Obtain session token
+  uri:
+    url: http://{{ primary_controller }}:8080/api/v1/login
+    return_content: yes
+    method: POST
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
+    template_name: "'/tmp/{{ common.name }}_add_k8s_host.json }}'"
+    cacheable: True  
+
+# Get the current list of Host tages 
+- name: Get the current set of host tags 
+  uri:
+    url: http://{{ primary_controller }}:8080/api/v2/tag
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+      accept: "application/json"
+    method: GET
+    status_code: 200
+  register: host_tags_res
+
+- name: Create a fact with parsed list of k8s hosts from the API call  
+  set_fact:
+    host_tags: "{{ host_tags_res.json | json_query('_embedded.tags[*].{tag_id: _links.self.href, name: label.name, description: label.description}') }}"
+    cacheable: True  
+
+- debug:
+    msg: "Host Tag: {{ item }} "
+  loop: "{{ host_tags }}"
+    
+- block:
+  # Template makes use new_k8s_hosts variable. If this variable isn't defined, then it will add all hosts in the k8s_workers host group  
+  - name: Prepare input file for epicctl.
+    template:
+      src: add_k8s_host.j2
+      dest: "{{ template_name }}"
+      mode: 0777
+
+  # Add the designated hosts to the set of k8s hosts 
+  - name: Add hosts to the current set of k8shosts 
+    uri:
+      url: http://{{ primary_controller }}:8080/api/v2/worker/k8shost
+      return_content: yes
+      headers:
+        X-BDS-SESSION: "{{ session_id }}" 
+        accept: "*/*"
+        Content-Type: "application/json"
+      method: POST
+      status_code: 200
+      body_format: json
+      body: "{{ lookup('file', template_name) }}"
+      status_code: 201
+    register: k8shost_res
+  loop: "{{ new_k8s_hosts }}"
+   
+#- name: Run epicctl command to add K8s hosts
+#  command: "epicctl op -f /tmp/{{ common.name }}_k8shosts.yml -n {{ common.name }} "
+#  register: res
+#  failed_when: res.rc != 0
+
+- debug:
+    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- K8s hosts result: {{ res.stdout }}"
