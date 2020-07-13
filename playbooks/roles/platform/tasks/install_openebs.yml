@@ -48,12 +48,12 @@
   register: res
   failed_when: res.rc != 0 
   
- - name: Create Openebs Stroage class 
+- name: Create Openebs Stroage class 
   command: kubectl apply -f {{ openebs_storage_class_file }} --skip-confirmation
   register: res
   failed_when: res.rc != 0
  
- - name: Create Openebs Persistant Volume Claim 
+- name: Create Openebs Persistant Volume Claim 
   command: kubectl apply -f {{ openebs_persistant_volume_claim_file }} --skip-confirmation
   register: res
   failed_when: res.rc != 0
