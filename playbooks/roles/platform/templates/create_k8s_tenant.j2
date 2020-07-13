@@ -23,6 +23,11 @@ nn"adopt_existing_namespace": "{{ k8s.tenant.adopt_existing_namespace_flag }}",
 {% else %}
   "map_services_to_gateway": false,
 {% endif %}
+{% if k8s.tenant.enable_service_mesh_flag is defined %}
+  "enable_service_mesh": "{{ k8s.tenant.enable_service_mesh_flag }}",
+{% else %}
+  "enable_service_mesh": true,
+{% endif %}
   "features": {
     "ml_project": false
   },
