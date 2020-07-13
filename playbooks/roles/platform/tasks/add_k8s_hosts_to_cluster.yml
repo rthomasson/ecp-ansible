@@ -74,7 +74,7 @@
     method: POST
     body_format: json
     body: "{{ lookup('file','/tmp/CICL_add_k8s_hosts_to_cluster.json') }}"
-    status_code: 201
+    status_code: 204
   register: cluster_res
 
 #  - name: Poll the status of cluster creation by making get call to /api/v2/k8scluster/k8scluster_id
