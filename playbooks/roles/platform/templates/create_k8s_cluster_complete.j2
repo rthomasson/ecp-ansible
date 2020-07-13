@@ -1,66 +1,101 @@
 {
   "label": {
-    "name": "{{ k8s.cluster_name }}",
-    "description": "{{ k8s.cluster_description }}"
+    "name": "{{ k8s.cluster.name }}",
+    "description": "{{ k8s.cluster.description }}"
   },
-  "k8s_version": "{{ k8s.k8s_version }}",
-  "pod_network_range": "{{ k8s.pod_network_range }}",
-  "service_network_range": "{{ k8s.service_network_range }}",
+  "k8s_version": "{{ k8s.cluster.k8s_version }}",
+  "pod_network_range": "{{ k8s.cluster.pod_network_range }}",
+  "service_network_range": "{{ k8s.cluster.service_network_range }}",
   "pod_dns_domain": "mycluster.local",
   #"addons": [
   #  "my_addon"
   #],
   "k8shosts_config": [
-{% for host in groups.k8s_master_nodes %}  
+{% if cluster_master_nodes is defined %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in cluster_master_nodes %}
     {
-      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
-      "role": "master"
+      "node": "{{ item | json_query('host_id') }}",
+      "role": "master",
     },
 {% endfor %}
-{% for host in groups.k8s_ingress_nodes %}  
+{% else %}   
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('hostname') in groups['k8s_master_nodes'] %}
     {
-      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
-      "role": "worker"
+      "node": "{{ item | json_query('host_id') }}",
+      "role": "master",
+    },
+{% endfor %}    
+{% endif %}
+{% if cluster_ingress_nodes is defined %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in cluster_ingress_nodes %}
+    {
+      "node": "{{ item | json_query('host_id') }}",
+      "role": "worker",
     },
 {% endfor %}
-{% for host in groups.k8s_worker_nodes %}  
+{% else %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('hostname') in groups['k8s_ingress_nodes'] %}  
     {
-      "node": "/api/v2/worker/k8shost/{{ hostvars[host].hcp_host_id }}",
-      "role": "worker"
+      "node": "{{ item | json_query('host_id') }}",
+      "role": "worker",
     },
 {% endfor %}
+{% endif %}
+{% if cluster_worker_nodes is defined %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in cluster_worker_nodes %}
+    {
+      "node": "{{ item | json_query('host_id') }}",
+      "role": "worker",
+{% if loop.last %}
+    }
+{% else %}    
+    },
+{% endif %}
+{% endfor %}
+{% else %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('hostname') in groups['k8s_worker_nodes']  %}  
+    {
+      "node": "{{ item | json_query('host_id') }}",
+      "role": "worker",
+{% if loop.last %}
+    }
+{% else %}    
+    },
+{% endif %}    
+{% endfor %}
+{% endif %}
   ],
   "cert_data": {
-    "root_ca_cert": "{{ k8s.cert_data.root_ca_cert }}",
-    "root_ca_key": "{{ k8s.cert_data.root_ca_key }}",
-    "front_proxy_ca_cert": "{{ k8s.cert_data.front_proxy_ca_cert }}",
-    "front_proxy_ca_key": "{{ k8s.cert_data.front_proxy_ca_key }}",
-    "etcd_ca_cert": "{{ k8s.cert_data.etcd_ca_cert }}",
-    "etcd_ca_key": "{{ k8s.cert_data.etcd_ca_key }}"
+    "root_ca_cert": "{{ k8s.cluster.cert_data.root_ca_cert }}",
+    "root_ca_key": "{{ k8s.cluster.cert_data.root_ca_key }}",
+    "front_proxy_ca_cert": "{{ k8s.cluster.cert_data.front_proxy_ca_cert }}",
+    "front_proxy_ca_key": "{{ k8s.cluster.cert_data.front_proxy_ca_key }}",
+    "etcd_ca_cert": "{{ k8s.cluster.cert_data.etcd_ca_cert }}",
+    "etcd_ca_key": "{{ k8s.cluster.cert_data.etcd_ca_key }}"
   },
   "external_identity_server": {
-    "type": "{{ k8s.ext_identity_server.type }}",
-    "host": "{{ k8s.ext_identity_server.ip }}",
-    "port": {{ k8s.ext_identity_server.port }},
+    "type": "{{ k8s.cluster.ext_identity_server.type }}",
+    "host": "{{ k8s.cluster.ext_identity_server.ip }}",
+    "port": {{ k8s.cluster.ext_identity_server.port }},
     "auth_service_locations": [
       {
-        "host": "{{ k8s.ext_identity_server.auth_service_location_host }}",
-        "port": {{ k8s.ext_identity_server.auth_service_location_port }}
+        "host": "{{ k8s.cluster.ext_identity_server.auth_service_location_host }}",
+        "port": {{ k8s.cluster.ext_identity_server.auth_service_location_port }}
       }
     ],
-    "timeout_ms": {{ k8s.ext_identity_server.timeout_ms }},
-    "reorder_after_failover": {{ k8s.ext_identity_server.reorder_after_failover }},
-    "user_attribute": "{{ k8s.ext_identity_server.user_attribute }}",
-    "bind_type": "{{ k8s.ext_identity_server.bind_type }}",
-    "base_dn": "{{ k8s.ext_identity_server.base_dn }}",
-    "security_protocol": "{{ k8s.ext_identity_server.security_protocol }}",
-    "cacert_filename": "{{ k8s.ext_identity_server.cacert_filename }}",
-    "nt_domain": "{{ k8s.ext_identity_server.nt_domain }}",
-    "bind_dn": "{{ k8s.ext_identity_server.bind_dn }}",
-    "bind_pwd": "{{ k8s.ext_identity_server.bind_pwd }}",
-    "verify_peer": {{ k8s.ext_identity_server.verify_peer }}
+    "timeout_ms": {{ k8s.cluster.ext_identity_server.timeout_ms }},
+    "reorder_after_failover": {{ k8s.cluster.ext_identity_server.reorder_after_failover }},
+    "user_attribute": "{{ k8s.cluster.ext_identity_server.user_attribute }}",
+    "bind_type": "{{ k8s.cluster.ext_identity_server.bind_type }}",
+    "base_dn": "{{ k8s.cluster.ext_identity_server.base_dn }}",
+    "security_protocol": "{{ k8s.cluster.ext_identity_server.security_protocol }}",
+    "cacert_filename": "{{ k8s.cluster.ext_identity_server.cacert_filename }}",
+    "nt_domain": "{{ k8s.cluster.ext_identity_server.nt_domain }}",
+    "bind_dn": "{{ k8s.cluster.ext_identity_server.bind_dn }}",
+    "bind_pwd": "{{ k8s.cluster.ext_identity_server.bind_pwd }}",
+    "verify_peer": {{k8s.cluster.ext_identity_server.verify_peer }}
   },
   "external_groups": [
-    "{{ k8s.external_groups }}"
+    "{{ k8s.cluster.external_groups }}"
   ]
 }
