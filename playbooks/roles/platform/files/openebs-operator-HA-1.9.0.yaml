@@ -94,10 +94,10 @@ spec:
         name: maya-apiserver
         openebs.io/component-name: maya-apiserver
         openebs.io/version: 1.9.0
-        serviceAccountName: openebs-maya-operator
     spec:
       nodeSelector:
         openebs.io/nodegroup: openebs-controlplane
+      serviceAccountName: openebs-maya-operator  
       containers:
       - name: maya-apiserver
         imagePullPolicy: IfNotPresent
@@ -258,10 +258,10 @@ spec:
     metadata:
       labels:
         name: openebs-provisioner
-       serviceAccountName: openebs-maya-operator
     spec:
       nodeSelector:
         openebs.io/nodegroup: openebs-controlplane
+      serviceAccountName: openebs-maya-operator
       containers:
       - name: openebs-provisioner
         imagePullPolicy: IfNotPresent
@@ -559,10 +559,10 @@ spec:
         name: openebs-ndm-operator
         openebs.io/component-name: ndm-operator
         openebs.io/version: 1.9.0
-      serviceAccountName: openebs-maya-operator
     spec:
       nodeSelector:
         openebs.io/nodegroup: openebs-controlplane
+      serviceAccountName: openebs-maya-operator
       containers:
         - name: node-disk-operator
           image: quay.io/openebs/node-disk-operator-amd64:v0.4.9
