@@ -33,7 +33,8 @@
    
     - name: Create a fact with parsed list of host tags from the API call  
       set_fact:
-        host_tags: "{{ host_tags_res.json | json_query('_embedded.tags[*].{tag_id: _links.self.href, name: label.name, description: label.description}') }}"
+        # host_tags: "{{ host_tags_res.json | json_query('_embedded.tags[*].{tag_id: _links.self.href, name: label.name, description: label.description}')  }}"
+        host_tags: "{{ host_tags_res.json }}"
         cacheable: True  
 
     - debug:
