@@ -5,7 +5,11 @@ parameters:
   config:
     api_scheme: http
   host:
+{% if primary_controller is defined and primary_controller|length > 0 %}  
+    host_ip: {{ primary_controller }}
+{% else %}
     host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
+{% endif %} 
   ssh:
     username: {{ credentials.ssh.username }}
     password: {{ credentials.ssh.password }}
@@ -29,7 +33,11 @@ parameters:
     url_bin_path: local://{{ common.bin_dir }}{{ common.bin_file }}
     install_type: {{ common.install_type }}
   host:
+{% if primary_controller is defined and primary_controller|length > 0 %}  
+    host_ip: {{ primary_controller }}
+{% else %}
     host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
+{% endif %} 
   ssh:
     username: {{ credentials.ssh.username }}
     password: {{ credentials.ssh.password }}
@@ -56,7 +64,11 @@ parameters:
     int_gw_ip: {{ common.int_gw_ip }}
     int_nw_mask: {{ common.int_nw_mask }}
   host:
+{% if primary_controller is defined and primary_controller|length > 0 %}  
+    host_ip: {{ primary_controller }}
+{% else %}
     host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
+{% endif %} 
   ssh:
     username: {{ credentials.ssh.username }}
     password: {{ credentials.ssh.password }}
@@ -64,6 +76,25 @@ parameters:
     #keypair_file: {{ credentials.ssh.keypair_file }}
     #keypair_name: {{ credentials.ssh.keypair_name }}
 platform: {{ common.platform }}
+{% if platform_gateways is defined and platform_gateways is iterable %}
+{% for gw in platform_gateways %}
+---
+op: GatewayConfig
+parameters:
+  config:
+    gateway_set_hostname: {{ gateway.gateway_set_hostname }}
+    install_type: {{ common.install_type }}
+  host:
+    internal_ip: {{ gw }}
+  ssh:
+    username: {{ credentials.ssh.username }}
+    password: {{ credentials.ssh.password }}
+    access_type: {{ credentials.ssh.access_type }}
+    #keypair_file: {{ credentials.ssh.keypair_file }}
+    #keypair_name: {{ credentials.ssh.keypair_name }}
+platform: {{ common.platform }}
+{% endfor %}
+{% else %}
 {% for gw in groups.gateways %}
 ---
 op: GatewayConfig
@@ -81,7 +112,30 @@ parameters:
     #keypair_name: {{ credentials.ssh.keypair_name }}
 platform: {{ common.platform }}
 {% endfor %}
-{% for ew in groups.epic_workers %}
+{% endif %}
+{% if platform_ha_workers is defined and platform_ha_workers is iterable %}
+{% for ew in platform_ha_workers %}
+---
+op: WorkerConfig
+parameters:
+  config:
+    node_disks: {{ common.ephemeral_disks|join(',') }}
+{% if common.persistent_disks is defined %}
+    hdfs_disks: {{ common.persistent_disks|join(',') }}
+{% endif %}
+    install_type: {{ common.install_type }}
+  host:
+    internal_ip: {{ ew }}
+  ssh:
+    username: {{ credentials.ssh.username }}
+    password: {{ credentials.ssh.password }}
+    access_type: {{ credentials.ssh.access_type }}
+    #keypair_file: {{ credentials.ssh.keypair_file }}
+    #keypair_name: {{ credentials.ssh.keypair_name }}
+platform: {{ common.platform }}
+{% endfor %}
+{% else %}
+{% for ew in groups.epic_wrokers %}
 ---
 op: WorkerConfig
 parameters:
@@ -101,3 +155,4 @@ parameters:
     #keypair_name: {{ credentials.ssh.keypair_name }}
 platform: {{ common.platform }}
 {% endfor %}
+{% endif %}

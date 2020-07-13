@@ -1,5 +1,13 @@
 {
   "cluster_dns_name":"",
+{% if shadow_controller is defined and shadow_controller|length > 0 %}  
+  "shadow":"/api/v1/workers/{{ shadow_controller }}",
+{% else %}
   "shadow":"/api/v1/workers/{{ groups.controllers[1].hcp_host_id }}",
+{% endif %}  
+{% if shadow_controller is defined and shadow_controller|length > 0 %}  
+  "arbiter":"/api/v1/workers/{{ arbiter }}"
+{% else %}
   "arbiter":"/api/v1/workers/{{ groups.controllers[2].hcp_host_id }}"
+{% endif %}
 }
