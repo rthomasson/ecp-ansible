@@ -38,7 +38,8 @@
         cacheable: True  
 
     - debug:
-        msg: "Tag Id: {{ host_tags | json_query('_embedded.tags[?label.name==`dc_tag`]._links.self.href') | replace('[u''', '') | replace(']''', '') }}"
+        #msg: "Tag Id: {{ host_tags | json_query('_embedded.tags[?label.name==`dc_tag`]._links.self.href') | replace('[u''', '') | replace(']''', '') }}"
+        msg: "Tag Id: {{ host_tags | json_query('_embedded.tags[?label.name==`dc_tag`]._links.self.href') | to_yaml }}"
     
 #    - name: Add hosts to the current set of k8s hosts
 #      include_tasks: add_k8s_host_block.yml   
