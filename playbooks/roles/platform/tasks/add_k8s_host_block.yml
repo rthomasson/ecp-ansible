@@ -2,7 +2,7 @@
 # Template makes use new_k8s_hosts variable. If this variable isn't defined, then it will add all hosts in the k8s_workers host group  
 - name: Prepare input file for epicctl.
   template:
-    src: add_k8s_hosts.j2
+    src: add_k8s_host.j2
     dest: "/tmp/{{ common.name }}_add_k8s_host.json"
     mode: 0777
 
