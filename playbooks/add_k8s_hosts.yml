@@ -55,7 +55,7 @@
       register: delsession_res
 
  #   - debug:
-         msg: "Session: {{ session_res.location  | urlsplit('path') }} -- K8s hosts result: {{ res.stdout }}"
+ #       msg: "Session: {{ session_res.location  | urlsplit('path') }} -- K8s hosts result: {{ res.stdout }}"
         
         
           
