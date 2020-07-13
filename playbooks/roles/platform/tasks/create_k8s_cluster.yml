@@ -32,17 +32,14 @@
     cacheable: True  
 
 - debug:
-    var: item
     msg: "Cluster Master Node: {{ item }}"
   loop: "{{ cluster_master_nodes }}"
 
 - debug:
-    var: item
     msg: "Cluster Ingress Node: {{ item }}"
   loop: "{{ cluster_ingress_nodes }}"
 
 - debug:
-    var: item
     msg: "Cluster Worker Node: {{ item }}"
   #loop: "{{ cluster_worker_nodes | dict2items }}"
   loop: "{{ cluster_worker_nodes }}"
