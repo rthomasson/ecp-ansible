@@ -3,7 +3,7 @@
 - name: Prepare input file for epicctl.
   template:
     src: add_k8s_hosts.j2
-    dest: "/tmp/{{ common.name }}_add_k8shosts.json"
+    dest: "/tmp/{{ common.name }}_add_k8s_host.json"
     mode: 0777
 
 # Add the designated hosts to the set of k8s hosts 

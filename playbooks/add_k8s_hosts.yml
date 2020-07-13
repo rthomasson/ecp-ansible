@@ -16,7 +16,7 @@
     - name: Create a fact with the session info from the API call  
       set_fact:
         session_id: "{{ session_res.location  | urlsplit('path') }}"
-        template_name: "'/tmp/{{ common.name }}_add_k8s_hosts.json }}'"
+        template_name: "'/tmp/{{ common.name }}_add_k8s_host.j2 }}'"
         cacheable: True  
     
     - name: Call the API to add each host in new_k8s_hosts
