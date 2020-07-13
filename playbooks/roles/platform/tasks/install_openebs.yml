@@ -44,17 +44,17 @@
  # failed_when: res.rc != 0
   
 - name: Install openebs 
-  command: kubectl apply --kubeconfig=/tmp/kubeconfig_splunk.conf --context CICL-splunk2-admin -f openebs-operator-HA-1.9.0.yaml
+  command: kubectl apply --kubeconfig=/tmp/kubeconfig_splunk.conf --context CICL-splunk2-admin -f /var/lib/awx/projects/_15__wf_lab92342_pm/playbooks/roles/platform/files/openebs-operator-HA-1.9.0.yaml
   register: res
   failed_when: res.rc != 0 
   
 - name: Create Openebs Stroage class 
-  command: kubectl apply --kubeconfig=/tmp/kubeconfig_splunk.conf --context CICL-splunk2-admin -f openebs_create_storageclass.yaml
+  command: kubectl apply --kubeconfig=/tmp/kubeconfig_splunk.conf --context CICL-splunk2-admin -f /var/lib/awx/projects/_15__wf_lab92342_pm/playbooks/roles/platform/files/openebs_create_storageclass.yaml
   register: res
   failed_when: res.rc != 0
  
 - name: Create Openebs Persistant Volume Claim 
-  command: kubectl apply --kubeconfig=/tmp/kubeconfig_splunk.conf --context CICL-splunk2-admin -f openebs_create_pvc.yaml 
+  command: kubectl apply --kubeconfig=/tmp/kubeconfig_splunk.conf --context CICL-splunk2-admin -f /var/lib/awx/projects/_15__wf_lab92342_pm/playbooks/roles/platform/files/openebs_create_pvc.yaml 
   register: res
   failed_when: res.rc != 0
   
