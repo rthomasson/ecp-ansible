@@ -27,7 +27,7 @@
 
 - name: Create a fact with parsed list of tenants from the APPI call  
   set_fact:
-    tenants_list: "{{ tenant_res.json | json_query('_embedded.tenants[*].{tenant_id: tenant_id, tenant_name: tenant_name, tenant_description: tenant_description, status: status}') }}"
+    tenants_list: "{{ tenant_res.json | json_query('_embedded.tenants[*].{tenant_id: _links.self.href, tenant_name: label.name, tenant_description: label.description, status: status}') }}"
     cacheable: True  
 
 # Parse the k8s cluster name and ID from the JSON result of the GET k8scluster call and set target cluster ID
