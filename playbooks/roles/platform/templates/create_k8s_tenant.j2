@@ -24,11 +24,6 @@ nn"adopt_existing_namespace": "{{ k8s.tenant.adopt_existing_namespace_flag }}",
   "map_services_to_gateway": false,
 {% endif %}
   "tenant_type_info": {
-{% if k8s.tenant.enable_service_mesh_flag is defined %}
-    "enable_service_mesh": "{{ k8s.tenant.enable_service_mesh_flag }}",
-{% else %}
-    "enable_service_mesh": true,
-{% endif %}
 {% if k8s.tenant.map_services_to_gateway_flag is defined %}
     "map_services_to_gateway": "{{ k8s.tenant.map_services_to_gateway_flag }}",
 {% else %}
