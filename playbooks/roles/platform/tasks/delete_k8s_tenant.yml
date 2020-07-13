@@ -38,7 +38,7 @@
     target_tenant_id: "{{ item | json_query('tenant_id') }}"
     cacheable: True
   #when: "{{ item | json_query('tenant_name') == target_tenant_name }}"  
-  loop: "{{ tenants_list| json_query(tenant_id_query) }}"
+  loop: "{{ tenants_list | json_query(tenant_id_query) }}"
 
 - name: Delete K8s tenant
   uri:
