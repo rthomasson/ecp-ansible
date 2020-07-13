@@ -2,9 +2,9 @@
   "ipaddr": "{{ hostvars[item].ansible_host }}",
   "credentials": {
     "type": "{{ credentials.ssh.access_type }}",
-    "password": "{{ credentials.ssh.password }}"
+    "password": "{{ credentials.ssh.password }}",    
 {% if credentials.ssh.keypair_file is none %} 
-    "ssh_key_data": 
+    "ssh_key_data": ,
 {% else %}
     "ssh_key_data": "{{ lookup('file', credentials.ssh.keypair_file) }}",
 {% endif %}
@@ -33,7 +33,7 @@
       "tag_value": true
     }
 {% else %}
-    }    
+    }
 {% endif %}    
   ]
 }
