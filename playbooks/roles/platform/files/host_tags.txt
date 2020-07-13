@@ -1,5 +1,5 @@
-{ "label": { "name": "label_1", "description": "Description 1"} }
-{ "label": { "name": "label_2", "description": "Description 2"} }
-{ "label": { "name": "label_3", "description": "Description 3"} }
-{ "label": { "name": "label_4", "description": "Description 4"} }
+{ "label": { "name": "dc_tag", "description": "Datacenter"} }
+{ "label": { "name": "rack_tag", "description": "Rack"} }
+{ "label": { "name": "ru_tag", "description": "Rack Unit Location"} }
+{ "label": { "name": "istio-ingressgateway", "description": "Istio Ingress Gateway"} }
 { "label": { "name": "New_Label", "description": "Description of New_label"} }
