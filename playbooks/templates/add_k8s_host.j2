@@ -2,7 +2,7 @@
   "ipaddr": "{{ hostvars[item].ansible_host }}",
   "credentials": {
     "type": "{{ credentials.ssh.access_type }}",
-{% if credentials.access_type == 'password_access' %}    
+{% if credentials.ssh.access_type == 'password_access' %}    
     "password": "{{ credentials.ssh.password }}"
 {% else %}
     "ssh_key_data": "{{ lookup('file', credentials.ssh.keypair_file) }}",
