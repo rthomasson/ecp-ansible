@@ -85,6 +85,7 @@ spec:
       name: maya-apiserver
       openebs.io/component-name: maya-apiserver
   replicas: 3
+  nodeSelector:openebs-controlplane
   strategy:
     type: Recreate
     rollingUpdate: null
@@ -94,16 +95,7 @@ spec:
         name: maya-apiserver
         openebs.io/component-name: maya-apiserver
         openebs.io/version: 1.9.0
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              matchExpressions:
-                key: node
-                operator: Equal
-                values: ["openebs-controlplane"]
-      serviceAccountName: openebs-maya-operator
+        serviceAccountName: openebs-maya-operator
       containers:
       - name: maya-apiserver
         imagePullPolicy: IfNotPresent
@@ -260,20 +252,12 @@ spec:
       name: openebs-provisioner
       openebs.io/component-name: openebs-provisioner
   replicas: 3
+  nodeSelector:openebs-controlplane
   template:
     metadata:
       labels:
         name: openebs-provisioner
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              matchExpressions:
-                key: node
-                operator: Equal
-                values: ["openebs-controlplane"]
-      serviceAccountName: openebs-maya-operator
+       serviceAccountName: openebs-maya-operator
       containers:
       - name: openebs-provisioner
         imagePullPolicy: IfNotPresent
@@ -333,6 +317,7 @@ spec:
       name: openebs-snapshot-operator
       openebs.io/component-name: openebs-snapshot-operator
   replicas: 3
+  nodeSelector:openebs-controlplane
   strategy:
     type: Recreate
   template:
@@ -341,15 +326,6 @@ spec:
         name: openebs-snapshot-operator
         openebs.io/component-name: openebs-snapshot-operator
         openebs.io/version: 1.9.0
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              matchExpressions:
-                key: node
-                operator: Equal
-                values: ["openebs-controlplane"]
       serviceAccountName: openebs-maya-operator
       containers:
         - name: snapshot-controller
@@ -569,6 +545,7 @@ spec:
       name: openebs-ndm-operator
       openebs.io/component-name: ndm-operator
   replicas: 3
+  nodeSelector:openebs-controlplane
   strategy:
     type: Recreate
   template:
@@ -577,15 +554,6 @@ spec:
         name: openebs-ndm-operator
         openebs.io/component-name: ndm-operator
         openebs.io/version: 1.9.0
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              matchExpressions:
-                key: node
-                operator: Equal
-                values: ["openebs-controlplane"]
       serviceAccountName: openebs-maya-operator
       containers:
         - name: node-disk-operator
@@ -639,6 +607,7 @@ metadata:
     openebs.io/version: 1.9.0
 spec:
   replicas: 3
+  nodeSelector:openebs-controlplane
   strategy:
     type: Recreate
     rollingUpdate: null
@@ -651,15 +620,6 @@ spec:
         app: admission-webhook
         openebs.io/component-name: admission-webhook
         openebs.io/version: 1.9.0
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              matchExpressions:
-                key: node
-                operator: Equal
-                values: ["openebs-controlplane"]
       serviceAccountName: openebs-maya-operator
       containers:
         - name: admission-webhook
@@ -706,6 +666,7 @@ spec:
       name: openebs-localpv-provisioner
       openebs.io/component-name: openebs-localpv-provisioner
   replicas: 3
+  nodeSelector:openebs-controlplane
   strategy:
     type: Recreate
   template:
@@ -714,15 +675,6 @@ spec:
         name: openebs-localpv-provisioner
         openebs.io/component-name: openebs-localpv-provisioner
         openebs.io/version: 1.9.0
-    spec:
-      affinity:
-        nodeAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            nodeSelectorTerms:
-              matchExpressions:
-                key: node
-                operator: Equal
-                values: ["openebs-controlplane"]
       serviceAccountName: openebs-maya-operator
       containers:
       - name: openebs-provisioner-device
