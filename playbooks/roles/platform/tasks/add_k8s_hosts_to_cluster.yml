@@ -1,7 +1,7 @@
 ---
 - name: Obtain session token
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
+    url: http://{{ primary_controller }}:8080/api/v1/login
     return_content: yes
     method: POST
     body_format: json
@@ -17,7 +17,7 @@
 # Get the current set of k8shosts 
 - name: Get the current set of k8shosts 
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/worker/k8shost
+    url: http://{{ primary_controller }}:8080/api/v2/worker/k8shost
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
@@ -45,7 +45,7 @@
  # Get the current list of K8s clusters 
 - name: Get the current set of K8s clusters 
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster
+    url: http://{{ primary_controller }}:8080/api/v2/k8scluster
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
@@ -66,7 +66,7 @@
 
 #- name: Add K8s host to Cluster
 #  uri:
-#    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/k8scluster/{{target_cluster_id}}/change_task
+#    url: http://{{ primary_controller }}:8080/api/v2/k8scluster/{{target_cluster_id}}/change_task
 #    return_content: yes
 #    headers:
 #      X-BDS-SESSION: "{{ session_id }}" 

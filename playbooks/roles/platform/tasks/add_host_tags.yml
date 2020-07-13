@@ -6,7 +6,7 @@
 
 - name: Obtain session token
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
+    url: http://{{ primary_controller }}:8080/api/v1/login
     return_content: yes
     method: POST
     body_format: json
@@ -17,7 +17,7 @@
 # status_code = 201 on success, 409 if tag/label already exists
 - name: Add each defined tag
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/tag
+    url: http://{{ primary_controller }}:8080/api/v2/tag
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
