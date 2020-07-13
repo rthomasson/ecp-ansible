@@ -34,7 +34,7 @@
 - debug:
     var: item
     msg: "Cluster Master Node: {{ item }}"
-  loop: "{{ cluster_master_nodesv }}"
+  loop: "{{ cluster_master_nodes }}"
 
 - debug:
     var: item
