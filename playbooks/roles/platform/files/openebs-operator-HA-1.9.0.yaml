@@ -97,7 +97,7 @@ spec:
         serviceAccountName: openebs-maya-operator
      spec:
       nodeSelector:
-        "openebs.io/nodegroup"="openebs-controlplane"
+        openebs.io/nodegroup: openebs-controlplane
       containers:
       - name: maya-apiserver
         imagePullPolicy: IfNotPresent
@@ -261,7 +261,7 @@ spec:
        serviceAccountName: openebs-maya-operator
      spec:
       nodeSelector:
-        "openebs.io/nodegroup"="openebs-controlplane"
+        openebs.io/nodegroup: openebs-controlplane
       containers:
       - name: openebs-provisioner
         imagePullPolicy: IfNotPresent
@@ -331,7 +331,7 @@ spec:
         openebs.io/version: 1.9.0
      spec:
       nodeSelector:
-        "openebs.io/nodegroup"="openebs-controlplane"
+        openebs.io/nodegroup: openebs-controlplane
       serviceAccountName: openebs-maya-operator
       containers:
         - name: snapshot-controller
@@ -462,7 +462,7 @@ spec:
       # e.g. label the storage nodes with - "openebs.io/nodegroup"="storage-node"
       # kubectl label node <node-name> "openebs.io/nodegroup"="storage-node"
       nodeSelector:
-        "openebs.io/nodegroup": "storage-node"
+        openebs.io/nodegroup: storage-node
       serviceAccountName: openebs-maya-operator
       hostNetwork: true
       containers:
@@ -562,7 +562,7 @@ spec:
       serviceAccountName: openebs-maya-operator
      spec:
       nodeSelector:
-        "openebs.io/nodegroup"="openebs-controlplane"
+        openebs.io/nodegroup: openebs-controlplane
       containers:
         - name: node-disk-operator
           image: quay.io/openebs/node-disk-operator-amd64:v0.4.9
@@ -629,7 +629,7 @@ spec:
         openebs.io/version: 1.9.0
       spec:
       nodeSelector:
-        "openebs.io/nodegroup"="openebs-controlplane"
+        openebs.io/nodegroup: openebs-controlplane
       serviceAccountName: openebs-maya-operator
       containers:
         - name: admission-webhook
@@ -686,7 +686,7 @@ spec:
         openebs.io/version: 1.9.0
       spec:
       nodeSelector:
-        "openebs.io/nodegroup"="openebs-controlplane"
+        openebs.io/nodegroup: openebs-controlplane
       serviceAccountName: openebs-maya-operator
       containers:
       - name: openebs-provisioner-device
