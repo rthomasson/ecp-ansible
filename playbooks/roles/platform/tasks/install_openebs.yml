@@ -44,17 +44,17 @@
  # failed_when: res.rc != 0
   
 - name: Install openebs 
-  command: kubectl apply -f {{ k8s.openebs.openebs_manifest_file }}
+  command: kubectl apply --kubeconfig={{ kubeconfig_file }} --context {{ kubeconfig_context }} -f {{ k8s.openebs.openebs_manifest_file }}
   register: res
   failed_when: res.rc != 0 
   
 - name: Create Openebs Stroage class 
-  command: kubectl apply -f {{ k8s.openebs.openebs_storage_class_file }} 
+  command: kubectl apply --kubeconfig={{ kubeconfig_file }} --context {{ kubeconfig_context }} -f {{ k8s.openebs.openebs_storage_class_file }} 
   register: res
   failed_when: res.rc != 0
  
 - name: Create Openebs Persistant Volume Claim 
-  command: kubectl apply -f {{ k8s.openebs.openebs_persistant_volume_claim_file }} 
+  command: kubectl apply --kubeconfig={{ kubeconfig_file }} --context {{ kubeconfig_context }} -f {{ k8s.openebs.openebs_persistant_volume_claim_file }} 
   register: res
   failed_when: res.rc != 0
   
