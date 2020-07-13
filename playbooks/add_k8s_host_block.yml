@@ -16,7 +16,6 @@
       accept: "*/*"
       Content-Type: "application/json"
     method: POST
-    status_code: 200
     body_format: json
     body: "{{ lookup('file', template_name) }}"
     status_code: 201
@@ -28,4 +27,4 @@
 #  failed_when: res.rc != 0
 
 - debug:
-    msg: "Add K8s host result: {{ k8shost.stdout }}"
+    msg: "Add K8s host result: {{ k8shost_res.stdout }}"
