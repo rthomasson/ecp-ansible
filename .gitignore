@@ -1,11 +1,7 @@
+.DS_Store
 group_vars/all/vars.yml
 group_vars/all/vault.yml
 ansible.log
-playbooks/roles/.DS_Store
-playbooks/roles/.DS_Store
-playbooks/roles/.DS_Store
 playbooks/roles/k8s-cluster/.DS_Store
-playbooks/roles/.DS_Store
 playbooks/roles/k8s-tenant/.DS_Store
 playbooks/roles/k8s-tenants/.DS_Store
-playbooks/.DS_Store
