@@ -40,7 +40,7 @@
 
 - name: Delete K8s tenant
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v2/tenant
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
