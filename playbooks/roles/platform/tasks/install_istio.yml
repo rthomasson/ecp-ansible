@@ -17,7 +17,9 @@
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
       accept: "text/yaml"
     method: GET
+    dest: /tmp/kubeconfig_{{ k8s.cluster.name }}.conf
     status_code: 200
+    
   register: kubeconfig_res
     
 - name: Authenticate k8s cluster user
