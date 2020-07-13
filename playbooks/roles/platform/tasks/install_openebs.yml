@@ -26,11 +26,11 @@
 #  failed_when: res.rc != 0
 
 
-- name: label openebs controlplane nodes
-  command: kubectl label nodes {{ item }} "openebs.io/nodegroup"="openebs-controlplane"
-  loop: "{{ groups['k8s_openebs_controleplane_nodes'] }}"
-  register: res
-  failed_when: res.rc != 0
+#- name: label openebs controlplane nodes
+#  command: kubectl label nodes {{ item }} "openebs.io/nodegroup"="openebs-controlplane"
+#  loop: "{{ groups['k8s_openebs_controleplane_nodes'] }}"
+#  register: res
+#  failed_when: res.rc != 0
   
  #- name: label openebs storage nodes
  # command: kubectl label nodes {{ item }} "openebs.io/nodegroup"="storage-node"
