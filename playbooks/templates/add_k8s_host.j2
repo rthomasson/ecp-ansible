@@ -1,5 +1,5 @@
 {
-  "ipaddr": "{{ hostvars[item].ansible_hostname }}",
+  "ipaddr": "{{ hostvars[item].ansible_host }}",
   "credentials": {
     "type": "{{ credentials.ssh.access_type }}",
 {% if credentials.access_type == 'password_access' %}    
