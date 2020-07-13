@@ -258,6 +258,7 @@ spec:
     metadata:
       labels:
         name: openebs-provisioner
+        openebs.io/component-name: openebs-provisioner
     spec:
       nodeSelector:
         openebs.io/nodegroup: openebs-controlplane
