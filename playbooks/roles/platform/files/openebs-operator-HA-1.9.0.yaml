@@ -86,7 +86,7 @@ spec:
       openebs.io/component-name: maya-apiserver
   replicas: 3
   nodeSelector:
-   node: openebs
+   node: openebs-controlplane
   strategy:
     type: Recreate
     rollingUpdate: null
@@ -254,7 +254,7 @@ spec:
       openebs.io/component-name: openebs-provisioner
   replicas: 3
   nodeSelector:
-   node: openebs
+   node: openebs-controlplane
   template:
     metadata:
       labels:
@@ -320,7 +320,7 @@ spec:
       openebs.io/component-name: openebs-snapshot-operator
   replicas: 3
   nodeSelector:
-    node: openebs
+    node: openebs-controlplane
   strategy:
     type: Recreate
   template:
@@ -549,7 +549,7 @@ spec:
       openebs.io/component-name: ndm-operator
   replicas: 3
   nodeSelector:
-    node: openebs
+    node: openebs-controlplane
   strategy:
     type: Recreate
   template:
@@ -612,7 +612,7 @@ metadata:
 spec:
   replicas: 3
   nodeSelector:
-    node: openebs
+    node: openebs-controlplane
   strategy:
     type: Recreate
     rollingUpdate: null
@@ -672,7 +672,7 @@ spec:
       openebs.io/component-name: openebs-localpv-provisioner
   replicas: 3
   nodeSelector:
-    node: openebs
+    node: openebs-controlplane
   strategy:
     type: Recreate
   template:
