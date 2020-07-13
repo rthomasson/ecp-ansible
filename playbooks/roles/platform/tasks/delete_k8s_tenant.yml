@@ -33,8 +33,8 @@
 - name: Parse the K8s cluster name and ID from the JSON result of the GET k8scluster call
   set_fact:
     # set the id of the tenant to delete if it matches the name of the supplied tenant
-    #target_tenant_id: "{{ item | json_query('tenant_id') | regex_replace('/api/v2/tenant/') }}"
-    target_tenant_id: "{{ item | json_query('tenant_id') }}"
+    target_tenant_id: "{{ item | json_query('tenant_id') | regex_replace('/api/v2/tenant/') }}"
+    #target_tenant_id: "{{ item | json_query('tenant_id') }}"
     cacheable: true
   when: "{{ item | json_query('tenant_name') == target_tenant_name }}"  
   loop: "{{ tenants_list | json_query('_embedded.tenants[*].{tenant_name: label.name, tenant_id: _links.self.href}') }}"
@@ -44,7 +44,7 @@
       
 - name: Delete K8s tenant
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080{{ target_tenant_id }}
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant/{{ target_tenant_id }}
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
