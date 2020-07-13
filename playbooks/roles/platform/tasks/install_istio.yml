@@ -29,7 +29,7 @@
 
 
 - name: label istio ingress nodes
-  command: kubectl  --kubeconfig=/tmp/kubeconfig_splunk2.conf --context CICL-splunk2-admin label nodes {{ item }} istio-ingressgateway=true
+  command: kubectl  --kubeconfig=/tmp/kubeconfig_{{ k8s.cluster.name }}.conf --context {{common.name}}-{{ k8s.cluster.name }}-{{credentials.site_admin_id}} label nodes {{ item }} istio-ingressgateway=true
   loop: "{{ groups['k8s_ingress_nodes'] }}"
   register: res
   failed_when: res.rc != 0
