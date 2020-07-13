@@ -38,14 +38,15 @@
   when: "{{ item | json_query('tenant_name') == target_tenant_name }}"  
   loop: "{{ tenants_list | json_query('_embedded.tenants[*].{tenant_name: tenant_name, tenant_id: tenant_id}') }}"
 
+- debug:
+    msg: "ID of Tenant to be deleted: {{ target_tenant_id }}" 
+      
 - name: Delete K8s tenant
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant
+    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/tenant/{{ target_tenanat_id }}
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
-      accept: "*/*"
-      Content-Type: "application/json"
     method: DELETE
     body_format: json
     body: ""
