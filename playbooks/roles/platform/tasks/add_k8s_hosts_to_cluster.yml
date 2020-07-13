@@ -26,17 +26,12 @@
     status_code: 200
   register: k8shost_res
 
-- name: Create a fact with the Json from the API call  
-  set_fact:
-    k8shosts_list_raw: "{{ k8shost_res.json }}"
-    cacheable: True  
-
 - name: Create a fact with parsed list of k8s hosts from the API call  
   set_fact:
-    k8shosts_list: "{{ k8shosts_list_raw | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
+    k8shosts_list: "{{ k8shosts_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
     cacheable: True  
 
-- name: Create inputfile to add K8shost to  K8s Cluster.
+- name: Create input file to add K8shost to K8s Cluster.
   template:
     src: add_k8s_hosts_to_cluster.j2
     dest: "/tmp/{{ common.name }}_add_k8s_hosts_to_cluster.json"
@@ -59,24 +54,24 @@
   set_fact:
     # set the id of the cluster to delete if it matches the name of the supplied cluster
     target_cluster_id: "{{ item | json_query('cluster_id') }}"
-  when: "{{ item | json_query('cluster_name') == k8s.cluster_name }}"  
+  when: "{{ item | json_query('cluster_name') == k8s.cluster.name }}"  
   loop: "{{ k8scluster_res.json | json_query('_embedded.k8sclusters[*].{cluster_name: label.name, cluster_id: _links.self.href}') }}"
   register: cluster_list
 
 
-#- name: Add K8s host to Cluster
-#  uri:
-#    url: http://{{ primary_controller }}:8080/api/v2/k8scluster/{{target_cluster_id}}/change_task
-#    return_content: yes
-#    headers:
-#      X-BDS-SESSION: "{{ session_id }}" 
-#      accept: "*/*"
-#      Content-Type: "application/json"
-#    method: POST
-#    body_format: json
-#    body: "{{ lookup('file','/tmp/CICL_add_k8s_hosts_to_cluster.json') }}"
-#    status_code: 201
-#  register: cluster_res
+- name: Add K8s host to Cluster
+  uri:
+    url: http://{{ primary_controller }}:8080/api/v2/k8scluster/{{target_cluster_id}}/change_task
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+      accept: "*/*"
+      Content-Type: "application/json"
+    method: POST
+    body_format: json
+    body: "{{ lookup('file','/tmp/CICL_add_k8s_hosts_to_cluster.json') }}"
+    status_code: 201
+  register: cluster_res
 
 #  - name: Poll the status of cluster creation by making get call to /api/v2/k8scluster/k8scluster_id
 #    command: epicctl api get -u {{ jsonResp }} -n "OnPremSetup" -p {{ common.platform }} -o /tmp/get-response.json
@@ -100,8 +95,7 @@
       X-BDS-SESSION: "{{ session_id }}" 
     method: DELETE
     status_code: 204
-  register: delsession_res
+  register: session_res
 
 - debug:
-#    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Create K8s Cluster Result: {{ cluster_res.status }}"
     msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Add K8s host to  Cluster finished."

@@ -1,11 +1,30 @@
 {
   "change_spec": {
      "add_k8shosts_config": [
-{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('hostname') in groups['k8s_ingress_nodes']  %}  
-       {
+{% if cluster_master_nodes is defined %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in cluster_master_nodes %}
+        {
+          "node": "{{ item | json_query('host_id') }}",
+          "role": "master",
+        },
+{% endfor %}
+{% if cluster_ingress_nodes is defined %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in cluster_ingress_nodes %}
+        {
           "node": "{{ item | json_query('host_id') }}",
           "role": "worker",
-       },
+        },
+{% endfor %}
+{% if cluster_worker_nodes is defined %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in cluster_worker_nodes %}
+        {
+          "node": "{{ item | json_query('host_id') }}",
+          "role": "worker",
+{% if loop.last %}
+        }
+{% else %}    
+        },
+{% endif %}
 {% endfor %}
      ]
   }, 
