@@ -35,14 +35,14 @@
   failed_when: res.rc != 0
 
 - name: Install Istio
-  command: "{{ istio_home}}/bin/istioctl --kubeconfig=/tmp/kubeconfig_{{ k8s.cluster.name }}.conf --context {{common.name}}-{{ k8s.cluster.name }}-{{credentials.site_admin_id}} install --skip-confirmation"
+  command: "{{ k8s.istio.istio_home}}/bin/istioctl --kubeconfig=/tmp/kubeconfig_{{ k8s.cluster.name }}.conf --context {{common.name}}-{{ k8s.cluster.name }}-{{credentials.site_admin_id}} install --skip-confirmation"
   register: res
   failed_when: res.rc != 0
   
-- name: Install istio addon manifest
-  command: "{{ istio_home}}/bin/istioctl  --kubeconfig=/tmp/kubeconfig_{{ k8s.cluster.name }}.conf --context {{common.name}}-{{ k8s.cluster.name }}-{{credentials.site_admin_id}} install -f {{ istio_manifest_file }} --skip-confirmation"
-  register: res
-  failed_when: res.rc != 0
+#- name: Install istio addon manifest
+#  command: "{{ k8s.istio.istio_home}}/bin/istioctl  --kubeconfig=/tmp/kubeconfig_{{ k8s.cluster.name }}.conf --context {{common.name}}-{{ k8s.cluster.name }}-{{credentials.site_admin_id}} install -f {{ istio_manifest_file }} --skip-confirmation"
+#  register: res
+#  failed_when: res.rc != 0
 
 - name: label splunk namespace
   command: kubectl  --kubeconfig=/tmp/kubeconfig_{{ k8s.cluster.name }}.conf  --context {{common.name}}-{{ k8s.cluster.name }}-{{credentials.site_admin_id}} label namespace {{ k8s.cluster.name }} istio-injection=enabled
