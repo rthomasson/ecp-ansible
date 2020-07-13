@@ -59,4 +59,4 @@
   register: delsession_res
   
 - debug:
-    msg: "End Istio Install Session: {{ session_res.location  | urlsplit('path') }}"
+    msg: "End Openebs Install Session: {{ session_res.location  | urlsplit('path') }}"
