@@ -57,12 +57,6 @@
   register: res
   failed_when: res.rc != 0
 
-  - name: label openebs storage nodes
-  command: kubectl --kubeconfig={{kubeconfig_file}} --context={{kube_context}} label nodes {{ item }} "openebs.io/nodegroup"="storage-node"
-  loop: "{{ worker_nodes }}"
-  register: res
-  failed_when: res.rc != 0
-
   - name: label openebs namespace
   command: kubectl --kubeconfig={{kubeconfig_file}} --context={{kube_context}} label namespace openebs
   register: res
