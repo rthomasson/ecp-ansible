@@ -445,7 +445,7 @@ data:
         name: path filter
         state: true
         include: ""
-        exclude: "/dev/sda"
+        exclude: "loop,/dev/fd0,/dev/sr0,/dev/ram,/dev/dm-,/dev/md,/dev/rbd,/sda/sda1,/sda/sda2,/sda/sda3"
 ---
 apiVersion: apps/v1
 kind: DaemonSet
