@@ -38,7 +38,7 @@ platform:
     - mip-bdcs-vm39.mip.storage.hpecorp.net    # K8s Worker 3
 
   bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
-  version: hpe-cp-rhel-release-5.2-3020.bin
+  version: hpe-cp-rhel-release-5.2-3020
   #bin_url: "http://16.143.20.46:8080/rock/golden/haathi-5.1-GA/3011/hpe-cp-rhel-release-5.1-3011.bin"
   #version: hpe-cp-rhel-release-5.1-3011
 

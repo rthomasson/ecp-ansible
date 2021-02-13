@@ -5,11 +5,11 @@
 
 - name: Get existing file properties for 50_kube.sh script
   stat:
-    path: /opt/bluedata/bundles/{{ platform.version }}scripts/iucomponents/k8s/50_kube.sh
+    path: /opt/bluedata/bundles/{{ platform.version }}/scripts/iucomponents/k8s/50_kube.sh
   register: st
 
 - name: Backup the original script
-  command: mv /opt/bluedata/bundles/{{ platform.version }}scripts/iucomponents/k8s/50_kube.sh /opt/bluedata/bundles/{{ platform.version }}scripts/iucomponents/k8s/50_kube.orig
+  command: mv /opt/bluedata/bundles/{{ platform.version }}/scripts/iucomponents/k8s/50_kube.sh /opt/bluedata/bundles/{{ platform.version }}/scripts/iucomponents/k8s/50_kube.orig
 
 # NOTE: be sure to specify the correct version of the script to copy
 - name: Copy the new script for the K8s upgrade fix
