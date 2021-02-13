@@ -15,7 +15,7 @@
 - name: Copy the new script for the K8s upgrade fix
   copy:
     src: files/ECP-patches/50_kube-52.sh
-    dest: "/opt/bluedata/bundles/{{ platform.version }}scripts/iucomponents/k8s/50_kube.sh"
+    dest: "/opt/bluedata/bundles/{{ platform.version }}/scripts/iucomponents/k8s/50_kube.sh"
     owner: "{{ st.stat.pw_name }}"
     group: "{{ st.stat.gr_name }}"
     mode: "{{ st.stat.mode }}"
