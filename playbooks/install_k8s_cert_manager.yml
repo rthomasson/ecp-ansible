@@ -1,0 +1,9 @@
+---
+  - name: Install Certificate manager
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          install_k8s_cert_manager: yes
+

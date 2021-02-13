@@ -1,0 +1,8 @@
+---
+  - hosts: k8s_master_nodes
+    name: Setup k8s config
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          setup_k8s_config: yes

@@ -1,0 +1,33 @@
+{
+    "spec": {
+       "template": {
+          "spec": {
+             "nodeSelector": {"istio-ingressgateway" : "true"},
+             "containers": [
+                {
+                    "name" : "istio-proxy", 
+                    "livenessProbe": {
+                       "failureThreshold": 30,
+                       "httpGet": { 
+                         "path": "/healthz/ready",
+                         "port": 15021,
+                         "scheme": "HTTP"
+                       },
+                       "initialDelaySeconds": 120,
+                       "periodSeconds": 10,
+                       "successThreshold": 1,
+                       "timeoutSeconds": 10
+                    },
+                    "ports": [
+                        {"containerPort" : 80, "hostPort" : 80, "protocol": "TCP"}, 
+                        {"containerPort":443, "hostPort": 443, "protocol" : "TCP"},
+                        {"containerPort":8089, "hostPort": 8089, "protocol" : "TCP"},
+                        {"containerPort":9997, "hostPort": 9997, "protocol" : "TCP"}
+                    ]
+                }
+             ]
+          }
+       }
+    }
+ }
+ 

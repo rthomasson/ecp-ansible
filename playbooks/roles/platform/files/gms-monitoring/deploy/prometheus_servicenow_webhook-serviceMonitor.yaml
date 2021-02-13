@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    k8s-app: prometheus-servicenow-webhook
+  name: prometheus-servicenow-webhook
+  namespace: gms-monitoring
+spec:
+  endpoints:
+  - interval: 30s
+    port: webhook
+  selector:
+    matchLabels:
+      app: prometheus-servicenow-webhook

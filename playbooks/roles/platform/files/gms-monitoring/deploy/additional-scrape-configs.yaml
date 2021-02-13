@@ -1,0 +1,178 @@
+apiVersion: v1
+data: {}
+kind: Secret
+metadata:
+  name: additional-scrape-configs
+  namespace: gms-monitoring
+stringData:
+  prometheus-additional.yaml: |-
+    #
+    - job_name: 'istio-mesh'
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - istio-system
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: istio-telemetry;prometheus
+
+    # Scrape config for envoy stats
+    - job_name: 'istio-envoy-stats'
+      metrics_path: /stats/prometheus
+      kubernetes_sd_configs:
+      - role: pod
+
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_container_port_name]
+        action: keep
+        regex: '.*-envoy-prom'
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: $1:15090
+        target_label: __address__
+      - action: labeldrop
+        regex: __meta_kubernetes_pod_label_(.+)
+      - source_labels: [__meta_kubernetes_namespace]
+        action: replace
+        target_label: namespace
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: pod_name
+
+
+    - job_name: 'istio-policy'
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - istio-system
+
+
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: istio-policy;http-policy-monitoring
+
+
+    - job_name: 'istio-telemetry'
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - istio-system
+
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: istio-telemetry;http-monitoring
+
+
+    - job_name: 'istio-pilot'
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - istio-system
+
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: istio-pilot;http-monitoring
+
+
+    - job_name: 'istio-galley'
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - istio-system
+
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: istio-galley;http-monitoring
+
+    - job_name: 'istio-citadel'
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - istio-system
+
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: istio-citadel;http-monitoring
+
+
+    - job_name: 'istio-sidecar-injector'
+
+      kubernetes_sd_configs:
+      - role: endpoints
+        namespaces:
+          names:
+          - istio-system
+
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
+        action: keep
+        regex: istio-sidecar-injector;http-monitoring
+
+
+    - job_name: 'openebs-volumes'
+      scheme: http
+      kubernetes_sd_configs:
+      - role: pod
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_monitoring]
+        regex: volume_exporter_prometheus
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name
+      # Below entry ending with vsm is deprecated and is maintained for
+      # backward compatibility purpose.
+      - source_labels: [__meta_kubernetes_pod_label_vsm]
+        action: replace
+        target_label: openebs_pv
+      # Below entry is the correct entry. Though the above and below entries
+      # are having same target_label as openebs_pv, only one of them will be
+      # valid for any release.
+      - source_labels: [__meta_kubernetes_pod_label_openebs_io_persistent_volume]
+        action: replace
+        target_label: openebs_pv
+      - source_labels: [__meta_kubernetes_pod_container_port_number]
+        action: drop
+        regex: '(.*)9501'
+      - source_labels: [__meta_kubernetes_pod_container_port_number]
+        action: drop
+        regex: '(.*)3260'
+      - source_labels: [__meta_kubernetes_pod_container_port_number]
+        action: drop
+        regex: '(.*)80'
+
+    - job_name: 'openebs-pools'
+      scheme: http
+      kubernetes_sd_configs:
+      - role: pod
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_openebs_io_monitoring]
+        regex: pool_exporter_prometheus
+        action: keep
+      - source_labels: [__meta_kubernetes_pod_name]
+        action: replace
+        target_label: kubernetes_pod_name
+      - source_labels: [__meta_kubernetes_pod_label_openebs_io_storage_pool_claim]
+        action: replace
+        target_label: storage_pool_claim
+      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        regex: ([^:]+)(?::\d+)?;(\d+)
+        replacement: ${1}:${2}
+        target_label: __address__
+
+
+type: Opaque

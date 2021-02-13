@@ -1,0 +1,8 @@
+---
+  - name: Install Bookinfo
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          test_k8s_bookinfo_deploy: yes

@@ -1,150 +1,95 @@
 ---
-tower_server: "mip-bdcs-vm40.mip.storage.hpecorp.net"
-primary_controller: 16.143.22.140
-shadow_controller: 16.143.22.156
-arbiter: 16.143.22.146
+credentials:
+  ssh:
+    username: root
+    password: root
 
 common:
-  airgap:
-    container_repo_url: 16.143.22.165:5000
-    #container_repo_username:
-    #container_repo_password:
-    #container_repo_secure_flag:
-    #container_repo_cert:
-    yum_repo_url: http://16.143.20.46:8080/scratch/qa/repos/base/
-    #yum_repo_gpg_key:
-    #yum_rpm_gpg_key:
-
-  precheck_file: "bluedata-prechecks-epic-entdoc-5.0.bin"
-  bd_domain: cicuat
-  bd_prefix: wfecp
-  bin_file: "hpe-cp-rhel-release-5.1-1884.bin"
-  bin_dir: "/var/lib/awx/projects/_15__wf_lab92342_pm/playbooks/roles/platform/files/"
-  bin_url: "http://airgap.cic.wf.hpe.mgt/files/hpecp/hpe-cp-rhel-release-5.1-1884.bin" 
-  #bin_dir: "/root/bundles/"
-  tools_dir: "/root/tools"                                               # place to store the kits like kubectl
+  platform: onprem
   #proxy:
   #  http: {}
   #  https: {}
   #  no_proxy: {}                     #"localhost, 127.0.0.1, 10.1.10.0/24,172.20.0.0/16,10.244.0.0/16,10.96.0.0/16"
-  lockdown_reason: Configure HA
-  name: CICL
-  platform: onprem
-  # Designated as hdfs_disks for Controller and EPIC Worker hosts
-  persistent_disks: ""
-  # Designated as node_disks for Controller and EPIC Worker hosts
-  ephemeral_disks: 
-  - /dev/sdb
-  int_start_ip: 172.20.0.2
-  int_end_ip: 172.20.255.254
-  int_gw_ip: 172.20.0.1
-  int_nw_mask: 16
-  install_type: non-agent-based-install
-  no_tenant_isolation: 'false'
-  no_tenant_storage: 'true' 
-  # ssl_cert_file: /home/stack/hpecp.pem 
-  # ssl_cert_key_file: /home/stack/hpecp_key.pem
-  # yum_update_flag: 'false'
-  
-credentials:
-  # Default installation accounts
-  site_admin_id: admin
-  site_admin_password: admin123
-  api_session_id: /api/v1/session/7d8f3dde-0d36-40f0-a978-7c4d9d1e3fef
-  ssh:
-    #access_type: ssh_key_access
-    access_type: password_access
-    keypair_file: /home/root/.ssh/caas_rsa
-    keypair_name: caas_rsa
-    key_passphrase: 
-    username: root
-    password: admin123
+  name: OnPremSetup
+
+controller_host_ip: 16.22.143.140
+bd_domain: bddomain
+bd_prefix: bluedata
+hdfs_disks: /dev/sdc
+no_tenant_isolation: false
+no_tenant_storage: false
+node_disks: /dev/sdb
+int_start_ip: 172.20.0.2
+int_end_ip: 172.20.255.254
+int_gw_ip: 172.20.0.1
+int_nw_mask: 16
+
+# epic workers
+epicworkers:
+  host_pools:
+    - name: worker1
+      worker: 10.1.10.21
+  hdfs_disks: /dev/sdc
+  node_disks: /dev/sdb
+
+# for k8s cluster
+k8shosts:
+  host_pools:
+    - name: worker1
+      host: 10.1.10.21
+    - name: worker2
+      host: 10.1.10.22
+    - name: worker3
+      host: 10.1.10.23
+  ephemeral_disks: /dev/sdc
+  persistent_disks: /dev/sdb
 
 gateway:
-  gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+  gateway_set_hostname: gateway-node.v0010.gselr5.local
+  host_ip: 10.1.10.24
 
-k8s:
-  kubeconfig_dir: "/var/lib/awx/.kube"
-  kubeconfig_file: /tmp/kubeconfig_splunk.conf
-  kubeconfig_context: CICL-splunk2-admin
-  kubectl_cli_version: v1.17.5
+k8scluster:
+  name: cluster01
+  description: "my first cluster"
+  # TODO: get the host url through API
+  host_pools:
+    - name: master-pool
+      role: master
+      host: "10.1.10.23" # ip address of the node
+    - name: worker-pool
+      role: worker
+      host: "10.1.10.21"
+    - name: worker-pool
+      role: worker
+      host: "10.1.10.22"
+  k8sversion: "1.17.5"
+  pod_network_range: "10.244.0.0/16"
+  service_network_range: "10.96.0.0/16"
+  pod_dns_domain: "cluster.local"
+  persistent_storage: 
+    nimble_csi: false
 
-  istio:
-    istio_manifest_file: "istio-ha.yml"
-    istio_home: "/var/lib/awx/istio-1.6.5"
-    
-  openebs:
-    openebs_manifest_file: "openebs-operator-HA-1.9.0.yaml"
-    openebs_storage_class_file: "openebs_create_storageclass.yaml"
-    openebs_persistant_volume_claim_file: "openebs_create_pvc.yaml"
-    
-  
-  cluster:
-    name: splunk2
-    description: K8s cluster for Splunk 2.0
-    k8s_version: 1.17.5
-    id: 0
-    pod_network_range: "10.192.0.0/12"
-    service_network_range: "10.96.0.0/12"
-    cert_data:
-      root_ca_cert: 
-      root_ca_key:
-      front_proxy_ca_cert:
-      front_proxy_ca_key:
-      etcd_ca_cert:
-      etcd_ca_key:
-    ext_identity_server:
-      type: LDAP
-      ip: 
-      port: 0
-      auth_service_location_host:
-      auth_service_location_port: 0
-      timeout_ms: 1000
-      reorder_after_failover: 'false'
-      user_attribute:
-      bind_type: search_bind
-      base_dn:
-      security_protocol: none
-      cacert_filename:
-      nt_domain:
-      bind_dn:
-      bind_pwd:
-      verify_peer: 'true'
-    external_groups: cn=Common_Name,ou=Organizational_Unit,dc=Domain_Component
-
-  tenant:
-    name: splunk
-    description: K8s cluster for Splunk
-    # Name of the K8s cluster this tenant is to be associated with
-    cluster_name: splunk1
-
-    # Set the namespace name to be created or adopted. If not adopting an existing namespace and no namespace name is given, a unique name will be generated
-    specified_namespace_name: splunk
-
-    # Flag to determine if associated namespace and all its contents should be deleted when the tenant is deleted. Defaults to true
-    # is_namespace_owner: true
-
-    # Flag to enable service mesh. This MUST be set to true for Splunk 2.0 and will default to true
-    # enable_service_mesh_flag: true
-
-    # Flag to map K8s services to HPE CP Gateway. This MUST be set to false for Splunk 2.0 and will default to false.
-    # map_services_to_gateway_flag: false
-
-    # Flag to adopt existing namespace for the tenant. If set to true, a namespace name MUST be provided. If false, a namespace will be created.
-    # adopt_existing_namespace_flag: false
-
-    # The following variables set the resource quotas for the new tenant. If not defined, resources will not be limited.
-    # NOTE: for Splunk 2.0 no resource quotas will be set.
-    quotas:
-      # cores: 64
-    
-      # Set the ephemeral disk space limit in GB
-      # disk: 512
-
-      # Set the persistent disk space limit in GB. Must be blank or an integer > 20 
-      # persistent: 1024
-
-      # gpus: 0
-
-      # Set the maximum memory limit in GB
-      # memory: 1024
+k8stenant:
+  name: test01
+  description: "my first tenant01"
+  tenant_type_info:
+    map_services_to_gateway: true
+    specified_namespace_name: test01
+    is_namespace_owner: true
+    adopt_existing_namespace: false
+  tenant_type: k8s
+  features:
+    ml_project: false
+  is_namespace_owner: true
+  quota:
+    memory: 20480 # 20x1024
+    persistent: 35840 # 35x1024
+    gpus: ""
+    cores: 12
+    disk: 25600 # 25x1024
+    tenant_storage: 30
+  k8s_cluster: cluster01
+  specified_namespace_name: test01
+  map_services_to_gateway: true
+  adopt_existing_namespace: false
+  krb_enc_types: []

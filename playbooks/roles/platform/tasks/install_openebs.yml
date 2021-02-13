@@ -1,72 +1,97 @@
 ---
+
 - name: Obtain session token
   uri:
-    url: http://{{ primary_controller }}:8080/api/v1/login
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
     return_content: yes
     method: POST
+    validate_certs: "{{ platform.validate_certs }}"
     body_format: json
     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
 
+- name: Create facts for kubeconfig file
+  set_fact:
+    kubeconfig_file: "/tmp/kubeconfig_{{ platform.name }}_{{ k8s_cluster.name }}_{{ credentials.site_admin_id }}.conf"
+    
+- name: Create facts for Kubecontext
+  set_fact:
+    kube_context: "{{ platform.name }}-{{ k8s_cluster.name }}-{{ credentials.site_admin_id }}"
+
+# clean up old dir
+- name: cleanup old filesystem
+  file:
+    path: /tmp/openebs 
+    state: absent 
+  register: res_cleanup
+
+
+- name: Copy directory from playbook to tmp
+  copy: 
+    src: "{{ playbook_dir }}/roles/platform/files/openebs"
+    dest: "/tmp/"
+  register: cp_res
+
+# create PV
+- name: Prepare input file for PV.
+  template:
+    src: openebs-operator-HA.j2
+    dest: "/tmp/openebs/openebs-operator.yaml"
+    mode: 0777
+
+
 - name: Get Kubeconfig for current user
   uri:
-    url: http://{{ primary_controller }}:8080/api/v2/k8skubeconfig
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8skubeconfig"
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"
       accept: "text/yaml"
     method: GET
+    validate_certs: "{{ platform.validate_certs }}"
+    dest: "{{ kubeconfig_file }}"
     status_code: 200
   register: kubeconfig_res
-    
-#- name: Authenticate k8s cluster user
-#  command: kubectl hpecp authenticate
-#  register: res
-#  failed_when: res.rc != 0
 
-
-#- name: label openebs controlplane nodes
-#  command: kubectl label nodes {{ item }} "openebs.io/nodegroup"="openebs-controlplane"
-#  loop: "{{ groups['k8s_openebs_controleplane_nodes'] }}"
-#  register: res
-#  failed_when: res.rc != 0
-  
- #- name: label openebs storage nodes
- # command: kubectl label nodes {{ item }} "openebs.io/nodegroup"="storage-node"
- # loop: "{{ groups['k8s_openebs_storage_nodes'] }}"
- # register: res
- # failed_when: res.rc != 0
-  
- #- name: label openebs namespace
- # command: kubectl label  namespace openebs
- # register: res
- # failed_when: res.rc != 0
-  
-- name: Install openebs 
-  command: kubectl apply --kubeconfig=/tmp/kubeconfig_splunk.conf --context CICL-splunk2-admin -f /var/lib/awx/projects/_15__wf_lab92342_pm/playbooks/roles/platform/files/openebs-operator-HA-1.9.0.yaml
-  register: res
-  failed_when: res.rc != 0 
-  
-- name: Create Openebs Stroage class 
-  command: kubectl apply --kubeconfig=/tmp/kubeconfig_splunk.conf --context CICL-splunk2-admin -f /var/lib/awx/projects/_15__wf_lab92342_pm/playbooks/roles/platform/files/openebs_create_storageclass.yaml
+- name: Authenticate k8s cluster user
+  command: echo "y" | kubectl hpecp --kubeconfig={{kubeconfig_file}} refresh
   register: res
   failed_when: res.rc != 0
- 
-- name: Create Openebs Persistant Volume Claim 
-  command: kubectl apply --kubeconfig=/tmp/kubeconfig_splunk.conf --context CICL-splunk2-admin -f /var/lib/awx/projects/_15__wf_lab92342_pm/playbooks/roles/platform/files/openebs_create_pvc.yaml 
+
+- name: label openebs controlplane nodes
+  command: kubectl --kubeconfig={{kubeconfig_file}} --context={{kube_context}} label nodes {{ item }} "openebs.io/nodegroup"="openebs-controlplane" --overwrite
+  loop: "{{ k8s_cluster.control_plane_hosts }}"
   register: res
   failed_when: res.rc != 0
-  
+
+
+- name: Create openebs namespace
+  command: kubectl --kubeconfig={{ kubeconfig_file }}  create namespace openebs
+  register: res
+  failed_when: res.rc != 0
+
+- name: Install openebs
+  command: kubectl --kubeconfig={{ kubeconfig_file }} --context={{ kube_context }} apply -f /tmp/openebs/openebs-operator.yaml
+  register: res
+  failed_when: res.rc != 0
+
+- name: Create Openebs Storage class
+  command: kubectl --kubeconfig={{ kubeconfig_file }} apply -f /tmp/openebs/openebs_hostpath_sc.yaml
+  register: res
+  failed_when: res.rc != 0
+
+
 - name: Log out of session
   uri:
     url: "{{ session_res.location }}"
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"
     method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
   register: delsession_res
-  
+
 - debug:
     msg: "End Openebs Install Session: {{ session_res.location  | urlsplit('path') }}"

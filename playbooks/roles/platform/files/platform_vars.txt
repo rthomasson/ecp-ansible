@@ -1,0 +1,186 @@
+platform:
+  name: CICL_test
+  type: onprem
+  install_type: non-agent-based-install
+  controller: hpcs-ciccu0032.wellsfargo.net
+  gateways:
+    - hpcs-ciccu0043.wellsfargo.net
+  ha_workers:
+    - hpcs-ciccu0051.wellsfargo.net
+    - hpcs-ciccu0054.wellsfargo.net
+    
+  #precheck_file: "bluedata-prechecks-epic-entdoc-5.0.bin"
+  precheck_file: "hpe-cp-prechecks-5.1.bin"
+  
+  #bin_url: "http://10.9.7.197/files/ecp/hpe-cp-rhel-release-5.1-1884.bin" 
+  bin_url: "http://10.9.7.197/files/ecp/hpe-cp-rhel-release-5.1-2055.bin" 
+  no_tenant_isolation: 'false'
+  lockdown_reason: Configure HA
+
+new_k8s_hosts:
+- hpcs-ciccu0017.wellsfargo.net
+#- hpcs-ciccu0018.wellsfargo.net
+#- hpcs-ciccu0020.wellsfargo.net
+- hpcs-ciccu0005.wellsfargo.net
+- hpcs-ciccu0006.wellsfargo.net
+- hpcs-ciccu0007.wellsfargo.net
+- hpcs-ciccu0008.wellsfargo.net
+- hpcs-ciccu0009.wellsfargo.net
+- hpcs-ciccu0010.wellsfargo.net
+- hpcs-ciccu0018.wellsfargo.net
+- hpcs-ciccu0020.wellsfargo.net
+
+gateway:
+  gateway_set_hostname: hpcs-ciccu0043.wellsfargo.net
+
+# Set the host IDs below to 3 and 4 if one gateway is configured, 4 and 5 if two gateways
+shadow_host_id: 3
+arbiter_host_id: 4
+
+# Playbook variables that determine which tasks will run
+#destroy: yes
+#install: yes
+configure_ha: yes
+configure_airgap: yes
+add_host_tags: yes
+add_k8s_hosts: yes
+create_k8s_cluster: yes
+create_k8s_tenant: yes
+install_istio: yes
+install_openebs: yes
+
+airgap:
+  container_repo_url: 10.9.7.197:5000
+  #container_repo_username:
+  #container_repo_password:
+  #container_repo_secure_flag:
+  #container_repo_cert:
+  yum_repo_url: http://10.9.7.197:8080/scratch/qa/repos/base/
+  #yum_repo_gpg_key:
+  #yum_rpm_gpg_key:
+
+disks:  
+  no_tenant_storage: 'true' 
+  # Designated as hdfs_disks for Controller and EPIC Worker hosts
+  persistent_disks: ""
+  # Designated as node_disks for Controller and EPIC Worker hosts
+  ephemeral_disks: 
+  - /dev/nvme0n1
+
+controller:
+  bd_domain: cicuat
+  bd_prefix: wfecp
+  int_start_ip: 172.20.0.2
+  int_end_ip: 172.20.255.254
+  int_gw_ip: 172.20.0.1
+  int_nw_mask: 16
+  ssl_cert_file: /home/stack/.ssh/caas_rsa.pub
+  ssl_cert_key_file: /home/stack/.ssh/caas_rsa
+
+credentials:
+  # Default installation accounts
+  site_admin_id: admin
+  site_admin_password: admin123
+  ssh:
+    access_type: ssh_key_access
+    #access_type: password_access
+    keypair_file: /home/stack/.ssh/caas_rsa
+    keypair_name: caas_rsa
+    key_passphrase:
+    username: stack
+    password: HPEknead2no!
+
+#*** UPDATE file locations as needed
+k8s_tools:
+  kubeconfig_dir: "/home/stack/.kube"
+  kubeconfig_file: /tmp/kubeconfig_splunk.conf
+  kubeconfig_context: CICL-splunk-admin
+  kubectl_cli_version: v1.17.5
+
+k8s_istio: 
+     istio_home: "/home/stack/istio-1.6.5"
+
+k8s_openebs:
+    manifest_file: "openebs-operator-HA-1.9.0.yml"
+    storage_class_file: "openebs_create_storageclass.yml"
+    persistant_volume_claim_file: "openebs_create_pvc.yml"
+
+# If no host IPs are specified below, the cluster will be created using all K8s hosts in inventory
+cluster_master_nodes:
+  - 10.9.4.29
+  - 10.9.4.38
+  - 10.9.4.39
+
+cluster_ingress_nodes:
+  - 10.9.4.40
+  - 10.9.4.41
+
+cluster_cp_nodes
+   - 10.9.4.30 
+
+cluster_worker_nodes:
+  - 10.9.4.30
+  - 10.9.4.32
+  - 10.9.4.42
+  - 10.9.4.43
+
+k8s_cluster:
+  name: splunk2
+  description: K8s cluster for Splunk 2.0
+  k8s_version: 1.17.5
+  id: 0
+  pod_network_range: "10.192.0.0/12"
+  service_network_range: "10.96.0.0/12"
+  cert_data:
+    root_ca_cert: 
+    root_ca_key:
+    front_proxy_ca_cert:
+    front_proxy_ca_key:
+    etcd_ca_cert:
+    etcd_ca_key:
+     
+  ext_identity_server:
+    type: LDAP
+    ip: 
+    port: 0
+    auth_service_location_host:
+    auth_service_location_port: 0
+    timeout_ms: 1000
+    reorder_after_failover: 
+    user_attribute:
+    bind_type: search_bind
+    base_dn:
+    security_protocol: none
+    cacert_filename:
+    nt_domain:
+    bind_dn:
+    bind_pwd:
+    verify_peer: 'true'
+  external_groups: cn=Common_Name,ou=Organizational_Unit,dc=Domain_Component
+  
+k8s_tenant:
+    name: splunk
+    description: K8s cluster for Splunk
+    # Name of the K8s cluster this tenant is to be associated with
+    cluster_name: splunk
+    # Set the namespace name to be created or adopted. If not adopting an existing namespace and no namespace name is given, a unique name will be generated
+    specified_namespace_name: splunk
+    # Flag to determine if associated namespace and all its contents should be deleted when the tenant is deleted. Defaults to true
+    # is_namespace_owner: true
+    # Flag to enable service mesh. This MUST be set to true for Splunk 2.0 and will default to true
+    # enable_service_mesh_flag: true
+    # Flag to map K8s services to HPE CP Gateway. This MUST be set to false for Splunk 2.0 and will default to false.
+    # map_services_to_gateway_flag: false
+    # Flag to adopt existing namespace for the tenant. If set to true, a namespace name MUST be provided. If false, a namespace will be created.
+    # adopt_existing_namespace_flag: false
+    # The following variables set the resource quotas for the new tenant. If not defined, resources will not be limited.
+    # NOTE: for Splunk 2.0 no resource quotas will be set.
+    quotas:
+      # cores: 64
+      # Set the ephemeral disk space limit in GB
+      # disk: 512
+      # Set the persistent disk space limit in GB. Must be blank or an integer > 20 
+      # persistent: 1024
+      # gpus: 0
+      # Set the maximum memory limit in GB
+      # memory: 1024    

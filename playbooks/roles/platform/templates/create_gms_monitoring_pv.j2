@@ -1,0 +1,25 @@
+{% for hostname in k8s_cluster.control_plane_hosts %}
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gms-monitoring-local-pv-{{ hostname.split(".")[0] | lower }} 
+spec:
+  capacity:
+    storage: 1800Gi
+  accessModes:
+  - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  volumeMode: Filesystem
+  storageClassName: gms-monitoring-sc
+  local:
+    path: /opt/gms-monitoring
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - "{{ hostname }}"
+{% endfor %}          

@@ -1,0 +1,148 @@
+---
+
+- name: Obtain session token
+  uri:
+    url: "https://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: false   
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Create facts for kubeconfig file
+  set_fact:
+    kubeconfig_file: "/tmp/kubeconfig_{{ platform.name }}_{{ k8s_cluster.name }}_{{ credentials.site_admin_id }}.conf"
+    
+- name: Create facts for Kubecontext
+  set_fact:
+    kube_context: "{{ platform.name }}-{{ k8s_cluster.name }}-{{ credentials.site_admin_id }}"
+
+- name: Create fact for the set of default master nodes
+  set_fact:
+    master_nodes: "{{ groups.k8s_master_nodes }}"
+  when: "{{ cluster_master_nodes is undefined }}"
+
+- name: Create fact for the set of master nodes specified by the user
+  set_fact:
+    master_nodes: "{{ cluster_master_nodes }}"
+  when: "{{ cluster_master_nodes is defined }}"
+
+- name: Create fact for the set of default worker nodes
+  set_fact:
+    worker_nodes: "{{groups.k8s_worker_nodes}}"
+  when: "{{ cluster_worker_nodes is undefined }}"
+
+- name: Create fact for the set of worker nodes specified by the user
+  set_fact:
+    worker_nodes: "{{ cluster_worker_nodes }}"
+  when: "{{ cluster_worker_nodes is defined }}"
+
+- name: Get Kubeconfig for current user
+  uri:
+    url: https://{{ platform.controller }}:8080/api/v2/k8skubeconfig
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"
+      accept: "text/yaml"
+    method: GET
+    validate_certs: false 
+    dest: "{{ kubeconfig_file }}"
+    status_code: 200
+  register: kubeconfig_res
+
+- name: Authenticate k8s cluster user
+  command: echo "y" | kubectl hpecp --kubeconfig={{kubeconfig_file}} refresh
+  register: res
+  failed_when: res.rc != 0
+
+- name: create wordpress namespace
+  command: kubectl --kubeconfig={{kubeconfig_file}} --context={{kube_context}} create namespace wordpress
+  register: res
+  failed_when: res.rc != 0
+
+- name: label wordpress namespace
+  command: kubectl --kubeconfig={{kubeconfig_file}} --context={{kube_context}} label namespace wordpress istio-injection=enabled
+  register: res
+  failed_when: res.rc != 0
+
+# clean up old dir
+- name: cleanup old filesystem
+  file:
+    path: /tmp/wordpress 
+    state: absent 
+  register: res_cleanup
+
+  
+  
+- name: Copy directory from playbook to tmp
+  copy: 
+    src: "{{playbook_dir}}/roles/platform/files/wordpress"
+    dest: "/tmp/"
+  register: cp_res
+
+# create mysql-deployment yaml
+- name: Prepare mysql-deployment yaml.
+  template:
+    src: mysql-deployment.j2
+    dest: "/tmp/wordpress/mysql-deployment.yaml"
+    mode: 0777
+
+# create mysql-deployment yaml
+- name: Prepare wordpress deployment yaml.
+  template:
+    src: wordpress-deployment.j2
+    dest: "/tmp/wordpress/wordpress-deployment.yaml"
+    mode: 0777
+
+- name: Install wordpress Persistant Volume Claim
+  command: kubectl --kubeconfig={{kubeconfig_file}} --context={{kube_context}} apply -f /tmp/wordpress/wp-pvc.yaml -n wordpress
+  register: res
+  failed_when: res.rc != 0
+
+- name: Create MySql Persistant Volume Claim
+  command: kubectl --kubeconfig={{kubeconfig_file}} --context={{kube_context}} apply -f /tmp/wordpress/mysql-pvc.yaml -n wordpress
+  register: res
+  failed_when: res.rc != 0
+
+- name: Install Wordpress-Mysql
+  command: kubectl --kubeconfig={{kubeconfig_file}} --context={{kube_context}} apply -k /tmp/wordpress/
+  register: res
+  failed_when: res.rc != 0
+
+- name: Prepare input file for wordpress gateway.
+  template:
+    src: wordpress-gateway.j2
+    dest: "/tmp/wordpress/wordpress-gateway.yaml"
+    mode: 0777
+
+- name: Install wordpress gateway
+  command: kubectl --kubeconfig={{kubeconfig_file}} --context={{kube_context}} apply -f /tmp/wordpress/wordpress-gateway.yaml
+  register: res
+  failed_when: res.rc != 0
+
+- name: Prepare input file for wordpress virtual service.
+  template:
+    src: wordpress-gateway-vs.j2
+    dest: "/tmp/wordpress/wordpress-gateway-vs.yaml"
+    mode: 0777
+
+- name: Install wordpress gateway virtual service
+  command: kubectl --kubeconfig={{kubeconfig_file}} --context={{kube_context}} apply -f /tmp/wordpress/wordpress-gateway-vs.yaml
+  register: res
+  failed_when: res.rc != 0
+  
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"
+    method: DELETE
+    validate_certs: false      
+    status_code: 204
+  register: delsession_res
+
+- debug:
+    msg: "End Wordpress Install Session: {{ session_res.location  | urlsplit('path') }}"

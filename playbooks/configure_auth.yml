@@ -1,0 +1,8 @@
+---
+  - name: Configure platform authorization
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          configure_auth: yes

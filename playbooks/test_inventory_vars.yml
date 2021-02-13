@@ -1,0 +1,8 @@
+---
+  - name: Test Inventory Vars
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          test_inventory_vars: yes

@@ -1,0 +1,17 @@
+---
+  - name: Install platform
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          install: yes
+          configure_ha: yes
+          configure_airgap: yes
+          add_host_tags: yes
+          add_k8s_hosts: no
+          create_k8s_cluster: no
+          create_k8s_tenant: no
+          install_istio: no
+          install_openebs: no
+          

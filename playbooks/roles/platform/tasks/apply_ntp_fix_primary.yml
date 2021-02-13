@@ -1,0 +1,20 @@
+---
+# This task addresses a bug in ECP 5.1-3011 where the installer fails to open UDP port 123 in iptables
+# In addition, it pulls a copy of /etc/chrony.conf to copy to the shadow controller in a later task
+
+- name: Edit ip_tables.json to replace tcp with udp for port 123
+  replace:
+    path: /etc/bluedata/iptables/bd_iptables.json
+    backup: yes
+    after: "\"ports\": 123,"
+    before: "\"ports\": 5666,"
+    regexp: "\"protocol\": \"tcp\""
+    replace: "\"protocol\": \"udp\""
+
+- name: Activate the updated iptables rules
+  command: /usr/lib/python2.7/site-packages/bluedata/ovs/bds-ovs-config.py createfwrules
+
+- name: Get a copy of /etc/chrony.conf
+  fetch:
+    src: /etc/chrony.conf
+    dest: /tmp/chrony.conf.primary

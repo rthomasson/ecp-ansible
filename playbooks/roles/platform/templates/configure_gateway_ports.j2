@@ -1,0 +1,19 @@
+{
+  "gateway_ssl_cert_info":
+  {
+    "key_file": {
+      "file_name": "{{ gateway.ssl_key_file }}",
+      "content": "{{ lookup('file', 'files/cert-manager/minica/wellsfargo.net/key.pem' ) + "\n" }}"
+    },
+    "cert_file": {
+      "file_name": "{{ gateway.ssl_cert_file }}",
+      "content": "{{ lookup('file', 'files/cert-manager/minica/wellsfargo.net/cert.pem' ) + "\n" }}"
+    }
+  },
+  "proxy_port_map_ranges": [
+    {
+      "end_port": {{ gateway.port_mapping_end }},
+      "start_port": {{ gateway.port_mapping_start }}
+    }
+  ]
+}

@@ -1,52 +1,83 @@
 ---
 - name: Obtain session token
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/login
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
     return_content: yes
     method: POST
+    validate_certs: "{{ platform.validate_certs }}"
     body_format: json
     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
 
-- name: Prepare lockdown JSON input file for epicctl.
-  template:
-    src: lockdown.j2
-    dest: "/tmp/{{ common.name }}_lockdown.json"
-    mode: 0777
+- debug:
+    msg: "Session: {{ session_res.location  | urlsplit('path') }}"
+
+- name: Set a fact with the path/filename for the lockdown reason
+  set_fact:
+    lockdown_reason: '{ "reason": "Configure HA" }'
+    cacheable: true  
 
 - name: Put the site in lockdown
   uri:
-    url: http://{{ groups.primary_controller[0] }}:8080/api/v1/lock
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/lock"
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      X-BDS-SESSION: "{{ session_res.location | urlsplit('path') }}"  
     method: POST
+    validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: "{{ lookup('file','/tmp/CICL_lockdown.json') }}"
+    body: "{{ lockdown_reason }}"
     status_code: 201
-  register: lock_res
- 
-- name: Prepare configure HA JSON input file for epicctl.
-  template:
-    src: configure_ha.j2
-    dest: "/tmp/{{ common.name }}_configure_ha.json"
-    mode: 0777
-  
-- name: Run epicctl command to configure HA
-  command: 'epicctl api put -a -u /api/v1/install/?install_ha -f /tmp/{{ common.name }}_configure_ha.json -p {{ common.platform }} -n {{ common.name }}'
-  register: res
-  failed_when: res.rc != 0
+  register: lockdown_res
+
+- debug:
+    msg: "Enter lockdown API call result: {{ lockdown_res.content }}"
+
+- name: Set a fact with the file contents for the HA config json
+  set_fact:
+    ha_file_contents: "{{ lookup('template', 'configure_ha.j2') }}"
+    cacheable: true
+
+- debug:
+    msg: 
+    - "*** Configuring HA ***"
+    - "Input file contents:"
+    - "{{ lookup('template', 'configure_ha.j2') }}"
+
+- name: Make REST API call to configure HA
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/install?install_ha"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location | urlsplit('path') }}"
+      accept: "application/json"
+    method: PUT
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: "{{ ha_file_contents }}"
+    status_code: 204
+  register: config_ha_res
+
+- debug:
+    msg: "Configure HA API call result: {{ config_ha_res.content }}"
 
 - name: Exit site lockdown
   uri:
-    url: "{{ lock_res.location }}"
+    url: "{{ lockdown_res.location }}"
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
     method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
-  register: unlock_res
+  register: clear_lockdown_res
+  until: clear_lockdown_res.status == 204
+  retries: 60 # 60 -> 1 hour                60 secs * 15 = 15 minutes
+  delay: 60 # wait 1 minute
+
+- debug:
+    msg: "Exit lockdown API call result: {{ clear_lockdown_res.content }}"
 
 - name: Log out of session
   uri:
@@ -55,8 +86,6 @@
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
     method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
   register: delsession_res
-
-- debug:
-    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Lockdown result: {{ lock_res.content }} ---- Unlock status: {{ unlock_res.status }}"

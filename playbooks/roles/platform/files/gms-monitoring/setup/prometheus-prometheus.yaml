@@ -1,0 +1,59 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Prometheus
+metadata:
+  labels:
+    prometheus: k8s
+  name: k8s
+  namespace: gms-monitoring
+spec:
+  storage:
+    volumeClaimTemplate:
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1800Gi
+        storageClassName: "gms-monitoring-sc"
+  tolerations:
+  - key: "istio-controlplane"
+    value: "true"
+    operator: "Equal"
+    effect: "NoSchedule"
+  alerting:
+    alertmanagers:
+    - name: alertmanager-main
+      namespace: gms-monitoring
+      port: web
+  image: "{{ airgap.container_repo_url }}/quay.io/prometheus/prometheus:v2.20.0"
+  nodeSelector:
+    istio-controlplane: "true"
+    kubernetes.io/os: linux
+  podMonitorNamespaceSelector: {}
+  podMonitorSelector: {}
+  replicas: 2
+  resources:
+    requests:
+      memory: 400Mi
+  ruleSelector:
+    matchLabels:
+      prometheus: k8s
+      role: alert-rules
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccountName: prometheus-k8s
+  serviceMonitorNamespaceSelector: {}
+  serviceMonitorSelector: {}
+  version: v2.20.0
+  logLevel: info
+  additionalScrapeConfigs:
+    name: additional-scrape-configs
+    key: prometheus-additional.yaml
+  retention: 90d
+  retentionSize: 1800GB
+  externalLabels:
+    prom_instance: K8sCicLower

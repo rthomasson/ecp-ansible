@@ -1,0 +1,11 @@
+---
+  - name: Add K8s nodes to cluster
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          add_k8s_nodes_to_cluster: yes
+          
+   
+    

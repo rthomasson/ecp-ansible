@@ -5,13 +5,17 @@
     roles:
       - role: platform
         vars:
-          install: yes
+          ansible_user: stack
+          install_controller: yes
+          add_gateways: yes
+          add_ha_workers: yes
           configure_ha: yes
           configure_airgap: yes
+          configure_notification: yes
           add_host_tags: yes
-          add_k8s_hosts: yes
-          create_k8s_cluster: yes
-          create_k8s_tenant: yes
-          install_istio: yes
-          install_openebs: yes
-          
+          add_k8s_hosts: no
+          create_k8s_cluster: no
+          create_k8s_tenant: no
+          install_k8s_istio: no
+          install_k8s_cert_manager: no
+          install_openebs: no

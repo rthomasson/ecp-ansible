@@ -1,0 +1,37 @@
+{# Configure platform installation YAML file for epicctl #}
+{% for ew in platform.ha_workers %}
+---
+op: WorkerConfig
+parameters:
+  config:
+    node_disks: {{platform.disks.node_disks|join(',') }}
+{% if platform.disks.no_tenant_storage is defined and not platform.disks.no_tenant_storage %}
+    hdfs_disks: {{ platform.disks.hdfs_disks|join(',') }}
+    no_tenant_storage: false
+{% else %}
+    hdfs_disks:
+    no_tenant_storage: true
+{% endif %}
+    api_scheme: {{ controller.api_scheme }}
+    install_type: {{ platform.install_type }}
+  host:
+{% if ew | ipv4 %}
+    internal_ip: {{ ew }} 
+{% else %}
+    internal_ip: {{ hostvars[ew].ansible_host }}
+{% endif %}
+  ssh: 
+    username: {{ credentials.ssh.username }}
+    access_type: {{ credentials.ssh.access_type }}
+{% if credentials.ssh.access_type == 'password_access' %}
+    password: {{ credentials.ssh.password }}
+{% else %}
+    keypair_file: {{ credentials.ssh.keypair_file }}
+    keypair_name: {{ credentials.ssh.keypair_name }}
+{% if credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ credentials.ssh.key_passphrase }}
+{% endif %}
+{% endif %}
+  verbose: true
+platform: {{ platform.type }} 
+{% endfor %}

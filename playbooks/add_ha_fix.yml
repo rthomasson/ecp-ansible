@@ -1,0 +1,7 @@
+---
+  - hosts: all
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          add_ha_fix: yes

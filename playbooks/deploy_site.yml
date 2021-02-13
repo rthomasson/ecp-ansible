@@ -7,11 +7,14 @@
         vars:
           install: yes
           configure_ha: yes
+          add_host_tags: yes
           configure_airgap: yes
           add_k8s_hosts: yes
           create_k8s_cluster: yes
           create_k8s_tenant: yes
-          install_istio: yes
+          install_k8s_istio: yes
+          install_k8s_cert_manager: yes
           install_openebs: yes
-          
-          
+          install_k8s_gms_monitoring: yes
+          test_k8s_bookinfo_deploy: yes
+          test_k8s_bookinfo_teardown: yes

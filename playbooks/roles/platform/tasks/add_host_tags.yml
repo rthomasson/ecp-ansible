@@ -6,9 +6,10 @@
 
 - name: Obtain session token
   uri:
-    url: http://{{ primary_controller }}:8080/api/v1/login
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
     return_content: yes
     method: POST
+    validate_certs: "{{ platform.validate_certs }}"
     body_format: json
     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
@@ -17,13 +18,14 @@
 # status_code = 201 on success, 409 if tag/label already exists
 - name: Add each defined tag
   uri:
-    url: http://{{ primary_controller }}:8080/api/v2/tag
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/tag"
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
       accept: "*/*"
       Content-Type: "application/json"
     method: POST
+    validate_certs: "{{ platform.validate_certs }}"
     body_format: json
     body: "{{ item }}"
     status_code: 201, 409
@@ -37,6 +39,7 @@
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
     method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
   register: delsession_res
 

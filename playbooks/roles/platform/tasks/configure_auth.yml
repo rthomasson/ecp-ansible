@@ -1,0 +1,40 @@
+---
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+ 
+- name: Configure platform authentication
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/config/auth"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+      accept: "*/*"
+      Content-Type: "application/json"
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: "{{ lookup('template','configure_auth.j2') }}"
+    status_code: 200
+  register: auth_res
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: delsession_res
+
+- debug:
+    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Auth Configuration Result: {{ auth_res.status }}"

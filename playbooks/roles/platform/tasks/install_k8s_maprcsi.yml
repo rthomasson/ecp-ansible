@@ -1,0 +1,72 @@
+---
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"    
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Get Kubeconfig for current user
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8skubeconfig"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      accept: "text/yaml"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"    
+    dest: /tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf
+    status_code: 200
+    
+  register: kubeconfig_res
+    
+- name: Authenticate k8s cluster user
+  command: echo "y" | kubectl hpecp --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf refresh
+  register: res_auth
+  failed_when: res_auth.rc != 0
+
+# clean up old dir
+- name: cleanup old filesystem
+  file:
+    path: /tmp/mapr/csi/*.yaml 
+    state: absent 
+  register: res_cleanup
+
+- name: create setup dir
+  file:
+    path: /tmp/mapr/csi 
+    state: directory 
+    recurse: yes
+  register: res_createdir
+
+# copy maprcsi yamls to temp
+- name: replace template vars
+  template:
+    src: "{{ item }}"
+    dest: "/tmp/mapr/csi/{{ item | basename }}"
+  with_fileglob:
+    - mapr/csi/*.yaml
+
+# deploy mapr csi
+- name: deploy mapr csi
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/mapr/csi/
+  register: res_istio_scale_down
+  failed_when: res_istio_scale_down.rc != 0
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: delsession_res
+  
+- debug:
+    msg: "End Istio Install Session: {{ session_res.location  | urlsplit('path') }}"

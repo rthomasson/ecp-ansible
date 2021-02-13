@@ -1,0 +1,9 @@
+---
+  - name: Install test openebs
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          test_k8s_openebs_deploy: yes
+

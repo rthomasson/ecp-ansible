@@ -1,0 +1,16 @@
+{
+  "change_spec": {
+     "remove_k8shosts": [
+
+{% for item in k8s_ips_to_remove %}
+{% if loop.last %}
+        "{{ item }}"
+{% else %}
+        "{{ item }}",
+{% endif %}
+{% endfor %}
+     ]
+  }, 
+  "operation": "reconfigure", 
+  "reason": "Removing k8s nodes from cluster "
+}

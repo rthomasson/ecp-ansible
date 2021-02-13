@@ -1,0 +1,7 @@
+  - name: Find unassigned K8s hosts
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          find_unassigned_k8s_hosts: yes

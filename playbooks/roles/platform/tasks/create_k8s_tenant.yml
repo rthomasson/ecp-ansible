@@ -1,9 +1,10 @@
 ---
 - name: Obtain session token
   uri:
-    url: http://{{ primary_controller }}:8080/api/v1/login
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
     return_content: yes
     method: POST
+    validate_certs: "{{ platform.validate_certs }}"
     body_format: json
     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
@@ -16,12 +17,13 @@
 # Get the current list of K8s clusters 
 - name: Get the current set of K8s clusters 
   uri:
-    url: http://{{ primary_controller }}:8080/api/v2/k8scluster
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8scluster"
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
       accept: "application/json"
     method: GET
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 200
   register: k8scluster_res
 
@@ -29,9 +31,6 @@
   set_fact:
     k8scluster_list: "{{ k8scluster_res.json }}"
     cacheable: True
-    
-- debug:
-    msg: "Query string is: {{ k8scluster_id_query }}"    
 
 # Parse the k8s cluster name and ID from the JSON result of the GET k8scluster call and set target cluster ID
 - name: Parse the K8s cluster name and ID from the JSON result of the GET k8scluster call
@@ -39,26 +38,28 @@
     # set the id of the cluster to delete if it matches the name of the supplied cluster
     k8s_tenant_cluster_id: "{{ item | json_query('cluster_id') }}"
     cacheable: true
-  when: "{{ item | json_query('cluster_name') == k8s.tenant.cluster_name }}"  
   loop: "{{ k8scluster_list | json_query('_embedded.k8sclusters[*].{cluster_name: label.name, cluster_id: _links.self.href}') }}"
+  when: item | json_query('cluster_name') == k8s_tenant.cluster_name  
 
-- name: Create inputfile to create K8s tenant.
-  template:
-    src: create_k8s_tenant.j2
-    dest: "/tmp/{{ common.name }}_create_k8s_tenant.json"
-    mode: 0777
-    
+- debug:
+    msg: "*** Creating K8s Tenant ***"
+- debug:
+    msg: "Input file Content: "
+- debug:
+    msg: "{{ lookup('template','create_k8s_tenant.j2') | from_yaml }}"
+
 - name: Create K8s tenant
   uri:
-    url: http://{{ primary_controller }}:8080/api/v1/tenant
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/tenant"
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
       accept: "*/*"
       Content-Type: "application/json"
     method: POST
+    validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: "{{ lookup('file','/tmp/CICL_create_k8s_tenant.json') }}"
+    body: "{{ lookup('template','create_k8s_tenant.j2') }}"
     status_code: 201
   register: tenant_res
 
@@ -69,6 +70,7 @@
     headers:
       X-BDS-SESSION: "{{ session_id }}"  
     method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
   register: delsession_res
 

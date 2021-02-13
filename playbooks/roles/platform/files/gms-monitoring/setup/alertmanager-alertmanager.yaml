@@ -1,0 +1,25 @@
+apiVersion: monitoring.coreos.com/v1
+kind: Alertmanager
+metadata:
+  labels:
+    alertmanager: main
+  name: main
+  namespace: gms-monitoring
+spec:
+  image: "{{ airgap.container_repo_url }}/quay.io/prometheus/alertmanager:v0.21.0"
+  tolerations:
+  - key: "istio-controlplane"
+    value: "true"
+    operator: "Equal"
+    effect: "NoSchedule"
+  nodeSelector:
+    istio-controlplane: "true"
+    kubernetes.io/os: linux
+  replicas: 3
+  securityContext:
+    fsGroup: 2000
+    runAsNonRoot: true
+    runAsUser: 1000
+  serviceAccountName: alertmanager-main
+  version: v0.21.0
+  logLevel: debug

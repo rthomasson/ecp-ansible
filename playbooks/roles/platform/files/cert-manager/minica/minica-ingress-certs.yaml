@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Certificate
+metadata:
+  name: splunk-uat-indexer-service
+  namespace: istio-system
+spec:
+  secretName: splunk-uat-indexer-service-minica
+  commonName: splunk-s2s-uat.hpcs.wellsfargo.net   
+  dnsNames:
+  - hpcs.wellsfargo.net
+  - hpcs-ciccu0046.wellsfargo.net
+  - hpcs-ciccu0049.wellsfargo.net 
+  - hpcs-ciccu0053.wellsfargo.net
+  - 10.9.4.61 
+  - 10.9.4.64 
+  - 10.9.4.68 
+  issuerRef:
+    name: minica-ca-issuer

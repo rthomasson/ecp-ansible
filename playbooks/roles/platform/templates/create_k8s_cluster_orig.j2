@@ -6,7 +6,7 @@
   "k8s_version": "{{ k8s.k8s_version }}",
   "pod_network_range": "{{ k8s.pod_network_range }}",
   "service_network_range": "{{ k8s.service_network_range }}",
-  "pod_dns_domain": "mycluster.local",
+  "pod_dns_domain": "cluster.local",
   "addons": [],
   "k8shosts_config": [
 {% for host in groups.k8s_master_nodes if hostvars[host].is_ready %}  

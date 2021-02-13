@@ -1,0 +1,170 @@
+---
+#
+# This playbook updates the tags on all k8s hosts in the platform to include those for Istio locality
+#
+# - topology.kubernetes.io/region = dc_tag
+# - topology.kubernetes.io/zone = zone_tag
+
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
+    cacheable: True  
+
+# Get the current set of k8shosts 
+- name: Get the current set of k8shosts 
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/worker/k8shost"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+      accept: "application/json"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 200
+  register: k8shost_res
+
+- name: Create a fact with parsed list of k8s hosts from the API call  
+  set_fact:
+    k8shosts_list: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, tags: tags}') }}"
+    cacheable: True
+
+# - debug:
+#     var: k8shosts_list
+
+- name: Get list of tags defined in platform
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/tag"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      accept: "application/json"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 200
+  register: tag_res
+
+# - debug:
+#     var: tag_res
+
+- name: Find tag id for dc_tag entry
+  set_fact:
+    dc_tag_id: "{{ tag_res.json | json_query(query) | first }}"
+  vars:
+    query: "_embedded.tags[?label.name=='dc_tag']._links.self.href"
+
+- name: Find tag id for zone_tag entry
+  set_fact:
+    zone_tag_id: "{{ tag_res.json | json_query(query) | first }}"
+  vars:
+    query: "_embedded.tags[?label.name=='zone_tag']._links.self.href"
+
+- name: Find tag id for topology.kubernetes.io/region entry
+  set_fact:
+    k8s_region_tag_id: "{{ tag_res.json | json_query(query) | first }}"
+  vars:
+    query: "_embedded.tags[?label.name=='topology.kubernetes.io/region']._links.self.href"
+
+- name: Find tag id for topology.kubernetes.io/zone entry
+  set_fact:
+    k8s_zone_tag_id: "{{ tag_res.json | json_query(query) | first }}"
+  vars:
+    query: "_embedded.tags[?label.name=='topology.kubernetes.io/zone']._links.self.href"
+
+- name: Display tag ids
+  debug:
+    msg:
+    - "dc_tag_id: {{ dc_tag_id }}"
+    - "zone_tag_id: {{ zone_tag_id }}"
+    - "k8s_region_tag_id: {{ k8s_region_tag_id }}"
+    - "k8s_zone_tag_id: {{ k8s_zone_tag_id }}"
+
+
+# "item": {
+#         "host_id": "/api/v2/worker/k8shost/13",
+#         "hostname": "hpcs-ciccu0137.wellsfargo.net",
+#         "ansible_host": "10.9.4.152",
+#         "tags": [
+#             {
+#                 "tag_id": "/api/v2/tag/1",
+#                 "tag_value": "CIC"
+#             },
+#             {
+#                 "tag_id": "/api/v2/tag/2",
+#                 "tag_value": "AZ2"
+#             },
+#             {
+#                 "tag_id": "/api/v2/tag/3",
+#                 "tag_value": "P104"
+#             },
+#             {
+#                 "tag_id": "/api/v2/tag/6",
+#                 "tag_value": "true"
+#             },
+#             {
+#                 "tag_id": "/api/v2/tag/7",
+#                 "tag_value": "true"
+#             },
+#             {
+#                 "tag_id": "/api/v2/tag/15",
+#                 "tag_value": "SI"
+#             },
+#             {
+#                 "tag_id": "/api/v2/tag/16",
+#                 "tag_value": "AZ2"
+#             }
+#         ]
+# Loop through each host, append k8s_region_tag_id if missing
+- name: Create list of host tags to update
+#  set_fact:
+#    updated_k8s_tags: "{{ item.tags | combine({k8s_region_tag_id:'ABC'}) }}"
+  debug:
+    msg: "New tags for {{ item.host_id }}: {{ item.tags | combine({k8s_region_tag_id:'ABC'}) }}"
+  loop: "{{ k8shosts_list }}"
+
+# Loop through each host, append k8s_zone_tag_id if missing (ensuring we preserve existing tags)
+
+
+# [
+#   {
+#     "op": "test",
+#     "path": "string",
+#     "value": "string",
+#     "from": "string"
+#   }
+# ]
+
+# - name: Update k8s worker with new host tags
+#   uri:
+#     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/worker/k8shost/{k8shost_id}"
+#     return_content: yes
+#     headers:
+#       X-BDS-SESSION: "{{ session_id }}" 
+#       accept: "application/json"
+#     method: PATCH
+#     validate_certs: "{{ platform.validate_certs }}"
+#     body_format: json
+#     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+#     status_code: 200
+#   register: k8shost_res
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: session_res

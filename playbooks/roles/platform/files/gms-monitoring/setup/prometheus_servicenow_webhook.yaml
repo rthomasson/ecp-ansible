@@ -1,0 +1,77 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-servicenow-webhook
+  namespace: gms-monitoring
+  labels:
+    app: prometheus-servicenow-webhook
+spec:
+  ports:
+    - name: webhook
+      port: 10002
+  selector:
+    app: prometheus-servicenow-webhook
+  clusterIP: None
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-servicenow-webhook
+  namespace: gms-monitoring
+  labels:
+    app: prometheus-servicenow-webhook
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: prometheus-servicenow-webhook
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: prometheus-servicenow-webhook
+    spec:
+      tolerations:
+      - key: "istio-controlplane"
+        value: "true"
+        operator: "Equal"
+        effect: "NoSchedule"
+      nodeSelector:
+        istio-controlplane: "true"
+        beta.kubernetes.io/os: linux
+      containers:
+      - image: {{ airgap.container_repo_url }}/bigdatacoe/prometheus-servicenow-webhook:1.0.6
+        name: prometheus-servicenow-webhook
+        args: ["-p","10002","-i","0.0.0.0","-f","/app/config.ini"]
+        env:
+        - name: username
+          valueFrom:
+            secretKeyRef:
+              name: webhook-secret
+              key: username
+        - name: password
+          valueFrom:
+            secretKeyRef:
+              name: webhook-secret
+              key: password
+        ports:
+        - containerPort: 10002
+          name: webhook
+          protocol: TCP
+        resources:
+          limits:
+            cpu: "2"
+            memory: 100Mi
+          requests:
+            cpu: "1"
+            memory: 2Mi
+        volumeMounts:
+        - mountPath: /app/config.ini
+          subPath: config.ini
+          name: config
+      volumes:
+      - name: config
+        configMap:
+          defaultMode: 420
+          name: prom-snow-webhook-config

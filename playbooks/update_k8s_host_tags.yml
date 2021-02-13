@@ -1,0 +1,7 @@
+  - name: Update K8s host tags for Istio locality tags
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          update_k8s_host_tags: yes

@@ -1,0 +1,70 @@
+---
+- name: Get existing file properties for HA fix
+  stat:
+    path: /usr/lib/python2.7/site-packages/bluedata/ha/__init__.py
+  register: st
+
+- name: Copy in new file for HA fix
+  copy:
+    src: files/ECP-patches/__init__.py
+    dest: "/usr/lib/python2.7/site-packages/bluedata/ha/__init__.py"
+    owner: "{{ st.stat.pw_name }}"
+    group: "{{ st.stat.gr_name }}"
+    mode: "{{ st.stat.mode }}"
+
+# Old patch
+#- name: Copy in new file for add k8s hosts fix
+#  copy:
+#    src: files/ECP-patches/common-cp-rhel-release-5.1-3011-k8s_fix.bin
+#    dest: "/opt/bluedata/bundles/common-cp-rhel-release-5.1-3011.bin"
+#    owner: stack
+#    group: stack
+#    mode: 0755
+
+- name: Get existing file properties for bin
+  stat:
+    path: /opt/bluedata/bundles/common-cp-rhel-release-5.1-3011.bin
+  register: st
+
+- name: Backup original bin
+  command: mv /opt/bluedata/bundles/common-cp-rhel-release-5.1-3011.bin /opt/bluedata/bundles/common-cp-rhel-release-5.1-3011.bin.orig
+
+- name: Copy in new file for add k8s hosts fix
+  copy:
+    src: files/ECP-patches/common-cp-rhel-release-5.1-3011.bin
+    dest: "/opt/bluedata/bundles/common-cp-rhel-release-5.1-3011.bin"
+    owner: "{{ st.stat.pw_name }}"
+    group: "{{ st.stat.gr_name }}"
+    mode: "{{ st.stat.mode }}"
+    seuser: "system_u"
+    serole: "object_r"
+    setype: "httpd_sys_content_t"
+    selevel: "s0"
+
+- name: Get existing file properties for main.js
+  stat:
+    path: /usr/share/bdswebui/bdswebui/static-5.1-3011/bdswebui/bluedata/bundle/main.js
+  register: st
+
+- name: Copy in new file for main.js
+  copy:
+    src: files/ECP-patches/main.js
+    dest: "/usr/share/bdswebui/bdswebui/static-5.1-3011/bdswebui/bluedata/bundle/main.js"
+    owner: "{{ st.stat.pw_name }}"
+    group: "{{ st.stat.gr_name }}"
+    mode: "{{ st.stat.mode }}"
+  when: st.stat.exists  # Won't exist on arbiter node
+
+- name: Get existing file properties for vendor.js
+  stat:
+    path: /usr/share/bdswebui/bdswebui/static-5.1-3011/bdswebui/bluedata/bundle/vendor.js
+  register: st
+
+- name: Copy in new file for vendor.js
+  copy:
+    src: files/ECP-patches/vendor.js
+    dest: "/usr/share/bdswebui/bdswebui/static-5.1-3011/bdswebui/bluedata/bundle/vendor.js"
+    owner: "{{ st.stat.pw_name }}"
+    group: "{{ st.stat.gr_name }}"
+    mode: "{{ st.stat.mode }}"
+  when: st.stat.exists  # Won't exist on arbiter node

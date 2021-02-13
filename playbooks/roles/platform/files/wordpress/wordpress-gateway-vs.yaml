@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: wordpress
+  namespace: wordpress
+spec:
+  hosts:
+  - "splunk-uat.hpcs.wellsfargo.net"
+  gateways:
+  - istio-system/wordpress-gateway
+  http:
+  - route:
+    - destination:
+        host: wordpress
+        port:
+          number: 80

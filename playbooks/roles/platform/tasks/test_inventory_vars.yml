@@ -1,0 +1,77 @@
+---
+- name: Include Inventory Vars - CIC LowerProd
+  include_vars:
+    file: CIC_lowerprod.yml
+  when: tower_inventory_name == "CIC LowerProd ECP"
+
+- name: Include Inventory Vars - CIC NonProd
+  include_vars:
+    file: CIC_nonprod_lab1.yml
+  when: tower_inventory_name == "CIC NonProd ECP"
+
+- debug:
+    var: hostvars[inventory_hostname]
+
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Set a fact with the path/filename for the lockdown reason
+  set_fact:
+    lockdown_reason: '{ "reason": "Test whether site is in lockdown" }'
+    cacheable: true  
+
+- name: Attempt to put the site in lockdown
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/lock"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location | urlsplit('path') }}"  
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: "{{ lockdown_reason }}"
+    status_code: 201,403
+  register: lockdown_res
+
+- name: Exit site lockdown
+  uri:
+    url: "{{ lockdown_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: clear_lockdown_res
+  when: lockdown_res.status == 201
+  until: clear_lockdown_res.status == 204
+  retries: 60 # 60 -> 1 hour                60 secs * 15 = 15 minutes
+  delay: 60 # wait 1 minute
+
+- debug:
+    msg: "Exit lockdown API call result: {{ clear_lockdown_res.content }}"
+  when: lockdown_res.status == 201
+
+- name: Log out of session if site in lockdown
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  when: lockdown_res.status == 403
+  register: delsession_res
+
+- fail:
+    msg: "Error: Site already in lockdown!"
+  when: lockdown_res.status == 403

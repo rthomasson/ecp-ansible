@@ -1,0 +1,15 @@
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" entityID="http://www.okta.com/exk42j7kffAL1Y0Aq297">
+<md:IDPSSODescriptor WantAuthnRequestsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol">
+<md:KeyDescriptor use="signing">
+<ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+<ds:X509Data>
+<ds:X509Certificate>MIIDrDCCApSgAwIBAgIGAWpGpXZ5MA0GCSqGSIb3DQEBCwUAMIGWMQswCQYDVQQGEwJVUzETMBEG A1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzENMAsGA1UECgwET2t0YTEU MBIGA1UECwwLU1NPUHJvdmlkZXIxFzAVBgNVBAMMDndlbGxzZmFyZ28tc2l0MRwwGgYJKoZIhvcN AQkBFg1pbmZvQG9rdGEuY29tMB4XDTE5MDQyMjIwMDIzMFoXDTI5MDQyMjIwMDMyOVowgZYxCzAJ BgNVBAYTAlVTMRMwEQYDVQQIDApDYWxpZm9ybmlhMRYwFAYDVQQHDA1TYW4gRnJhbmNpc2NvMQ0w CwYDVQQKDARPa3RhMRQwEgYDVQQLDAtTU09Qcm92aWRlcjEXMBUGA1UEAwwOd2VsbHNmYXJnby1z aXQxHDAaBgkqhkiG9w0BCQEWDWluZm9Ab2t0YS5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAw ggEKAoIBAQCvUhxayB1o/7iUkYZlfxqDA4nl2xVbG2pSR4nsq6lzZL5jELPxDyi2iZnx5Rcg9cxT qYe6QWF5c9WM0qr/H1E7/gN8Wp+GOH/eBXwM11RR9tYE08C4wCTgMesV18Fx/DCtLREuAONOioCt h6gYu+I1LIdsG3qmspZQItUHTFNlhIcrx3RkeiwaXnTxFdvaZxPauo31zY0ZVFJkXzEBYk2FVgJu dW7H+meJEgP/dbfDZTmAZwrldlduMYHjHRUUL2xdSJXmDe2hrQcuvCsPMW6GMXIW/2zt+/BHVeU2 VVbBvSfH5vaNIj/o3zH5hyys2eTalh+7W2R3LL7PaX2r+qonAgMBAAEwDQYJKoZIhvcNAQELBQAD ggEBAByzGzGrNHdp6xXI+qvaCPdkrK1l8CrH+2wk//G4uU58442HKGYGIQ9zpxV+SgQbYooCE1HX Laqltlra8jF/iM/nUy7dCJe64y+FWFMW4949CSERzqZBRkOZOrLmrZp89xYfhN3dPTZOHd7ffcug UK+PZ8rdDtrPf/+CuOS45e1C9IueC1ANpnz1YtOwwSITTkOc3FZtwC4oDda2C7GjDbxDSE+BoMB7 0qYp6baJ0EFBTF+FoINFg7hYAdqELz4cwqg5uSYbaMDjdJfaGpTsx0HEmOWh4HYjxUdwvxTryf6w BCzHB8Xgij9AN4QMU13ZX448Q8Q8hVk2BBOKYeFAHXI=</ds:X509Certificate>
+</ds:X509Data>
+</ds:KeyInfo>
+</md:KeyDescriptor>
+<md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified</md:NameIDFormat>
+<md:NameIDFormat>urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress</md:NameIDFormat>
+<md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://wellsfargo-sit.okta.com/app/wellsfargosit_hpedev_1/exk42j7kffAL1Y0Aq297/sso/saml"/>
+<md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://wellsfargo-sit.okta.com/app/wellsfargosit_hpedev_1/exk42j7kffAL1Y0Aq297/sso/saml"/>
+</md:IDPSSODescriptor>
+</md:EntityDescriptor>

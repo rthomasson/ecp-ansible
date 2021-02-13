@@ -1,0 +1,419 @@
+---
+#
+# Playbook var set for adding spare k8s host capacity for Silas
+#
+
+# Variables to override which tasks will run in install_platform.yml playbook
+#install_controller: no
+#add_gateways: no
+#add_ha_workers: no
+#configure_ha: no
+#configure_gateway_ports: no  # DO NOT USE
+#configure_airgap: no
+#configure_notification: no
+#add_host_tags: no
+
+# Controller, gateways, and ha_workers can be either IP or FQDN
+# k8s_workers must be FQDN due to multiple Ansible hostvars[] references
+# TODO: Research how to do IP->FQDN lookup in Ansible inventory (for add_k8s_hosts.j2)
+platform:
+  name: Production
+  type: onprem
+  install_type: non-agent-based-install
+  install_as_root: false
+  controller: hpcs-oxcp0006.wellsfargo.net
+  gateways:
+    - hpcs-oxcp0016.wellsfargo.net    # Gateway 1
+    - hpcs-oxcp0046.wellsfargo.net    # Gateway 2
+    - hpcs-sicp0016.wellsfargo.net    # Gateway 3
+    - hpcs-sicp0046.wellsfargo.net    # Gateway 4
+  ha_workers: 
+    - hpcs-sicp0006.wellsfargo.net    # Shadow (shadow_host_id: 6)
+    - hpcs-sicp0034.wellsfargo.net    # Arbiter (arbiter_host_id: 7)
+  k8s_workers:
+#    - hpcs-oxcp0071.wellsfargo.net    # K8s Master 1
+#    - hpcs-oxcp0099.wellsfargo.net    # K8s Master 2
+#    - hpcs-sicp0071.wellsfargo.net    # K8s Master 3
+#    - hpcs-sicp0099.wellsfargo.net    # K8s Master 4
+#    - hpcs-ciccu0054.wellsfargo.net   # K8s Master 5
+#    - hpcs-oxcp0029.wellsfargo.net    # K8s Ingress 1
+#    - hpcs-oxcp0057.wellsfargo.net    # K8s Ingress 2
+#    - hpcs-oxcp0085.wellsfargo.net    # K8s Ingress 3
+#    - hpcs-sicp0057.wellsfargo.net    # K8s Ingress 4
+#    - hpcs-sicp0085.wellsfargo.net    # K8s Ingress 5
+#    - hpcs-sicp0113.wellsfargo.net    # K8s Ingress 6
+#    - hpcs-oxcp0127.wellsfargo.net    # K8s CP Worker1
+#    - hpcs-sicp0127.wellsfargo.net    # K8s CP Worker2
+# Since these are all k8s workers, no need to list the associated IP address in
+# k8s_cluster.worker_nodes below -- they will be assumed to be workers if not listed
+# as masters, ingress, or cp_workers and will have disks assigned appropriately.
+# However: the IPs will need to be listed below if using Ansible to add k8s nodes to the cluster
+    - hpcs-sicp0005.wellsfargo.net
+#    - hpcs-sicp0009.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0011.wellsfargo.net
+#    - hpcs-sicp0037.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0042.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0081.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0094.wellsfargo.net   # HammerDB as of 10-13-2020
+#    - hpcs-sicp0095.wellsfargo.net   # HammerDB as of 10-13-2020
+#    - hpcs-sicp0096.wellsfargo.net   # HammerDB as of 10-13-2020
+#    - hpcs-sicp0097.wellsfargo.net   # masquerade as of 10-13-2020
+#    - hpcs-sicp0103.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0106.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0112.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0114.wellsfargo.net   # masquerade as of 10-13-2020
+    - hpcs-sicp0115.wellsfargo.net
+    - hpcs-sicp0116.wellsfargo.net
+#    - hpcs-sicp0117.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0126.wellsfargo.net
+#    - hpcs-sicp0155.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0156.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0168.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0192.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0201.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0202.wellsfargo.net
+#    - hpcs-sicp0203.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0204.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0208.wellsfargo.net
+#    - hpcs-sicp0210.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0216.wellsfargo.net
+#    - hpcs-sicp0218.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0223.wellsfargo.net
+    - hpcs-sicp0225.wellsfargo.net
+    - hpcs-sicp0227.wellsfargo.net
+#    - hpcs-sicp0232.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0239.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0240.wellsfargo.net
+    - hpcs-sicp0241.wellsfargo.net
+    - hpcs-sicp0242.wellsfargo.net
+    - hpcs-sicp0243.wellsfargo.net
+    - hpcs-sicp0244.wellsfargo.net
+    - hpcs-sicp0245.wellsfargo.net
+#    - hpcs-sicp0246.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0247.wellsfargo.net
+    - hpcs-sicp0248.wellsfargo.net
+    - hpcs-sicp0249.wellsfargo.net
+    - hpcs-sicp0250.wellsfargo.net
+    - hpcs-sicp0251.wellsfargo.net
+    - hpcs-sicp0252.wellsfargo.net
+    - hpcs-sicp0253.wellsfargo.net
+    - hpcs-sicp0254.wellsfargo.net
+    - hpcs-sicp0255.wellsfargo.net
+    - hpcs-sicp0256.wellsfargo.net
+    - hpcs-sicp0257.wellsfargo.net
+#    - hpcs-sicp0258.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0266.wellsfargo.net
+#    - hpcs-sicp0271.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0280.wellsfargo.net
+    - hpcs-sicp0283.wellsfargo.net
+#    - hpcs-sicp0290.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0303.wellsfargo.net
+    - hpcs-sicp0310.wellsfargo.net
+    - hpcs-sicp0319.wellsfargo.net
+#    - hpcs-sicp0334.wellsfargo.net   # repair_pool as of 10-13-2020
+#    - hpcs-sicp0336.wellsfargo.net   # repair_pool as of 10-13-2020
+    - hpcs-sicp0337.wellsfargo.net
+    - hpcs-sicp0347.wellsfargo.net
+  bin_url: "http://10.9.47.197/files/ecp/hpe-cp-rhel-release-5.1-3011.bin"
+
+  disks:
+    node_disks:
+      - /dev/nvme0n1
+#      - /dev/nvme1n1
+#      - /dev/nvme2n1
+#      - /dev/nvme3n1
+#      - /dev/nvme4n1
+#      - /dev/nvme5n1
+#      - /dev/nvme6n1
+#      - /dev/nvme7n1
+    no_tenant_storage: true
+    hdfs_disks:
+      # - /dev/nvme8n1
+      # - /dev/nvme9n1
+      # - /dev/nvme10n1
+      # - /dev/nvme11n1
+      # - /dev/nvme12n1
+      # - /dev/nvme13n1
+      # - /dev/nvme14n1
+      # - /dev/nvme15n1
+  no_tenant_isolation: false
+  precheck_file: "hpe-cp-prechecks-5.1.rhel.bin"
+  rest_protocol: https
+  validate_certs: no                # This is to turn off strict SSL cert checks for REST API calls
+  tools_dir: "/root/tools"         # place to store the kits like kubectl
+  snmp:
+    server: "10.9.7.232"            # TODO: Find new server IP for Production
+    community: "public"
+#    engine: "Engine"
+#    user: "Username"
+#    authpassword: "Authpassword"
+#    authprotocol: "MD5"          # SHA, MD5
+#    privilege: "authPriv"        # authPriv, authNoPriv, noAuthNoPriv
+#    privprotocol: "AES"          # AES, DES
+#    privpassword: "privpassword"
+#  smtp:
+#    email: "test@mail.com"
+#    server: "smtp@mail.com"
+#    user: "username"
+#    password: "password"
+
+gateway:
+  gateway_set_hostname: gateway.mgmt.hpcs.wellsfargo.net
+  # These are the cert filenames in the platform after install 
+  # (playbook not used at this time for setting SSL certs or port mapping - so the 
+  # following 4 vars are not used)
+  ssl_cert_file: cert.pem
+  ssl_key_file: key.pem
+  port_mapping_start: 10000
+  port_mapping_end: 11000
+
+# Set the hosts IDs below to 3 and 4 if one gateway is configured, 4 and 5 if two gateways are configured
+shadow_host_id: 4
+arbiter_host_id: 5
+
+airgap:
+#  container_repo_url: 10.9.47.197:8080/hpecp
+  container_repo_url: registry.hpcs.wellsfargo.net:8080/hpecp
+  #container_repo_username:
+  #container_repo_password:
+  #container_repo_secure_flag:
+  #container_repo_cert:
+#  yum_repo_url: http://10.9.47.197/repos/centos/kubernetes/
+  yum_repo_url: http://registry.hpcs.wellsfargo.net/repos/centos/kubernetes/
+  #yum_repo_gpg_key:
+  #yum_rpm_gpg_key:
+
+controller:
+  bd_domain: prod
+  bd_prefix: wfecp
+  int_start_ip: 172.20.0.2
+  int_end_ip: 172.20.255.254
+  int_gw_ip: 172.20.0.1
+  int_nw_mask: 16
+  ssl_cert_file: /home/stack/ecp/ssl_certs/hpcs.wellsfargo.net/hpcs.wellsfargo.net.crt
+  ssl_cert_key_file: /home/stack/ecp/ssl_certs/hpcs.wellsfargo.net/hpcs.wellsfargo.net.key
+  # Setting for epicctl API calls - usually http regardless of using certs (move variable to platform sometime)
+  api_scheme: http
+
+credentials:
+  # Default installation accounts
+  site_admin_id: admin
+  site_admin_password: ProdAdmin123!
+  ssh:
+    access_type: ssh_key_access
+#    access_type: password_access
+    keypair_file: /home/stack/.ssh/prod_ecp_rsa
+    keypair_name: prod_ecp_rsa
+    key_passphrase: bubAIdT^k2l}
+#    password: admin123
+    username: stack
+    usergroup: stack
+
+# Disk configuration for k8s masters
+k8s_master_disks:
+  ephemeral_disks: 
+    - /dev/nvme0n1
+    - /dev/nvme1n1
+    - /dev/nvme2n1
+    - /dev/nvme3n1
+    - /dev/nvme4n1
+    - /dev/nvme5n1
+    - /dev/nvme6n1
+    - /dev/nvme7n1
+    - /dev/nvme8n1
+    - /dev/nvme9n1
+    - /dev/nvme10n1
+    - /dev/nvme11n1
+    - /dev/nvme12n1
+    - /dev/nvme13n1
+    - /dev/nvme14n1
+    - /dev/nvme15n1
+  no_tenant_storage: true
+  persistent_disks:
+
+# Disk configuration for k8s ingress
+k8s_ingress_disks:
+  ephemeral_disks: 
+    - /dev/nvme0n1
+    - /dev/nvme1n1
+    - /dev/nvme2n1
+    - /dev/nvme3n1
+    - /dev/nvme4n1
+    - /dev/nvme5n1
+    - /dev/nvme6n1
+    - /dev/nvme7n1
+    - /dev/nvme8n1
+    - /dev/nvme9n1
+    - /dev/nvme10n1
+    - /dev/nvme11n1
+    - /dev/nvme12n1
+    - /dev/nvme13n1
+    - /dev/nvme14n1
+    - /dev/nvme15n1
+  no_tenant_storage: true
+  persistent_disks:
+
+# Disk configuration for k8s cp workers
+k8s_cp_disks:
+  ephemeral_disks: 
+    - /dev/nvme0n1
+    - /dev/nvme1n1
+    - /dev/nvme2n1
+    - /dev/nvme3n1
+    - /dev/nvme4n1
+    - /dev/nvme5n1
+    - /dev/nvme6n1
+    - /dev/nvme7n1
+#    - /dev/nvme8n1
+#    - /dev/nvme9n1
+#    - /dev/nvme10n1
+#    - /dev/nvme11n1
+#    - /dev/nvme12n1
+#    - /dev/nvme13n1
+#    - /dev/nvme14n1
+#    - /dev/nvme15n1
+  no_tenant_storage: true
+  persistent_disks:
+
+# Disk configuration for k8s workers
+k8s_worker_disks:
+  ephemeral_disks: 
+    - /dev/nvme0n1
+    - /dev/nvme1n1
+    - /dev/nvme2n1
+    - /dev/nvme3n1
+    - /dev/nvme4n1
+    - /dev/nvme5n1
+    - /dev/nvme6n1
+    - /dev/nvme7n1
+    - /dev/nvme8n1
+    - /dev/nvme9n1
+    - /dev/nvme10n1
+    - /dev/nvme11n1
+    - /dev/nvme12n1
+    - /dev/nvme13n1
+    - /dev/nvme14n1
+    - /dev/nvme15n1
+  no_tenant_storage: true
+  persistent_disks:
+
+#*** UPDATE file locations as needed
+k8s_tools:
+  kubeconfig_dir: "/var/lib/awx/.kube"
+  kubeconfig_file: /tmp/kubeconfig_splunk.conf
+  kubeconfig_context: CICL-splunk-admin
+  kubectl_cli_version: v1.17.5
+
+k8s_istio:
+  istio_home: "/var/lib/awx/istio-1.6.5"
+
+k8s_openebs:
+  manifest_file: "openebs-operator-HA-1.9.0.yaml"
+  storage_class_file: "openebs_create_storageclass.yaml"
+  persistant_volume_claim_file: "openebs_create_pvc.yaml"
+
+k8s_cluster:
+  name: splunk
+  description: K8s cluster for Splunk 2.0
+  k8s_version: 1.17.5
+  # These FQDN vars are for istio, cert-manager, openebs, and wordpress playbooks
+  # TODO: Standardize on IPs or FQDNs throughout
+  ingress_gateway_hosts:
+    - hpcs-oxcp0029.wellsfargo.net   # K8s Ingress 1
+    - hpcs-oxcp0057.wellsfargo.net   # K8s Ingress 2
+    - hpcs-oxcp0085.wellsfargo.net   # K8s Ingress 3
+##    - hpcs-sicp0057.wellsfargo.net   # K8s Ingress 4
+##    - hpcs-sicp0085.wellsfargo.net   # K8s Ingress 5
+##    - hpcs-sicp0114.wellsfargo.net   # K8s Ingress 6
+    - hpcs-oxcp0020.wellsfargo.net   # K8s Ingress 4 (Temp)
+    - hpcs-oxcp0021.wellsfargo.net   # K8s Ingress 5 (Temp)
+    - hpcs-oxcp0022.wellsfargo.net   # K8s Ingress 6 (Temp)
+  control_plane_hosts:
+    - hpcs-oxcp0113.wellsfargo.net   # K8s CP Worker1
+##    - hpcs-sicp0127.wellsfargo.net   # K8s CP Worker2
+    - hpcs-oxcp0023.wellsfargo.net   # K8s CP Worker 2 (Temp)
+  # If no host IPs are specified below, the cluster will be created using all K8s hosts in inventory
+  # These vars are IP because that's how ECP requires them for referencing hosts
+  master_nodes:
+    - 10.9.40.85                    # K8s Master 1
+    - 10.9.40.113                   # K8s Master 2
+##    - 10.9.24.85                    # K8s Master 3
+    - 10.9.40.32                   # K8s Master 3 (Temp)
+#    - 10.9.24.113                   # K8s Master 4 - repair
+##    - 10.9.24.111                   # K8s Master 4
+    - 10.9.40.33                   # K8s Master 4 (Temp)
+#    - 10.9.4.69                     # K8s Master 5 - repair
+    - 10.9.40.59                     # K8s Master 5 (Temp)
+  ingress_nodes:
+    - 10.9.40.43                    # K8s Ingress 1
+    - 10.9.40.71                    # K8s Ingress 2
+    - 10.9.40.99                    # K8s Ingress 3
+##    - 10.9.24.71                    # K8s Ingress 4
+##    - 10.9.24.99                    # K8s Ingress 5
+#    - 10.9.24.127                   # K8s Ingress 6 - repair
+##    - 10.9.24.128                   # K8s Ingress 6
+    - 10.9.40.34                    # K8s Ingress 4 (Temp)
+    - 10.9.40.35                    # K8s Ingress 5 (Temp)
+    - 10.9.40.36                    # K8s Ingress 6 (Temp)
+  cp_nodes:
+    - 10.9.40.127                   # K8s CP Worker1
+    - 10.9.24.141                   # K8s CP Worker2
+  worker_nodes:
+#    - 10.9.40.103
+    - 10.9.40.124
+  id: 0
+  pod_network_range: "10.192.0.0/12"
+  service_network_range: "10.96.0.0/12"
+  pod_dns_domain: "cluster.local"
+  cert_data:
+    root_ca_cert: 
+    root_ca_key:
+    front_proxy_ca_cert:
+    front_proxy_ca_key:
+    etcd_ca_cert:
+    etcd_ca_key:
+  ext_identity_server:
+    type: LDAP
+    ip: 
+    port: 0
+    auth_service_location_host:
+    auth_service_location_port: 0
+    timeout_ms: 1000
+    reorder_after_failover: false
+    user_attribute:
+    bind_type: search_bind
+    base_dn:
+    security_protocol: none
+    cacert_filename:
+    nt_domain:
+    bind_dn:
+    bind_pwd:
+    verify_peer: true
+  external_groups: cn=Common_Name,ou=Organizational_Unit,dc=Domain_Component
+
+k8s_tenant:
+  name: splunk
+  description: K8s cluster for Splunk
+  # Name of the K8s cluster this tenant is to be associated with
+  cluster_name: splunk
+  # Set the namespace name to be created or adopted. If not adopting an existing namespace and no namespace name is given, a unique name will be generated
+  specified_namespace_name: splunk
+  # Flag to determine if associated namespace and all its contents should be deleted when the tenant is deleted. Defaults to true
+  #is_namespace_owner: true
+  # Flag to enable service mesh. This MUST be set to true for Splunk 2.0
+  #enable_service_mesh_flag: true
+  # Flag to map K8s servceis to HPE CP Gateway. This MUST be set to true for Splunk 2.0
+  map_services_to_gateway_flag: true
+  # Flag to adopt existing namespace fo the tenant. If set to true, a namespace name MUST be provided. If false, a namespace will be created
+  #adopt_existing_namespace_flag: false
+  # The following variables set the resource quotas for the new tenant. If not defined, resources will not be limited.
+  # NOTE: for Splunk 2.0 no resource quotas will be set.
+  quotas: null
+    # cores: 64
+    # Set the ephemeral disk space limit in GB
+    # disk: 512
+    # Set the persistent disk space limit in GB. Must be an integer > 20
+    # persistent: 1024
+    # gpus: 0
+    # Set the maximum memory limit in GB
+    # memory: 1024

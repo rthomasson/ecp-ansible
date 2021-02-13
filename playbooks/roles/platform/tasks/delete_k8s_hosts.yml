@@ -1,0 +1,133 @@
+---
+#
+# This playbook deletes k8s hosts from the platform)
+#
+
+# Validate vars for nodes to delete
+- fail:
+    msg: "Error: Specify only host_list OR host_status"
+  when: delete_k8s_hosts.host_list is defined and delete_k8s_hosts.host_status is defined
+
+- fail:
+    msg: "Error: Must specify either host_list OR host_status"
+  when: delete_k8s_hosts.host_list is undefined and delete_k8s_hosts.host_status is undefined
+
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
+    cacheable: True  
+
+# Get the current set of k8shosts 
+- name: Get the current set of k8shosts 
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/worker/k8shost"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+      accept: "application/json"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 200
+  register: k8shost_res
+
+- name: Create a fact with parsed list of k8s hosts from the API call  
+  set_fact:
+    k8shosts_list: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status, tags: tags}') }}"
+    cacheable: True
+
+- debug:
+    var: k8shosts_list
+
+# At this point, k8shosts_list contains all k8s hosts in the platform
+# now create the list of host ids to delete, and the list of host IPs to restore
+- name: Create empty list
+  set_fact:
+    k8s_ids_to_delete: []
+    k8s_ips_to_restore: []
+    cacheable: True
+
+- name: Create list of hosts to delete based on enumerated list of k8s hosts
+  set_fact:
+    k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
+    k8s_ips_to_restore: "{{ k8s_ips_to_restore + [item | json_query('hostname')] }}"
+    cacheable: True
+  when: delete_k8s_hosts.host_list is defined and
+        (item | json_query('ansible_host') in delete_k8s_hosts.host_list or 
+        item | json_query('hostname') in delete_k8s_hosts.host_list)
+  loop: "{{ k8shosts_list }}"
+
+- name: Create list of hosts to delete based on k8s host status
+  set_fact:
+    k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
+    k8s_ips_to_restore: "{{ k8s_ips_to_restore + [item | json_query('hostname')] }}"
+    cacheable: True
+  when: delete_k8s_hosts.host_status is defined and
+        item | json_query('status') == delete_k8s_hosts.host_status
+  loop: "{{ k8shosts_list }}"
+
+# Use add_k8s_hosts.j2 to create a YAML file for re-adding the hosts we just deleted
+- name: Create a fact with the session info from the API call  
+  set_fact:
+#    k8s_hosts_list: "{{ k8s_ips_to_restore }}"    # Override variable add_k8s_hosts.j2 will be looking for
+    input_file: "/tmp/{{platform.name }}_re-add_deleted_k8s_hosts.yml"
+    cacheable: True
+
+# - name: Set var
+#   vars:
+#     platform:
+#       k8s_workers: "{{ k8s_ips_to_restore }}" 
+
+- name: Prepare input file for epicctl (skipping any in repair_pool)
+  template:
+    src: re-add_k8s_hosts.j2
+    dest: "{{ input_file }}"
+    mode: 0777
+
+- name: Delete K8s hosts from platform
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080{{ item }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}"
+      Content-Type: "application/json"
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: cluster_res
+  loop: "{{ k8s_ids_to_delete }}"
+
+#  - name: Poll the status of cluster creation by making get call to /api/v2/k8scluster/k8scluster_id
+#    command: epicctl api get -u {{ jsonResp }} -n "OnPremSetup" -p {{ platform.type }} -o /tmp/get-response.json
+#    vars:
+#      getResp: "{{ (lookup('file', '/tmp/get-response.json') | from_json)['status'] }}"
+#    register : res
+#    failed_when: res.rc != 0
+#    changed_when: false
+#    retries: 30
+#    delay: 60
+#    until:  '"ready" == getResp'
+
+#  - debug:
+#      msg: "polling task finished"
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: session_res

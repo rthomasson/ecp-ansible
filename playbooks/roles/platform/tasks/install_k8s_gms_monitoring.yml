@@ -1,0 +1,146 @@
+---
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"    
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Get Kubeconfig for current user
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8skubeconfig"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      accept: "text/yaml"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"    
+    dest: /tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf
+    status_code: 200  
+  register: kubeconfig_res
+    
+- name: Authenticate k8s cluster user
+  command: echo "y" | kubectl hpecp --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf refresh
+  register: res_auth
+  failed_when: res_auth.rc != 0
+
+# clean up old dir
+- name: cleanup old filesystem
+  file:
+    path: /tmp/gms-monitoring 
+    state: absent 
+  register: res_cleanup
+
+- name: create dir
+  file:
+    path: /tmp/gms-monitoring 
+    state: directory 
+  register: res_createdir
+
+#copy  deployment artifacts
+- name: Copy directory from playbook to tmp
+  copy: 
+    src: "{{playbook_dir}}/roles/platform/files/gms-monitoring/init"
+    dest: "/tmp/gms-monitoring/"
+    owner: stack
+    group: stack
+    mode: '0644'
+  register: cp_res
+
+- name: create setup dir
+  file:
+    path: /tmp/gms-monitoring/setup 
+    state: directory 
+  register: res_createdir2
+
+- name: setup_replace_container_repo_url
+  template:
+    src: "{{ item }}"
+    dest: "/tmp/gms-monitoring/setup/{{ item | basename }}"
+  with_fileglob:
+    - gms-monitoring/setup/*.yaml
+
+- name: create deploy dir
+  file:
+    path: /tmp/gms-monitoring/deploy 
+    state: directory 
+  register: res_createdir3
+
+- name: Copy directory from playbook to tmp
+  copy: 
+    src: "{{playbook_dir}}/roles/platform/files/gms-monitoring/deploy"
+    dest: "/tmp/gms-monitoring/"
+    # owner: stack
+    # group: stack
+    mode: '0644'
+  register: cp_res
+
+# - name: deploy_replace_container_repo_url
+#   template:
+#     src: "{{ item }}"
+#     dest: "/tmp/gms-monitoring/deploy/{{ item | basename }}"
+#   with_fileglob:
+#     - gms-monitoring/deploy/*.yaml  
+
+# # Copy prometheus_rules.yaml
+# - name: Copy hostport patch playbook to tmp
+#   copy: 
+#     src: "{{ item.src }}"
+#     dest: "{{ item.dest }}"
+# #    owner: "{{ credentials.ssh.username }}"
+# #    group: "{{ credentials.ssh.usergroup }}"
+#   with_items:
+#     - { src:'gms-monitoring/deploy/prometheus_rules.tpl',dest: '/tmp/gms-monitoring/deploy/prometheus_rules.yaml'}
+#     - { src:'gms-monitoring/deploy/grafana-dashboardDefinitions.tpl',dest: '/tmp/gms-monitoring/deploy/grafana-dashboardDefinitions.yaml'}
+
+#     mode: '0644'
+#   register: cpkiali_res
+
+# Create namespace
+- name: create gms-monitoring namespace
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} create ns gms-monitoring
+  register: res_ns
+
+
+# Create StorageClass  
+- name: create StorageClass
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/gms-monitoring/init/gms-monitoring-sc.yaml
+  register: res_sc
+
+
+# create PV
+- name: Prepare input file for PV.
+  template:
+    src: create_gms_monitoring_pv.j2
+    dest: "/tmp/gms-monitoring/create_gms_monitoring_pv.yaml"
+    mode: 0777
+
+- name: create PV
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/gms-monitoring/create_gms_monitoring_pv.yaml
+  register: res_pv
+  failed_when: res_pv.rc != 0
+
+- name: deploy monitoring manifests
+  shell: |
+    kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/gms-monitoring/setup
+    kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/gms-monitoring/deploy
+  register: res_gms_monitor
+  failed_when: res_gms_monitor.rc != 0
+  
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: delsession_res
+  
+- debug:
+    msg: "End GMS Monitoring Install Session: {{ session_res.location  | urlsplit('path') }}"

@@ -1,5 +1,9 @@
 { "label": { "name": "dc_tag", "description": "Datacenter"} }
+{ "label": { "name": "zone_tag", "description": "Availability Zone"} }
 { "label": { "name": "rack_tag", "description": "Rack"} }
-{ "label": { "name": "ru_tag", "description": "Rack Unit Location"} }
+{ "label": { "name": "ru_tag", "description": "Rack Unit Position"} }
 { "label": { "name": "istio-ingressgateway", "description": "Istio Ingress Gateway"} }
-{ "label": { "name": "New_Label", "description": "Description of New_label"} }
+{ "label": { "name": "istio-controlplane", "description": "Istio Control Plane"} }
+{ "label": { "name": "openebs-controlplane", "description": "OpenEBS Control Plane"} }
+{ "label": { "name": "topology.kubernetes.io/region", "description": "Datacenter/Region for Istio Locality"} }
+{ "label": { "name": "topology.kubernetes.io/zone", "description": "Availability Zone for Istio Locality"} }

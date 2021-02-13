@@ -1,0 +1,12 @@
+---
+- name: copy k8s config file
+  fetch: 
+    src: /home/stack/.kube/config
+    dest: /tmp/kubeconfig_{{ inventory_hostname }}
+    flat: yes
+  when: "inventory_hostname == 'hpcs-oxcp0071.wellsfargo.net'"
+  run_once: yes  
+
+
+- debug:
+    msg: "copied k8s config file"

@@ -1,0 +1,8 @@
+---
+  - name: Install Wordpress .
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          install_wordpress: yes

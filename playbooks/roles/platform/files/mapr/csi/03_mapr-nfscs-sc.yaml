@@ -1,0 +1,20 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: mapr-nfscsi
+  namespace: mapr-nfscsi
+provisioner: com.mapr.csi-nfskdf
+reclaimPolicy: Delete
+allowVolumeExpansion: true
+parameters:
+    csiProvisionerSecretName: "mapr-user-secret"
+    csiProvisionerSecretNamespace: "mapr-nfscsi"
+    csiNodePublishSecretName: "mapr-ticket-secret"
+    csiNodePublishSecretNamespace: "mapr-nfscsi"
+    restServers: "{{ mapr.restServers }}"
+    cldbHosts: "{{ mapr.cldbHosts }}"
+    cluster: "hcp.mapr.cluster"
+    securityType: "unsecure"
+    namePrefix: "dynamic"
+    mountPrefix: "/mapr-csi"
+    rootdirperms: "777"

@@ -1,0 +1,4 @@
+ID: HPAAS_PKI_Automation
+Pwd: Az#atE8uM2vC5Wgx
+prod: https://venafi.wellsfargo.com/vedsdk
+curl -v -X POST -H "Content-Type: application/json" --data-binary @auth.txt http://venafi.wellsfargo.com/vedsdk/Authorize/

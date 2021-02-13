@@ -1,0 +1,13 @@
+apiVersion: cert-manager.io/v1alpha2
+kind: Issuer
+metadata:
+  name: venafi-tpp-issuer
+  namespace: cert-manager
+spec:
+  venafi:
+    zone: splunk-uat\cert-manager # Set this to the Venafi policy zone you want to use
+    tpp:
+      url: https://venafi-vedadmin-uat.wellsfargo.net/vedsdk  # Change this to the URL of your TPP instance
+      #caBundle: <base64 encoded string of caBundle PEM file, or empty to use system root CAs>
+      credentialsRef:
+        name: venafi-tpp-secret

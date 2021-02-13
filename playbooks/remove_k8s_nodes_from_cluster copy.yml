@@ -1,0 +1,11 @@
+---
+  - name: Remove K8s nodes from cluster
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          remove_k8s_nodes_from_cluster: yes
+          
+   
+    

@@ -1,0 +1,8 @@
+---
+  - name: Configure gateway ports
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          configure_gateway_ports: yes

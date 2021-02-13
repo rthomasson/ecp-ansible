@@ -1,6 +1,9 @@
 ---
-  - hosts: controllers
+  - hosts: controllers, gateways, k8s_workers
     gather_facts: false
+#    become: yes
+#    become_user: stack
+#    become_user: "{{ credentials.ssh.username }}"
     roles:
       - role: platform
         vars:

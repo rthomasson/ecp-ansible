@@ -1,9 +1,10 @@
 ---
 - name: Obtain session token
   uri:
-    url: http://{{ primary_controller }}:8080/api/v1/login
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
     return_content: yes
     method: POST
+    validate_certs: "{{ platform.validate_certs }}"
     body_format: json
     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
@@ -17,12 +18,13 @@
 # Get the current set of k8shosts 
 - name: Get the current set of k8shosts 
   uri:
-    url: http://{{ primary_controller }}:8080/api/v2/worker/k8shost
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/worker/k8shost"
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
       accept: "application/json"
     method: GET
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 200
   register: k8shost_res
 
@@ -32,35 +34,31 @@
     cacheable: True  
 
 - debug:
+    msg: "***Creating K8s Cluster***"
+- debug:
     msg: "Cluster Master Node: {{ item }}"
-  loop: "{{ cluster_master_nodes }}"
+  loop: "{{ k8s_cluster.master_nodes }}"
 
 - debug:
     msg: "Cluster Ingress Node: {{ item }}"
-  loop: "{{ cluster_ingress_nodes }}"
+  loop: "{{ k8s_cluster.ingress_nodes }}"
 
 - debug:
     msg: "Cluster Worker Node: {{ item }}"
-  #loop: "{{ cluster_worker_nodes | dict2items }}"
-  loop: "{{ cluster_worker_nodes }}"
+  loop: "{{ k8s_cluster.worker_nodes }}"
       
-- name: Create inputfile to create K8s Cluster.
-  template:
-    src: create_k8s_cluster.j2
-    dest: "/tmp/{{ common.name }}_create_k8s_cluster.json"
-    mode: 0777
- 
 - name: Create K8s Cluster
   uri:
-    url: http://{{ primary_controller }}:8080/api/v2/k8scluster
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8scluster"
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
       accept: "*/*"
       Content-Type: "application/json"
     method: POST
+    validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: "{{ lookup('file','/tmp/CICL_create_k8s_cluster.json') }}"
+    body: "{{ lookup('template','create_k8s_cluster.j2') }}"
     status_code: 201
   register: cluster_res
 
@@ -85,9 +83,10 @@
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
     method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
   register: delsession_res
 
 - debug:
-    msg: "Session: {{ session_id }} -- Create K8s Cluster finished."
+    msg: "Create K8s Cluster result: {{ cluster_res.content }} -- Create K8s Cluster finished."
 

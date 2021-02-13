@@ -1,0 +1,246 @@
+---
+# Playbook variables that determine which tasks will run 
+#install_controller: no
+#add_gateways: no
+#add_ha_workers: no
+#configure_ha: no
+#configure_gateway_ports: no
+#configure_airgap: no
+#configure_notification: no
+#add_host_tags: no
+
+platform:
+  name: CIC_nonprod_lab1
+  type: onprem
+  install_type: non-agent-based-install
+  controller: 10.9.4.141
+  gateways:
+    - 10.9.4.144
+#    - hpcs-ciccu0003.wellsfargo.net
+  ha_workers: 
+    - 10.9.4.142
+    - 10.9.4.143
+  k8s_workers:
+#    - hpcs-ciccu0130.wellsfargo.net    # Master 1
+#    - hpcs-ciccu0132.wellsfargo.net    # Master 2
+#    - hpcs-ciccu0133.wellsfargo.net    # Master 3
+#    - hpcs-ciccu0134.wellsfargo.net    # Ingress 1
+#    - hpcs-ciccu0135.wellsfargo.net    # Ingress 2
+    - hpcs-ciccu0136.wellsfargo.net    # CP Worker 1
+    - hpcs-ciccu0137.wellsfargo.net    # CP Worker 2
+#    - hpcs-ciccu0138.wellsfargo.net    # Worker 1
+#    - hpcs-ciccu0139.wellsfargo.net    # Worker 2
+#    - hpcs-ciccu0140.wellsfargo.net    # Worker 3
+# Future: just use k8s_cluster.cp_nodes for persistent disks
+  k8s_workers_with_persistent:  
+#    - hpcs-ciccu0088.wellsfargo.net
+#    - hpcs-ciccu0090.wellsfargo.net
+  bin_url: "http://10.9.7.197/files/ecp/hpe-cp-rhel-release-5.1-3011.bin"
+#  bin_url: "http://10.9.7.197/files/ecp/hpe-cp-rhel-release-5.1-2055.bin"
+
+  disks:
+    node_disks:
+      - /dev/nvme0n1
+#      - /dev/nvme1n1
+#      - /dev/nvme2n1
+#      - /dev/nvme3n1
+#      - /dev/nvme4n1
+#      - /dev/nvme5n1
+#      - /dev/nvme6n1
+#      - /dev/nvme7n1
+    no_tenant_storage: true
+    hdfs_disks:
+      # - /dev/nvme8n1
+      # - /dev/nvme9n1
+      # - /dev/nvme10n1
+      # - /dev/nvme11n1
+      # - /dev/nvme12n1
+      # - /dev/nvme13n1
+      # - /dev/nvme14n1
+      # - /dev/nvme15n1
+  no_tenant_isolation: false
+  precheck_file: "hpe-cp-prechecks-5.1.rhel.bin"
+  rest_protocol: https
+  validate_certs: no
+  tools_dir: "/root/tools"         # place to store the kits like kubectl
+  snmp:
+    server: "10.9.7.232"
+    community: "public"
+#    engine: "Engine"
+#    user: "Username"
+#    authpassword: "Authpassword"
+#    authprotocol: "MD5"   # SHA, MD5
+#    privilege: "authPriv"         # authPriv, authNoPriv, noAuthNoPriv
+#    privprotocol: "AES"   # AES, DES
+#    privpassword: "privpassword"
+#  smtp:
+#    email: "test@mail.com"
+#    server: "smtp@mail.com"
+#    user: "username"
+#    password: "password"
+
+gateway:
+  gateway_set_hostname: hpcs-ciccu0129.wellsfargo.net
+  # These are the cert filenames in the platform after install
+  ssl_cert_file: cert.pem
+  ssl_key_file: key.pem
+  port_mapping_start: 10000
+  port_mapping_end: 11000
+
+# Set the hosts IDs below to 3 and 4 if one gateway is configured, 4 and 5 if two gateways are configured
+shadow_host_id: 3
+arbiter_host_id: 4
+
+airgap:
+  container_repo_url: 10.9.7.197:8080/hpecp
+#  container_repo_url: 16.143.23.200:5000  #HPE QA
+  #container_repo_username:
+  #container_repo_password:
+  #container_repo_secure_flag:
+  #container_repo_cert:
+#  yum_repo_url: http://10.9.7.197:8080/scratch/qa/repos/base/
+  yum_repo_url: http://10.9.7.197/repos/centos/kubernetes/
+  #yum_repo_gpg_key:
+  #yum_rpm_gpg_key:
+
+controller:
+  bd_domain: cicuat
+  bd_prefix: wfecp
+  int_start_ip: 172.20.0.2
+  int_end_ip: 172.20.255.254
+  int_gw_ip: 172.20.0.1
+  int_nw_mask: 16
+#  ssl_cert_file: /home/stack/ecp/minica/wellsfargo.net/cert.pem
+#  ssl_cert_key_file: /home/stack/ecp/minica/wellsfargo.net/key.pem
+  ssl_cert_file: /home/stack/ecp/ssl_certs/hpcs.wellsfargo.net/hpcs.wellsfargo.net.crt
+  ssl_cert_key_file: /home/stack/ecp/ssl_certs/hpcs.wellsfargo.net/hpcs.wellsfargo.net.key
+  # Set to http if no certs defined (move variable to platform sometime)
+  api_scheme: http
+
+credentials:
+  # Default installation accounts
+  site_admin_id: admin
+  site_admin_password: admin123
+  ssh:
+    access_type: ssh_key_access
+#    access_type: password_access
+    keypair_file: /home/stack/.ssh/caas_rsa
+    keypair_name: caas_rsa
+    key_passphrase: 
+    username: stack
+    usergroup: stack
+#    password: admin123
+
+# Future: could add a cp_node and worker_node definition - these are only two roles in k8s that would have 
+# persistent storage
+k8s_disks:
+  ephemeral_disks: 
+    - /dev/nvme0n1
+    - /dev/nvme1n1
+    - /dev/nvme2n1
+    - /dev/nvme3n1
+    - /dev/nvme4n1
+    - /dev/nvme5n1
+    - /dev/nvme6n1
+    - /dev/nvme7n1
+#    - /dev/nvme8n1
+#    - /dev/nvme9n1
+#    - /dev/nvme10n1
+#    - /dev/nvme11n1
+#    - /dev/nvme12n1
+#    - /dev/nvme13n1
+#    - /dev/nvme14n1
+#    - /dev/nvme15n1
+  no_tenant_storage: true
+  persistent_disks:
+
+#*** UPDATE file locations as needed
+k8s_tools:
+  kubeconfig_dir: "/var/lib/awx/.kube"
+  kubeconfig_file: /tmp/kubeconfig_splunk.conf
+  kubeconfig_context: CICL-splunk-admin
+  kubectl_cli_version: v1.17.5
+
+k8s_istio:
+  istio_home: "/var/lib/awx/istio-1.6.5"
+
+k8s_openebs:
+  manifest_file: "openebs-operator-HA-1.9.0.yaml"
+  storage_class_file: "openebs_create_storageclass.yaml"
+  persistant_volume_claim_file: "openebs_create_pvc.yaml"
+
+k8s_cluster:
+  name: splunk
+  description: K8s cluster for Splunk 2.0
+  k8s_version: 1.17.5
+  # If no host IPs are specified below, the cluster will be created using all K8s hosts in inventory
+  master_nodes:
+    - 10.9.4.145
+    - 10.9.4.147
+    - 10.9.4.148
+  ingress_nodes:
+    - 10.9.4.149
+    - 10.9.4.150
+  cp_nodes:
+    - 10.9.4.151
+    - 10.9.4.152
+  worker_nodes:
+    - 10.9.4.153
+    - 10.9.4.154
+    - 10.9.4.155
+#    - 10.9.4.156
+  id: 0
+  pod_network_range: "10.192.0.0/12"
+  service_network_range: "10.96.0.0/12"
+  cert_data:
+    root_ca_cert: 
+    root_ca_key:
+    front_proxy_ca_cert:
+    front_proxy_ca_key:
+    etcd_ca_cert:
+    etcd_ca_key:
+  ext_identity_server:
+    type: LDAP
+    ip: 
+    port: 0
+    auth_service_location_host:
+    auth_service_location_port: 0
+    timeout_ms: 1000
+    reorder_after_failover: false
+    user_attribute:
+    bind_type: search_bind
+    base_dn:
+    security_protocol: none
+    cacert_filename:
+    nt_domain:
+    bind_dn:
+    bind_pwd:
+    verify_peer: true
+  external_groups: cn=Common_Name,ou=Organizational_Unit,dc=Domain_Component
+
+k8s_tenant:
+  name: splunk
+  description: K8s cluster for Splunk
+  # Name of the K8s cluster this tenant is to be associated with
+  cluster_name: splunk
+  # Set the namespace name to be created or adopted. If not adopting an existing namespace and no namespace name is given, a unique name will be generated
+  specified_namespace_name: splunk
+  # Flag to determine if associated namespace and all its contents should be deleted when the tenant is deleted. Defaults to true
+  #is_namespace_owner: true
+  # Flag to enable service mesh. This MUST be set to true for Splunk 2.0
+  #enable_service_mesh_flag: true
+  # Flag to map K8s servceis to HPE CP Gateway. This MUST be set to true for Splunk 2.0
+  #map_services_to_gateway_flag: true
+  # Flag to adopt existing namespace fo the tenant. If set to true, a namespace name MUST be provided. If false, a namespace will be created
+  #adopt_existing_namespace_flag: false
+  # The following variables set the resource quotas for the new tenant. If not defined, resources will not be limited.
+  # NOTE: for Splunk 2.0 no resource quotas will be set.
+  quotas: null
+    # cores: 64
+    # Set the ephemeral disk space limit in GB
+    # disk: 512
+    # Set the persistent disk space limit in GB. Must be an integer > 20
+    # persistent: 1024
+    # gpus: 0
+    # Set the maximum memory limit in GB
+    # memory: 1024

@@ -1,0 +1,8 @@
+---
+  - name: Install Mapr csi .
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          install_k8s_maprcsi: yes

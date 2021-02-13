@@ -2,11 +2,30 @@
 - name: Prepare input file for epicctl.
   template:
     src: platform.j2
-    dest: "/tmp/{{ common.name }}_platform.yml"
+    dest: "/tmp/{{ platform.name }}_platform.yml"
     mode: 0777
-  
+
+# - name: Get current version of epicctl
+#   copy:
+#     src: files/epicctl
+#     dest: "/usr/local/bin/epicctl"
+#     owner: root
+#     group: root
+#     mode: 0777
+
+- debug:
+    msg: 
+    - "*** Installing HPE CP Control Plane ***"
+    - "Input file content: "
+    - "{{ lookup('template', 'platform.j2') }}"
+
+- name: Run epicctl command to output its version
+  command: "epicctl -v"
+  register: res
+  failed_when: res.rc != 0
+
 - name: Run epicctl command to install controller, gateways and two EPIC workers (for shadow and arbiter)
-  command: "epicctl op -f /tmp/{{ common.name }}_platform.yml -n {{ common.name }}"
+  command: "epicctl op -f /tmp/{{ platform.name }}_platform.yml -n {{ platform.name }}"
   register: res
   failed_when: res.rc != 0
 

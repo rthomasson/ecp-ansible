@@ -1,0 +1,160 @@
+---
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"    
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Get Kubeconfig for current user
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8skubeconfig"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      accept: "text/yaml"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"    
+    dest: /tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf
+    status_code: 200  
+  register: kubeconfig_res
+
+- name: Authenticate k8s cluster user
+  command: echo "y" | kubectl hpecp --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf refresh
+  register: res
+  failed_when: res.rc != 0
+
+# clean up old dir
+- name: cleanup old filesystem
+  file:
+    path: /tmp/cert-manager 
+    state: absent 
+  register: res_cleanup
+
+- name: create setup dir
+  file:
+    path: /tmp/cert-manager
+    state: directory 
+    recurse: yes
+  register: res_createdir
+
+- name: replace template vars
+  template:
+    src: "{{ item }}"
+    dest: "/tmp/cert-manager/{{ item | basename }}"
+  with_fileglob:
+    - cert-manager/*.yaml
+
+# install cert manager
+- name: install cert manager
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/cert-manager/
+  register: res
+  failed_when: res.rc != 0
+
+# - name: Copy cert file from playbook to tmp
+#   copy: 
+#     src: "{{playbook_dir}}/roles/platform/files/cert-manager/minica/minica-secret.yaml"
+#     dest: "/tmp/{{platform.name}}_{{ k8s_cluster.name }}_minica-secret.yaml"
+#     owner: stack
+#     group: stack
+#     mode: '0644'
+#   register: cp_res
+
+# Install minica secret
+# - name: Install minica secret
+#   command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/{{platform.name}}_{{ k8s_cluster.name }}_minica-secret.yaml
+#   register: res
+#   failed_when: res.rc != 0
+
+# - name: Copy cert file from playbook to tmp
+#   copy: 
+#     src: "{{playbook_dir}}/roles/platform/files/cert-manager/minica/minica-ca-issuer.yaml"
+#     dest: "/tmp/{{platform.name}}_{{ k8s_cluster.name }}_minica-ca-issuer.yaml"
+#     owner: stack
+#     group: stack
+#     mode: '0644'
+#   register: cp_res
+
+# # Install minica selef signed issuer
+# - name: Install minica self signed issuer
+#   command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/{{platform.name}}_{{ k8s_cluster.name }}_minica-ca-issuer.yaml
+#   register: res
+#   failed_when: res.rc != 0
+
+# - name: Copy cert file from playbook to tmp
+#   copy: 
+#     src: "{{playbook_dir}}/roles/platform/files/cert-manager/minica/minica-ingress-certs.yaml"
+#     dest: "/tmp/{{platform.name}}_{{ k8s_cluster.name }}_minica-ingress-certs.yaml"
+#     owner: stack
+#     group: stack
+#     mode: '0644'
+#   register: cp_res
+
+#install minica self signed certs
+# - name: Install minica self signed certs
+#   command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/{{platform.name}}_{{ k8s_cluster.name }}_minica-ingress-certs.yaml
+#   register: res
+#   failed_when: res.rc != 0
+
+# - name: Copy cert file from playbook to tmp
+#   copy: 
+#     src: "{{playbook_dir}}/roles/platform/files/cert-manager/venafi/venafi-tpp-issuer.yaml"
+#     dest: "/tmp/{{platform.name}}_{{ k8s_cluster.name }}_venafi-tpp-issuer.yaml"
+#     owner: stack
+#     group: stack
+#     mode: '0644'
+#   register: cp_res
+
+# Install venafi-tpp cert issuer
+# - name: Install venafi-tpp cert issuer
+#   command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/{{platform.name}}_{{ k8s_cluster.name }}_venafi-tpp-issuer.yaml
+#   register: res
+#   failed_when: res.rc != 0
+
+# - name: Copy cert file from playbook to tmp
+#   copy: 
+#     src: "{{playbook_dir}}/roles/platform/files/cert-manager/venafi/venafi-tpp-ingress-certs.yaml"
+#     dest: "/tmp/{{platform.name}}_{{ k8s_cluster.name }}_venafi-tpp-ingress-certs.yaml"
+#     owner: stack
+#     group: stack
+#     mode: '0644'
+#   register: cp_res
+
+# #install venafi-tpp certs
+# - name: install venafi-tpp certs
+#   command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/{{platform.name}}_{{ k8s_cluster.name }}_venafi-tpp-ingress-certs.yaml
+#   register: res
+#   failed_when: res.rc != 0
+
+- name: Copy wells cert file from playbook to tmp
+  copy: 
+    src: "{{playbook_dir}}/roles/platform/files/cert-manager/wellsfargo-ca/wellsfargo-ca-tls-secret.yaml"
+    dest: "/tmp/cert-manager/wellsfargo-ca-tls-secret.yaml"
+    owner: stack
+    group: stack
+    mode: '0644'
+  register: cp_res
+
+- name: Install wells secret
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/cert-manager/wellsfargo-ca-tls-secret.yaml
+  register: res
+  failed_when: res.rc != 0
+
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: delsession_res
+  
+- debug:
+    msg: "End Cert manager Install Session: {{ session_res.location  | urlsplit('path') }}"  

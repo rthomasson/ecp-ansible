@@ -1,0 +1,15 @@
+
+SAML Metadata :  browse for xml and attach
+
+SAML User Xpath: //saml2:Subject/saml2:NameID/text()
+
+SAML groups: checked
+
+SAML Group XPath: //saml2:AttributeStatement/saml2:Attribte[@Name="GroupName"]/saml2:AttributeValue/text()
+
+Allow username/password login : checked
+
+Tenant- External Authentication: G-IDaas_POC_Users
+
+https://hpcs-ciccu0011.wellsfargo.net/bdswebui/saml_login
+

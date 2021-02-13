@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: openebs-device-pvc-block
+spec:
+  storageClassName: openebs-device
+  volumeMode: Block
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1700G

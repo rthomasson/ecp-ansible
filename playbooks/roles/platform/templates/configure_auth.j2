@@ -1,0 +1,15 @@
+{
+  "external_identity_server": [{
+    "type": "Local"
+  }],
+  "sso_settings": {
+    "saml_user_xpath": "{{ authentication.sso_settings.saml_user_xpath }}",
+    "saml_metadata_filename": "{{ authentication.sso_settings.saml_metadata_filename }}",
+    "prune_subject": true,
+    "saml_application_name": "{{ authentication.sso_settings.saml_application_name }}",
+    "saml_group_xpath": "{{ authentication.sso_settings.saml_group_xpath }}",
+    "prevent_ext_user_un_pw_login": "{{ authentication.sso_settings.prevent_ext_user_un_pw_login }}",
+    "allow_un_pw_login": "{{ authentication.sso_settings.allow_un_pw_login }}",
+    "saml_metadata": "{{ lookup('file', authentication.sso_settings.saml_metadata_filename) }}"
+  }
+}

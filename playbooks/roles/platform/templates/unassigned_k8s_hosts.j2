@@ -1,0 +1,5 @@
+These hosts are defined in Ansible inventory but are not added to the Container Platform
+
+{% for kw in unassigned_k8s_hosts %}
+{{ kw }} - {{ hostvars[kw].ansible_host }}
+{% endfor %}

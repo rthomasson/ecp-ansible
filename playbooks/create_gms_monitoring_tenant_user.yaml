@@ -1,0 +1,8 @@
+---
+  - name: Create K8s Tenant GMS
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          create_gms_monitoring_tenant_user: yes

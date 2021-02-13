@@ -1,0 +1,216 @@
+---
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"    
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Set a fact with the path/filename for the lockdown reason
+  set_fact:
+    lockdown_reason: '{ "reason": "Test whether site is in lockdown" }'
+    cacheable: true  
+
+- name: Attempt to put the site in lockdown
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/lock"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location | urlsplit('path') }}"  
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: "{{ lockdown_reason }}"
+    status_code: 201,403
+  register: lockdown_res
+
+- name: Exit site lockdown
+  uri:
+    url: "{{ lockdown_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: clear_lockdown_res
+  when: lockdown_res.status == 201
+  until: clear_lockdown_res.status == 204
+  retries: 2 # 30 secs
+  delay: 15 # wait 15 secs
+
+- debug:
+    msg: "Exit lockdown API call result: {{ clear_lockdown_res.content }}"
+  when: lockdown_res.status == 201
+
+- name: Log out of session if lockdown active
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  when: lockdown_res.status == 403
+  register: delsession_res
+
+- fail:
+    msg: "Error: Site already in lockdown!"
+  when: lockdown_res.status == 403
+
+
+- name: Get Kubeconfig for current user
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8skubeconfig"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+      accept: "text/yaml"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"    
+    dest: /tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf
+    status_code: 200
+  register: kubeconfig_res
+    
+- name: Authenticate k8s cluster user
+  command: echo "y" | kubectl hpecp --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf refresh
+  register: res_auth
+  failed_when: res_auth.rc != 0
+
+- name: create istio namespace
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} create ns istio-system
+  register: res
+  failed_when: res.rc != 0
+
+- name: Copy kiali secret from playbook to tmp
+  copy: 
+    src: "{{playbook_dir}}/roles/platform/files/istio/kiali_secret.yaml"
+    dest: "/tmp/{{platform.name}}_{{ k8s_cluster.name }}_kiali_secret.yaml"
+  register: cpkiali_res
+
+- name: create kiali secret
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/{{platform.name}}_{{ k8s_cluster.name }}_kiali_secret.yaml
+  register: res_kiali_secret
+  failed_when: res_kiali_secret.rc != 0
+
+- name: Copy grafana secret from playbook to tmp
+  copy: 
+    src: "{{playbook_dir}}/roles/platform/files/istio/grafana_secret.yaml"
+    dest: "/tmp/{{platform.name}}_{{ k8s_cluster.name }}_grafana_secret.yaml"
+  register: cpgrafana_res
+
+- name: create grafana secret
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/{{platform.name}}_{{ k8s_cluster.name }}_grafana_secret.yaml
+  register: res_grafana_secret
+  failed_when: res_grafana_secret.rc != 0
+
+- name: Prepare input file for istioctl.
+  template:
+    src: install_k8s_istio.j2
+    dest: "/tmp/{{ platform.name }}_istio.yaml"
+    mode: 0777
+    
+- name: Install Istio
+  command: "{{ k8s_add_ons.istio.home}}/bin/istioctl --kubeconfig /tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} install -f /tmp/{{ platform.name }}_istio.yaml --skip-confirmation"
+  register: res_install_istio
+  failed_when: res_install_istio.rc != 0
+
+- name: Copy hostport patch playbook to tmp
+  copy: 
+    src: "{{playbook_dir}}/roles/platform/files/istio/hostport_patch.json"
+    dest: "/tmp/istio_hostport_patch.json"
+  register: cpkiali_res
+
+# scale down ingress replicas
+- name: scale down ingress replicas
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} -n istio-system scale deployment/istio-ingressgateway --replicas=0 
+  register: res_istio_scale_down
+  failed_when: res_istio_scale_down.rc != 0
+
+# patch for istio hostport
+- name: patch ingress gateway for hostport
+  shell: |
+    kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} -n istio-system patch deployment/istio-ingressgateway --patch "$(cat /tmp/istio_hostport_patch.json)"
+  register: res_patch
+  failed_when: res_patch.rc != 0
+
+# scale up ingress replicas
+- name: scale down ingress replicas
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} -n istio-system scale deployment/istio-ingressgateway --replicas={{ k8s_cluster.ingress_gateway_hosts|length }}
+  register: res_istio_scale_up
+  failed_when: res_istio_scale_up.rc != 0
+
+# apply service annotation for grafana_dashboard
+- name: apply service annotation for grafana_dashboard
+  shell: |
+    kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} -n istio-system patch service grafana --type='json' -p='[{"op": "replace", "path":"/spec/ports/0/name", "value":"http-grafana"}]'
+    kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} -n istio-system patch service grafana -p '{"spec":{"type":"NodePort"}}'
+    kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} -n istio-system label service grafana hpecp.hpe.com/hpecp-internal-gateway=true
+  register: res_grafana_annotate
+  failed_when: res_grafana_annotate.rc != 0
+
+# apply service annotation for prometheus
+- name: apply service annotation for prometheus
+  shell: |
+    kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} -n istio-system patch service prometheus -p '{"spec":{"type":"NodePort"}}'
+    kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} -n istio-system label service prometheus hpecp.hpe.com/hpecp-internal-gateway=true
+  register: res_prometheus_annotate
+  failed_when: res_prometheus_annotate.rc != 0
+
+# apply service annotation for kiali
+- name: apply service annotation for kiali
+  shell: |
+    kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} -n istio-system patch service kiali -p '{"spec":{"type":"NodePort"}}'
+    kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} -n istio-system label service kiali hpecp.hpe.com/hpecp-internal-gateway=true
+  register: res_kiali_annotate
+  failed_when: res_kiali_annotate.rc != 0
+
+- name: label splunk namespace
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} label namespace {{ k8s_tenant.specified_namespace_name }} istio-injection=enabled
+  register: res_label
+  failed_when: res_label.rc != 0
+  
+# copy mutualTLS
+- name: Copy mutualTLS playbook to tmp
+  copy: 
+    src: "{{playbook_dir}}/roles/platform/files/istio/mutual-tls.yaml"
+    dest: "/tmp/{{ platform.name }}_mutual_tls_{{ k8s_tenant.specified_namespace_name }}.yaml"
+  register: cpmtls_res
+  
+
+# disable mutualTLS on splunk namespace
+- name: disalbe mTLS on  splunk namespace
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} apply -f /tmp/{{ platform.name }}_mutual_tls_{{ k8s_tenant.specified_namespace_name }}.yaml
+  register: res_disable_mtls
+  failed_when: res_disable_mtls.rc != 0
+
+- name: taint istio ingress nodes
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} taint nodes {{ item }} istio-ingressgateway=true:NoSchedule
+  loop: "{{ k8s_cluster.ingress_gateway_hosts }}"
+  register: res_taint_ig
+  failed_when: res_taint_ig.rc != 0
+
+- name: taint istio control plane nodes
+  command: kubectl --kubeconfig=/tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} taint nodes {{ item }} istio-controlplane=true:NoSchedule
+  loop: "{{ k8s_cluster.control_plane_hosts }}"
+  register: res_taint_cp
+  failed_when: res_taint_cp.rc != 0
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: delsession_res
+  
+- debug:
+    msg: "End Istio Install Session: {{ session_res.location  | urlsplit('path') }}"

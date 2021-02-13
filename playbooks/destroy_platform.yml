@@ -2,7 +2,9 @@
   - name: Destroy platform
     hosts: localhost
     gather_facts: false
-    roles:
-      - role: platform
-        vars:
-          destroy: yes
+    tasks:
+      - name: Run epicctl command to destroy the specified platform
+        command: "epicctl -n {{ platform.name }} -p {{ platform.type }} destroy"
+        register: res
+        failed_when: res.rc != 0
+        #failed_when: false

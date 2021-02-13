@@ -1,0 +1,104 @@
+{% if platform.k8s_workers is undefined %}
+{% set platform.k8s_workers = groups.k8s_workers %}
+{% endif %}
+{% for kw in platform.k8s_workers if kw not in groups.repair_pool or force_repair is defined and force_repair %}
+---
+op: K8sHostConfig
+platform: {{ platform.type }}
+parameters:
+  verbose: true
+  config:
+{% if k8s_cluster.master_nodes is defined and hostvars[kw].ansible_host in k8s_cluster.master_nodes %}
+    ephemeral_disks: {{k8s_master_disks.ephemeral_disks|join(',') }}
+{% if k8s_master_disks.no_tenant_storage is defined and not k8s_master_disks.no_tenant_storage %}
+    persistent_disks: {{ k8s_master_disks.persistent_disks|join(',') }}
+{% else %}
+    persistent_disks:
+{% endif %}
+{% elif k8s_cluster.ingress_nodes is defined and hostvars[kw].ansible_host in k8s_cluster.ingress_nodes %}
+    ephemeral_disks: {{k8s_ingress_disks.ephemeral_disks|join(',') }}
+{% if k8s_ingress_disks.no_tenant_storage is defined and not k8s_ingress_disks.no_tenant_storage %}
+    persistent_disks: {{ k8s_ingress_disks.persistent_disks|join(',') }}
+{% else %}
+    persistent_disks:
+{% endif %}
+{% elif k8s_cluster.cp_nodes is defined and hostvars[kw].ansible_host in k8s_cluster.cp_nodes %}
+    ephemeral_disks: {{k8s_cp_disks.ephemeral_disks|join(',') }}
+{% if k8s_cp_disks.no_tenant_storage is defined and not k8s_cp_disks.no_tenant_storage %}
+    persistent_disks: {{ k8s_cp_disks.persistent_disks|join(',') }}
+{% else %}
+    persistent_disks:
+{% endif %}
+{% else %}
+    ephemeral_disks: {{k8s_worker_disks.ephemeral_disks|join(',') }}
+{% if k8s_worker_disks.no_tenant_storage is defined and not k8s_worker_disks.no_tenant_storage %}
+    persistent_disks: {{ k8s_worker_disks.persistent_disks|join(',') }}
+{% else %}
+    persistent_disks:
+{% endif %}
+{% endif %}
+    api_scheme: {{ controller.api_scheme }}
+    install_type: {{ platform.install_type }}
+{% set have_tags = false %}
+{% if hostvars[kw].tag_dc is defined or hostvars[kw].tag_rack is defined or hostvars[kw].tag_ru is defined or hostvars[kw].tag_zone is defined %}
+    tags:
+{% set have_tags = true %}
+{% endif %}
+{% if hostvars[kw].tag_dc is defined %}
+      - name: dc_tag
+        value: {{ hostvars[kw].tag_dc }}
+      - name: topology.kubernetes.io/region
+        value: {{ hostvars[kw].tag_dc }}
+{% endif %}
+{% if hostvars[kw].tag_zone is defined %}
+      - name: zone_tag
+        value: {{ hostvars[kw].tag_zone }}
+      - name: topology.kubernetes.io/zone
+        value: {{ hostvars[kw].tag_zone }}
+{% endif %}
+{% if hostvars[kw].tag_rack is defined %}
+      - name: rack_tag
+        value: {{ hostvars[kw].tag_rack }}
+{% endif %}
+{% if hostvars[kw].tag_ru is defined %}
+      - name: ru_tag
+        value: {{ hostvars[kw].tag_ru }}
+{% endif %}
+{% if k8s_cluster.ingress_nodes is defined and hostvars[kw].ansible_host in k8s_cluster.ingress_nodes %}
+{% if have_tags == false %}
+    tags:
+{% set have_tags = true %}
+{% endif %}
+      - name: istio-ingressgateway
+        value: true
+{% endif %}
+{% if k8s_cluster.cp_nodes is defined and hostvars[kw].ansible_host in k8s_cluster.cp_nodes %}
+{% if have_tags == false %}
+    tags:
+{% set have_tags = true %}
+{% endif %}
+      - name: istio-controlplane
+        value: true
+      - name: openebs-controlplane
+        value: true
+{% endif %}
+  host:
+{% if kw | ipv4 %}
+    internal_ip: {{ kw }}
+{% else %}
+    internal_ip: {{ hostvars[kw].ansible_host }}
+{% endif %}
+  ssh:
+    username: {{ credentials.ssh.username }}
+    access_type: {{ credentials.ssh.access_type }}
+{% if credentials.ssh.access_type == 'password_access' %}
+    password: {{ credentials.ssh.password }}
+{% else %}
+    keypair_file: {{ credentials.ssh.keypair_file }}
+    keypair_name: {{ credentials.ssh.keypair_name }}
+{% if credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ credentials.ssh.key_passphrase }}
+{% endif %}
+{% endif %}
+{% endfor %}
+    verbose: true

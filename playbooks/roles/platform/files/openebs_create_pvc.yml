@@ -1,0 +1,12 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: local-device-pvc-block
+spec:
+  storageClassName: openebs-device
+  volumeMode: Block
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5G

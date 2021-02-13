@@ -1,17 +1,48 @@
 ---
-- name: Copy the bin file from the automation server to the target server.
-  copy: 
-    src: "{{ common.bin_dir }}{{ common.precheck_file }}"
-    dest: "/root/{{ common.precheck_file }}"
-    owner: root
-    group: root
-    mode: preserve
+- name: Set facts for the source and destination paths
+  set_fact:
+    file_src: "files/{{ platform.precheck_file }}" 
+#    file_dest: "/home/stack/{{ platform.precheck_file }}"
+#    file_dest: "/home/{{ credentials.username }}/{{ platform.precheck_file }}"
+    file_dest: "~/{{ platform.precheck_file }}"
 
-- name: Ensure pre-checks runs successfully.
-  shell: "/root/{{ common.precheck_file }} --proxy http://web-proxy.corp.hpecorp.net:8080"
+- debug:
+    msg: "Copying: {{ file_src }} to: {{ file_dest }}"
+
+- name: Copy the file from the automation server to the target server.
+  copy: 
+    src: "{{ file_src }}"
+    dest: "{{ file_dest }}"
+#    owner: stack
+#    group: stack
+    owner: "{{ credentials.ssh.username }}"
+    group: "{{ credentials.ssh.usergroup }}"
+    mode: preserve
+  register: cp_res
+
+#- name: Source the profile so that all precheck tests run
+#  shell: "bash -l"
+#  command: "bash -l"
+#  changed_when: false
+#  register: res
+#  failed_when: res.rc != 0
+  
+- name: Make the precheck file executable
+  shell: "chmod a+x {{file_dest}}"
+  changed_when: false
+  register: res
+  failed_when: res.rc != 0
+  
+- name: Add proxy if defined.
+  set_fact:
+    add_proxy: "--proxy {{ platform.proxy }}"
+  when: platform.proxy is defined
+
+- name: Run the pre-checks.
+  shell: "{{ file_dest }} {{ add_proxy|default('') }}"
   changed_when: false
   register: res
   failed_when: res.rc != 0
 
 - debug:
-    msg: "{{ res.stdout }}"
+    msg: "Return code: {{ res.rc }}"

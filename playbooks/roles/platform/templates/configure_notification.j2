@@ -1,0 +1,40 @@
+{
+{% if platform.snmp is defined %}
+  "snmp": {
+    "server": "{{ platform.snmp.server }}",
+    "community": "{{ platform.snmp.community }}",
+{% if platform.snmp.engine is defined %}
+    "engine": "{{ platform.snmp.engine }}",
+{% endif %}
+{% if platform.snmp.user is defined %}
+    "user": "{{ platform.snmp.user }}",
+{% endif %}
+{% if platform.snmp.authpassword is defined %}
+    "authpassword": "{{ platform.snmp.authpassword }}",
+{% endif %}
+{% if platform.snmp.authprotocol is defined %}
+    "authprotocol": "{{ platform.snmp.authprotocol }}",
+{% endif %}
+{% if platform.snmp.privilege is defined %}
+    "privilege": "{{ platform.snmp.privilege }}",
+{% endif %}
+{% if platform.snmp.privprotocol is defined %}
+    "privprotocol": "{{ platform.snmp.privprotocol }}",
+{% endif %}
+{% if platform.snmp.password is defined %}
+    "privpassword": "{{ platform.snmp.privpassword }}"
+{% endif %}
+  }
+{% if platform.smtp is defined %}
+  ,
+{% endif %}
+{% endif %}
+{% if platform.smtp is defined %}
+  "smtp": {
+    "email": "{{ platform.smtp.email }}",
+    "server": "{{ platform.smtp.server }}",
+    "user": "{{ platform.smtp.user }}",
+    "password": "{{ platform.smtp.password }}"
+  }
+{% endif %}
+}

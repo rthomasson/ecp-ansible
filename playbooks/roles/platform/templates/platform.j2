@@ -1,158 +1,178 @@
 ---
-#Configure platform installation YAML file for epicctl
+{# Configure platform installation YAML file for epicctl #}
 op: Init
 parameters:
   config:
-    api_scheme: http
+    api_scheme: {{ controller.api_scheme }}
+    install_type: {{ platform.install_type }}
+    install_as_root: {{ platform.install_as_root }}
   host:
-{% if primary_controller is defined and primary_controller|length > 0 %}  
-    host_ip: {{ primary_controller }}
+{% if platform.controller | ipv4 %}
+    host_ip: {{ platform.controller }}
 {% else %}
-    host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
-{% endif %} 
+    host_ip: {{ hostvars[platform.controller].ansible_host }}
+{% endif %}
   ssh:
     username: {{ credentials.ssh.username }}
-    password: {{ credentials.ssh.password }}
     access_type: {{ credentials.ssh.access_type }}
-    #keypair_file: {{ credentials.ssh.keypair_file }}
-    #keypair_name: {{ credentials.ssh.keypair_name }}
-platform: {{ common.platform }}
+{% if credentials.ssh.access_type == 'password_access' %}
+    password: {{ credentials.ssh.password }}
+{% else %}
+    keypair_file: {{ credentials.ssh.keypair_file }}
+    keypair_name: {{ credentials.ssh.keypair_name }}
+{% if credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ credentials.ssh.key_passphrase }}
+{% endif %}
+{% endif %}
+  verbose: true
+platform: {{ platform.type }}
 ---
 op: ControllerSetup
 parameters:
   config:
-{% if common.proxy is defined %}
-    proxy_url: {{ common.proxy.http }}
+{% if platform.proxy is defined %}
+    proxy_url: {{ platform.proxy }}
 {% endif %}
-{% if common.ssl_cert_file is defined %}
-    ssl_cert_file: {{ common.ssl_cert_file }}
+{% if controller.ssl_cert_file is defined %}
+    ssl_cert_file: {{ controller.ssl_cert_file }}
 {% endif %}
-{% if common.ssl_cert_key_file is defined %}
-    ssl_cert_file: {{ common.ssl_cert_key_file }}
-{% endif %}    #url_bin_path: {{ common.bin_url }}
-    url_bin_path: local://{{ common.bin_dir }}{{ common.bin_file }}
-    install_type: {{ common.install_type }}
+{% if controller.ssl_cert_key_file is defined %}
+    ssl_cert_key_file: {{ controller.ssl_cert_key_file }}
+{% endif %}
+    url_bin_path: {{ platform.bin_url }}
+    install_type: {{ platform.install_type }}
+    install_as_root: true
   host:
-{% if primary_controller is defined and primary_controller|length > 0 %}  
-    host_ip: {{ primary_controller }}
+{% if platform.controller | ipv4 %}
+    host_ip: {{ platform.controller }}
 {% else %}
-    host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
-{% endif %} 
+    host_ip: {{ hostvars[platform.controller].ansible_host }}
+{% endif %}
   ssh:
     username: {{ credentials.ssh.username }}
-    password: {{ credentials.ssh.password }}
     access_type: {{ credentials.ssh.access_type }}
-    #keypair_file: {{ credentials.ssh.keypair_file }}
-    #keypair_name: {{ credentials.ssh.keypair_name }}
-platform: {{ common.platform }}
+{% if credentials.ssh.access_type == 'password_access' %}
+    password: {{ credentials.ssh.password }}
+{% else %}
+    keypair_file: {{ credentials.ssh.keypair_file }}
+    keypair_name: {{ credentials.ssh.keypair_name }}
+{% if credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ credentials.ssh.key_passphrase }}
+{% endif %}
+{% endif %}
+  verbose: true
+platform: {{ platform.type }}
 ---
 op: ControllerConfig
 parameters:
   config:
-    bd_domain: {{ common.bd_domain }}
-    bd_prefix: {{ common.bd_prefix }}
-    node_disks: {{ common.ephemeral_disks|join(',') }}
-{% if common.no_tenant_storage is defined and not common.no_tenant_storage %}
-    hdfs_disks: {{ common.persistent_disks|join(',') }}
+    bd_domain: {{ controller.bd_domain }}
+    bd_prefix: {{ controller.bd_prefix }}
+    node_disks: {{ platform.disks.node_disks|join(',') }}
+{% if platform.disks.no_tenant_storage is defined and not platform.disks.no_tenant_storage %}
+    hdfs_disks: {{ platform.disks.hdfs_disks|join(',') }}
     no_tenant_storage: false
 {% else %}
+    hdfs_disks:  
     no_tenant_storage: true
 {% endif %}
-    no_tenant_isolation: {{ common.no_tenant_isolation }}
-    int_start_ip: {{ common.int_start_ip }}
-    int_end_ip: {{ common.int_end_ip }}
-    int_gw_ip: {{ common.int_gw_ip }}
-    int_nw_mask: {{ common.int_nw_mask }}
+    no_tenant_isolation: {{ platform.no_tenant_isolation }}
+    int_start_ip: {{ controller.int_start_ip }}
+    int_end_ip: {{ controller.int_end_ip }}
+    int_gw_ip: {{ controller.int_gw_ip }}
+    int_nw_mask: {{ controller.int_nw_mask }}
+    install_type: {{ platform.install_type }}
+    install_as_root: true
   host:
-{% if primary_controller is defined and primary_controller|length > 0 %}  
-    host_ip: {{ primary_controller }}
+{% if platform.controller | ipv4 %}
+    host_ip: {{ platform.controller }}
 {% else %}
-    host_ip: {{ hostvars[groups.controllers[0]].ansible_host }}
-{% endif %} 
+    host_ip: {{ hostvars[platform.controller].ansible_host }}
+{% endif %}
   ssh:
     username: {{ credentials.ssh.username }}
-    password: {{ credentials.ssh.password }}
     access_type: {{ credentials.ssh.access_type }}
-    #keypair_file: {{ credentials.ssh.keypair_file }}
-    #keypair_name: {{ credentials.ssh.keypair_name }}
-platform: {{ common.platform }}
-{% if platform_gateways is defined and platform_gateways is iterable %}
-{% for gw in platform_gateways %}
+{% if credentials.ssh.access_type == 'password_access' %}
+    password: {{ credentials.ssh.password }}
+{% else %}
+    keypair_file: {{ credentials.ssh.keypair_file }}
+    keypair_name: {{ credentials.ssh.keypair_name }}
+{% if credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ credentials.ssh.key_passphrase }}
+{% endif %}
+{% endif %}
+  verbose: true
+platform: {{ platform.type }}
+{% if platform.gateways is undefined %}
+{% set platform.gateways = groups.gateways %}
+{% endif %}
+{% for gw in platform.gateways %}
 ---
 op: GatewayConfig
 parameters:
   config:
     gateway_set_hostname: {{ gateway.gateway_set_hostname }}
-    install_type: {{ common.install_type }}
+    api_scheme: {{ controller.api_scheme }}
+    install_type: {{ platform.install_type }}
+    install_as_root: true
   host:
+{% if gw | ipv4 %}   
     internal_ip: {{ gw }}
-  ssh:
-    username: {{ credentials.ssh.username }}
-    password: {{ credentials.ssh.password }}
-    access_type: {{ credentials.ssh.access_type }}
-    #keypair_file: {{ credentials.ssh.keypair_file }}
-    #keypair_name: {{ credentials.ssh.keypair_name }}
-platform: {{ common.platform }}
-{% endfor %}
 {% else %}
-{% for gw in groups.gateways %}
----
-op: GatewayConfig
-parameters:
-  config:
-    gateway_set_hostname: {{ gateway.gateway_set_hostname }}
-    install_type: {{ common.install_type }}
-  host:
     internal_ip: {{ hostvars[gw].ansible_host }}
+{% endif %}
   ssh:
     username: {{ credentials.ssh.username }}
-    password: {{ credentials.ssh.password }}
     access_type: {{ credentials.ssh.access_type }}
-    #keypair_file: {{ credentials.ssh.keypair_file }}
-    #keypair_name: {{ credentials.ssh.keypair_name }}
-platform: {{ common.platform }}
-{% endfor %}
-{% endif %}
-{% if platform_ha_workers is defined and platform_ha_workers is iterable %}
-{% for ew in platform_ha_workers %}
----
-op: WorkerConfig
-parameters:
-  config:
-    node_disks: {{ common.ephemeral_disks|join(',') }}
-{% if common.persistent_disks is defined %}
-    hdfs_disks: {{ common.persistent_disks|join(',') }}
-{% endif %}
-    install_type: {{ common.install_type }}
-  host:
-    internal_ip: {{ ew }}
-  ssh:
-    username: {{ credentials.ssh.username }}
+{% if credentials.ssh.access_type == 'password_access' %}
     password: {{ credentials.ssh.password }}
-    access_type: {{ credentials.ssh.access_type }}
-    #keypair_file: {{ credentials.ssh.keypair_file }}
-    #keypair_name: {{ credentials.ssh.keypair_name }}
-platform: {{ common.platform }}
-{% endfor %}
 {% else %}
-{% for ew in groups.epic_wrokers %}
+    keypair_file: {{ credentials.ssh.keypair_file }}
+    keypair_name: {{ credentials.ssh.keypair_name }}
+{% if credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ credentials.ssh.key_passphrase }}
+{% endif %}
+{% endif %}
+  verbose: true
+platform: {{ platform.type }}
+{% endfor %}
+{% if platform.ha_workers is undefined %}
+{% set platform.ha_workers = groups.controllers %}
+{% endif %}
+{% for ew in platform.ha_workers if (ew | ipv4 and ew != hostvars[platform.controller].ansible_host) or (ew != platform.controller) %}
 ---
 op: WorkerConfig
 parameters:
   config:
-    node_disks: {{ common.ephemeral_disks|join(',') }}
-{% if common.persistent_disks is defined %}
-    hdfs_disks: {{ common.persistent_disks|join(',') }}
+    node_disks: {{platform.disks.node_disks|join(',') }}
+{% if platform.disks.no_tenant_storage is defined and not platform.disks.no_tenant_storage %}
+    hdfs_disks: {{ platform.disks.hdfs_disks|join(',') }}
+    no_tenant_storage: false
+{% else %}
+    hdfs_disks:
+    no_tenant_storage: true
 {% endif %}
-    install_type: {{ common.install_type }}
+    api_scheme: {{ controller.api_scheme }}
+    install_type: {{ platform.install_type }}
+    install_as_root: true
   host:
+{% if ew | ipv4 %}
+    internal_ip: {{ ew }} 
+{% else %}
     internal_ip: {{ hostvars[ew].ansible_host }}
-  ssh:
-    username: {{ credentials.ssh.username }}
-    password: {{ credentials.ssh.password }}
-    access_type: {{ credentials.ssh.access_type }}
-    #keypair_file: {{ credentials.ssh.keypair_file }}
-    #keypair_name: {{ credentials.ssh.keypair_name }}
-platform: {{ common.platform }}
-{% endfor %}
 {% endif %}
+  ssh: 
+    username: {{ credentials.ssh.username }}
+    access_type: {{ credentials.ssh.access_type }}
+{% if credentials.ssh.access_type == 'password_access' %}
+    password: {{ credentials.ssh.password }}
+{% else %}
+    keypair_file: {{ credentials.ssh.keypair_file }}
+    keypair_name: {{ credentials.ssh.keypair_name }}
+{% if credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ credentials.ssh.key_passphrase }}
+{% endif %}
+{% endif %}
+  verbose: true
+platform: {{ platform.type }} 
+{% endfor %}
