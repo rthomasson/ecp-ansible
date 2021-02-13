@@ -1,0 +1,8 @@
+---
+  - hosts: all
+    gather_facts: false
+    become: true
+    roles:
+      - role: platform
+        vars:
+          uninstall_ecp_on_host: yes

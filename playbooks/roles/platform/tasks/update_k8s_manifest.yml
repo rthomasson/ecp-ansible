@@ -1,0 +1,57 @@
+---
+# This task updates the K8s Manifest file on the ECP Controller and Shadow Controller, makes a REST API call to refresh the manifest in order to introduce a new version of Kubernetes to ECP 
+- name: Get existing file properties for the k8s_manifest.json
+  stat:
+    path: /srv/bluedata/kubernetes/k8s_manifest.json
+  register: st
+
+- name: Backup the original manifest
+  command: mv /srv/bluedata/kubernetes/k8s_manifest.json /srv/bluedata/kubernetes/k8s_manifest.orig
+
+# NOTE: be sure to specify the correct version of the manifest file to copy
+- name: Copy the new manifest file
+  copy:
+    src: files/ECP-patches/k8s_manifest-52.json
+    dest: "/srv/bluedata/kubernetes/k8s_manifest.json"
+    owner: "{{ st.stat.pw_name }}"
+    group: "{{ st.stat.gr_name }}"
+    mode: "{{ st.stat.mode }}"
+  when: st.stat.exists  # Won't exist on arbiter node
+
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+ 
+- name: Request K8s Manifest refresh
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8smanifest"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+      accept: "*/*"
+      Content-Type: "application/json"
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: k8s_manifest_res
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: delete_session_res
+
+- debug:
+    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- K8s Manifest Refresh Result: {{ k8s_manifest_res.status }}"

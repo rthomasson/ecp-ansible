@@ -19,28 +19,33 @@ platform:
   name: HPE_Lab1
   type: onprem
   install_type: non-agent-based-install
-  install_as_root: false
-  controller: mip-bdcs-vm19.mip.storage.hpecorp.net
+  install_as_root: true
+  controller: mip-bdcs-vm31.mip.storage.hpecorp.net
   gateways:
-    - mip-bdcs-vm20.mip.storage.hpecorp.net    # Gateway 1
-    - mip-bdcs-vm32.mip.storage.hpecorp.net    # Gateway 2
+    #- mip-bdcs-vm20.mip.storage.hpecorp.net    # Gateway 1
+    - mip-bdcs-vm32.mip.storage.hpecorp.net    # Gateway 1
   ha_workers: 
-    - mip-bdcs-vm22.mip.storage.hpecorp.net    # Shadow
-    - mip-bdcs-vm31.mip.storage.hpecorp.net    # Arbiter
+    #- mip-bdcs-vm22.mip.storage.hpecorp.net    # Shadow
+    #- mip-bdcs-vm31.mip.storage.hpecorp.net    # Arbiter
   k8s_workers:
-    - mip-bdcs-vm21.mip.storage.hpecorp.net    # K8s Master 1
-    - mip-bdcs-vm33.mip.storage.hpecorp.net    # K8s Ingress 1
-    - mip-bdcs-vm34.mip.storage.hpecorp.net    # K8s Ingress 2
+    #- mip-bdcs-vm21.mip.storage.hpecorp.net    # K8s Master 1
+    - mip-bdcs-vm33.mip.storage.hpecorp.net    # K8s Master 1
+    - mip-bdcs-vm34.mip.storage.hpecorp.net    # K8s Ingress 1
     - mip-bdcs-vm35.mip.storage.hpecorp.net    # K8s CP Worker 1
     - mip-bdcs-vm36.mip.storage.hpecorp.net    # K8s CP Worker 2
     - mip-bdcs-vm37.mip.storage.hpecorp.net    # K8s Worker 1
     - mip-bdcs-vm38.mip.storage.hpecorp.net    # K8s Worker 2
     - mip-bdcs-vm39.mip.storage.hpecorp.net    # K8s Worker 3
-  bin_url: "http://16.143.20.46:8080/rock/golden/haathi-5.1-GA/3011/hpe-cp-rhel-release-5.1-3011.bin"
+
+  bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
+  version: hpe-cp-rhel-release-5.2-3020.bin
+  #bin_url: "http://16.143.20.46:8080/rock/golden/haathi-5.1-GA/3011/hpe-cp-rhel-release-5.1-3011.bin"
+  #version: hpe-cp-rhel-release-5.1-3011
 
   disks:
     node_disks:
       - /dev/sdb
+      - /dev/sdc
     no_tenant_storage: true
     hdfs_disks:
 #      - /dev/sdc
@@ -67,6 +72,7 @@ platform:
 
 gateway:
   gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+  # TO-DO: clean up certs
   # These are the cert filenames in the platform after install
   ssl_cert_file: cert.pem
   ssl_key_file: key.pem
@@ -90,12 +96,13 @@ airgap:
   #yum_rpm_gpg_key:
 
 controller:
-  bd_domain: cicuat
-  bd_prefix: wfecp
+  bd_domain: hpelab
+  bd_prefix: ecp
   int_start_ip: 172.20.0.2
   int_end_ip: 172.20.255.254
   int_gw_ip: 172.20.0.1
   int_nw_mask: 16
+  # TO-DO: Clean up certs
   ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
   ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
   # Setting for epicctl API calls - usually http regardless of using certs (move variable to platform sometime)
@@ -137,6 +144,7 @@ k8s_ingress_disks:
 k8s_cp_disks:
   ephemeral_disks:
     - /dev/sdb
+    - /dev/sdc
   no_tenant_storage: true
   persistent_disks:
 #    - /dev/sdc
@@ -166,22 +174,22 @@ k8s_openebs:
   persistant_volume_claim_file: "openebs_create_pvc.yaml"
 
 k8s_cluster:
-  name: splunk
+  name: test
   description: K8s cluster for Splunk 2.0
   k8s_version: 1.17.5
   # These FQDN vars are for istio, cert-manager, openebs, and wordpress playbooks
   # TO-DO: Standardize on IPs or FQDNs throughout
   ingress_gateway_hosts:
-    - mip-bdcs-vm33.mip.storage.hpecorp.net   # K8s Ingress 1
+    #- mip-bdcs-vm33.mip.storage.hpecorp.net   # K8s Ingress 1
     - mip-bdcs-vm34.mip.storage.hpecorp.net   # K8s Ingress 2
   control_plane_hosts:
     - mip-bdcs-vm35.mip.storage.hpecorp.net   # K8s CP Worker 1
     - mip-bdcs-vm36.mip.storage.hpecorp.net   # K8s CP Worker 2
   # If no host IPs are specified below, the cluster will be created using all K8s hosts in inventory
   master_nodes:
-    - 16.143.22.146                    # K8s Master 1
+    - 16.143.22.158                    # K8s Master 1
   ingress_nodes:
-    - 16.143.22.158                    # K8s Ingress 1
+    #- 16.143.22.158                    # K8s Ingress 1
     - 16.143.22.159                    # K8s Ingress 2
   cp_nodes:
     - 16.143.22.160                   # K8s CP Worker 1
@@ -221,12 +229,12 @@ k8s_cluster:
   external_groups: cn=Common_Name,ou=Organizational_Unit,dc=Domain_Component
 
 k8s_tenant:
-  name: splunk
-  description: K8s cluster for Splunk
+  name: Spark
+  description: K8s cluster for Spark
   # Name of the K8s cluster this tenant is to be associated with
-  cluster_name: splunk
+  cluster_name: test
   # Set the namespace name to be created or adopted. If not adopting an existing namespace and no namespace name is given, a unique name will be generated
-  specified_namespace_name: splunk
+  specified_namespace_name: spark
   # Flag to determine if associated namespace and all its contents should be deleted when the tenant is deleted. Defaults to true
   #is_namespace_owner: true
   # Flag to enable service mesh. This MUST be set to true for Splunk 2.0

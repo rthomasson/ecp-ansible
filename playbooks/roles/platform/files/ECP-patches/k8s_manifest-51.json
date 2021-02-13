@@ -1,0 +1,291 @@
+{
+  "_version" : 3,
+  "supported_versions" : {
+    "centos" : [
+      "1.14.10",
+      "1.15.11",
+      "1.16.9",
+      "1.17.5",
+      "1.18.6",
+      "1.19.5"
+    ],
+    "suse" : [
+      "1.15.2",
+      "1.16.2",
+      "1.17.4"
+    ]
+  },
+  "bootstrap_image_version" : "0.1",
+  "version_info" : {
+    "latest" : {
+      "_version" : 2,
+      "min_upgrade_version" : "latest",
+      "relnote_url" : "https://kubernetes.io/docs/setup/release/notes/",
+      "addons" : [
+        "hpecp-agent",
+        "kubedirector",
+        "kube-state-metrics",
+        "kubernetes-dashboard",
+        "metrics-server",
+        "nvidia-plugin",
+        "hpecp-monitoring",
+        "hpecp-serviceaccounts",
+        "nimble",
+        "picasso"
+      ]
+    },
+    "1.14" : {
+      "_version" : 2,
+      "min_upgrade_version" : "1.13.0",
+      "relnote_url" : "https://v1-14.docs.kubernetes.io/docs/setup/release/notes/",
+      "addons" : [
+        "hpecp-agent",
+        "kubedirector",
+        "kube-state-metrics",
+        "kubernetes-dashboard",
+        "metrics-server",
+        "nvidia-plugin",
+        "hpecp-monitoring",
+        "hpecp-serviceaccounts",
+        "nimble"
+      ]
+    },
+    "1.15" : {
+      "_version" : 2,
+      "min_upgrade_version" : "1.14.0",
+      "relnote_url" : "https://v1-15.docs.kubernetes.io/docs/setup/release/notes/",
+      "addons" : [
+        "hpecp-agent",
+        "kubedirector",
+        "kube-state-metrics",
+        "kubernetes-dashboard",
+        "metrics-server",
+        "nvidia-plugin",
+        "hpecp-monitoring",
+        "hpecp-serviceaccounts",
+        "nimble",
+        "picasso"
+      ]
+    },
+    "1.16" : {
+      "_version" : 2,
+      "min_upgrade_version" : "1.15.0",
+      "relnote_url" : "https://v1-16.docs.kubernetes.io/docs/setup/release/notes/",
+      "addons" : [
+        "hpecp-agent",
+        "kubedirector",
+        "kube-state-metrics",
+        "kubernetes-dashboard",
+        "metrics-server",
+        "nvidia-plugin",
+        "hpecp-monitoring",
+        "hpecp-serviceaccounts",
+        "nimble",
+        "picasso"
+      ]
+    },
+    "1.17" : {
+      "_version" : 2,
+      "min_upgrade_version" : "1.16.0",
+      "relnote_url" : "https://v1-17.docs.kubernetes.io/docs/setup/release/notes/",
+      "addons" : [
+        "hpecp-agent",
+        "kubedirector",
+        "kube-state-metrics",
+        "kubernetes-dashboard",
+        "metrics-server",
+        "nvidia-plugin",
+        "hpecp-monitoring",
+        "hpecp-serviceaccounts",
+        "nimble",
+        "picasso"
+      ]
+    },
+    "1.18" : {
+      "_version" : 2,
+      "min_upgrade_version" : "1.17.0",
+      "relnote_url" : "https://kubernetes.io/docs/setup/release/notes/",
+      "addons" : [
+        "hpecp-agent",
+        "kubedirector",
+        "kube-state-metrics",
+        "kubernetes-dashboard",
+        "metrics-server",
+        "nvidia-plugin",
+        "hpecp-monitoring",
+        "hpecp-serviceaccounts",
+        "nimble",
+        "picasso"
+      ]
+    },
+    "1.19" : {
+      "_version" : 2,
+      "min_upgrade_version" : "1.18.0",
+      "relnote_url" : "https://kubernetes.io/docs/setup/release/notes/",
+      "addons" : [
+        "hpecp-agent",
+        "kubedirector",
+        "kube-state-metrics",
+        "kubernetes-dashboard",
+        "metrics-server",
+        "nvidia-plugin",
+        "hpecp-monitoring",
+        "hpecp-serviceaccounts",
+        "nimble",
+        "picasso"
+      ]
+    }
+  },
+  "import_addons" : [
+    "hpecp-agent",
+    "kubedirector",
+    "kube-state-metrics",
+    "hpecp-monitoring"
+  ],
+  "addon_info" : {
+    "hpecp-agent" : {
+      "_version" : 1,
+      "required" : true,
+      "version" : "1.0",
+      "system" : true,
+      "order" : 10,
+      "deployment" : "hpecp-bootstrap-hpecp-agent",
+      "label" : {
+        "name" : "hpecp-bootstrap-hpecp-agent",
+        "description" : ""
+      }
+    },
+    "kubedirector" : {
+      "_version" : 1,
+      "required" : true,
+      "version" : "1.1",
+      "system" : true,
+      "order" : 20,
+      "deployment" : "hpecp-bootstrap-kubedirector",
+      "label" : {
+        "name" : "hpecp-bootstrap-kubedirector",
+        "description" : ""
+      }
+    },
+    "kube-state-metrics" : {
+      "_version" : 1,
+      "required" : true,
+      "version" : "2.8.8",
+      "system" : true,
+      "order" : 40,
+      "deployment" : "hpecp-bootstrap-kube-state-metrics",
+      "label" : {
+        "name" : "hpecp-bootstrap-kube-state-metrics",
+        "description" : ""
+      }
+    },
+    "kubernetes-dashboard" : {
+      "_version" : 1,
+      "required" : true,
+      "version" : "v2.0.0-rc2",
+      "system" : true,
+      "order" : 40,
+      "deployment" : "hpecp-bootstrap-kubernetes-dashboard",
+      "label" : {
+        "name" : "hpecp-bootstrap-kubernetes-dashboard",
+        "description" : ""
+      }
+    },
+    "metrics-server" : {
+      "_version" : 1,
+      "required" : true,
+      "version" : "v0.3.6-1",
+      "system" : true,
+      "order" : 40,
+      "deployment" : "hpecp-bootstrap-metrics-server",
+      "label" : {
+        "name" : "hpecp-bootstrap-metrics-server",
+        "description" : ""
+      }
+    },
+    "nvidia-plugin" : {
+      "_version" : 1,
+      "required" : true,
+      "version" : "1.0.0-beta2",
+      "system" : true,
+      "order" : 40,
+      "deployment" : "hpecp-bootstrap-nvidia-plugin",
+      "label" : {
+        "name" : "hpecp-bootstrap-nvidia-plugin",
+        "description" : ""
+      }
+    },
+    "hpecp-monitoring" : {
+      "_version" : 1,
+      "required" : true,
+      "version" : "6.6.4-1.0",
+      "system" : true,
+      "order" : 40,
+      "deployment" : "hpecp-bootstrap-hpecp-monitoring",
+      "label" : {
+        "name" : "hpecp-bootstrap-hpecp-monitoring",
+        "description" : ""
+      }
+    },
+    "hpecp-serviceaccounts" : {
+      "_version" : 1,
+      "required" : true,
+      "version" : "0.2",
+      "system" : true,
+      "order" : 40,
+      "deployment" : "hpecp-bootstrap-hpecp-serviceaccounts",
+      "label" : {
+        "name" : "hpecp-bootstrap-hpecp-serviceaccounts",
+        "description" : ""
+      }
+    },
+    "istio": {
+      "_version" : 1,
+      "required" : false,
+      "version" : "1.6.1",
+      "system" : false,
+      "order" : 30,
+      "deployment" : "hpecp-bootstrap-istio",
+      "label" : {
+        "name" : "Istio",
+        "description" : "Istio Service Mesh addon for Kubernetes."
+      }
+    },
+    "nimble" : {
+      "_version" : 1,
+      "required" : false,
+      "version" : "0.2",
+      "system" : false,
+      "order" : 40,
+      "deployment" : "hpecp-bootstrap-nimble-csi",
+      "label" : {
+        "name" : "HPE Nimble Storage",
+        "description" : "HPE Nimble persistent storage using HPE CSI driver for Kubernetes."
+      }
+    },
+    "harbor" : {
+      "_version" : 1,
+      "required" : false,
+      "version" : "0.3",
+      "system" : false,
+      "order" : 40,
+      "deployment" : "hpecp-bootstrap-harbor",
+      "label" : {
+        "name" : "Harbor container image registry",
+        "description" : "Harbor secures images with role-based access control, scans images for vulnerabilities, and signs images as trusted."
+      }
+    },
+    "picasso" : {
+      "_version" : 1,
+      "required" : false,
+      "version" : "0.2",
+      "system" : false,
+      "order" : 40,
+      "deployment" : "hpecp-bootstrap-picasso",
+      "label" : {
+        "name" : "Enable packaged apps",
+        "description" : "Enable custom resources to create Spark and KubeFlow applications"
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+---
+# This task addresses a limitation in ECP 5.1 that prevents K8s versions later than 1.17 to be installed by copying 
+# an updated kube_50.sh script to each ECP host
+# NOTE: to actually enable a later version of K8s to be available for installation in ECP, the K8s manifest must also be updated
+
+- name: Get existing file properties for 50_kube.sh script
+  stat:
+    path: /opt/bluedata/bundles/{{ platform.version }}scripts/iucomponents/k8s/50_kube.sh
+  register: st
+
+- name: Backup the original script
+  command: mv /opt/bluedata/bundles/{{ platform.version }}scripts/iucomponents/k8s/50_kube.sh /opt/bluedata/bundles/{{ platform.version }}scripts/iucomponents/k8s/50_kube.orig
+
+# NOTE: be sure to specify the correct version of the script to copy
+- name: Copy the new script for the K8s upgrade fix
+  copy:
+    src: files/ECP-patches/50_kube-52.sh
+    dest: "/opt/bluedata/bundles/{{ platform.version }}scripts/iucomponents/k8s/50_kube.sh"
+    owner: "{{ st.stat.pw_name }}"
+    group: "{{ st.stat.gr_name }}"
+    mode: "{{ st.stat.mode }}"
+

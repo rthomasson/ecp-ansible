@@ -1,4 +1,8 @@
 ---
+# Cleanup tasks for ECP Hosts
+  - include_tasks: uninstall_ecp_on_host.yml
+    when: uninstall_ecp_on_host is defined and uninstall_ecp_on_host
+ 
 # tasks file for controller
   - include_tasks: run_prechecks.yml
     when: run_checks is defined and run_checks
@@ -33,6 +37,12 @@
 
   - include_tasks: apply_ecp_patches.yml
     when: apply_ecp_patches is defined and apply_ecp_patches
+
+  - include_tasks: apply_k8s_manifest_patch.yml
+    when: apply_k8s_manifest_patch is defined and apply_k8s_manifest_patch
+
+  - include_tasks: unpdate_k8s_manifest.yml
+    when: update_k8s_manifest is defined and update_k8s_manifest
 
   - include_tasks: apply_ntp_fix_primary.yml
     when: apply_ntp_fix_primary is defined and apply_ntp_fix_primary
