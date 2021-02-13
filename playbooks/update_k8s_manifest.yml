@@ -1,0 +1,8 @@
+---
+  - hosts: controllers
+    gather_facts: false
+    become: true
+    roles:
+      - role: platform
+        vars:
+          update_k8s_manifest: yes
