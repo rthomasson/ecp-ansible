@@ -41,7 +41,7 @@
   - include_tasks: apply_k8s_manifest_patch.yml
     when: apply_k8s_manifest_patch is defined and apply_k8s_manifest_patch
 
-  - include_tasks: unpdate_k8s_manifest.yml
+  - include_tasks: update_k8s_manifest.yml
     when: update_k8s_manifest is defined and update_k8s_manifest
 
   - include_tasks: apply_ntp_fix_primary.yml
