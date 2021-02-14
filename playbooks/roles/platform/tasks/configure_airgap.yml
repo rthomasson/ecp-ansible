@@ -10,12 +10,6 @@
     status_code: 201
   register: session_res
  
-#- name: Prepare configure air gap input file for epicctl.
-#  template:
-#    src: configure_airgap.j2
-#    dest: "/tmp/{{ platform.name }}_configure_airgap.json"
-#    mode: 0777
- 
 - name: Configure platform for air gap
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/config/k8s"
@@ -27,7 +21,6 @@
     method: PUT
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-#    body: "{{ lookup('file','/tmp/CICL_configure_airgap.json') }}"
     body: "{{ lookup('template','configure_airgap.j2') }}"
     status_code: 204
   register: airgap_res
