@@ -30,6 +30,11 @@
     status_code: 201
   register: session_res
  
+- debug:
+    msg: "*** Obtaining Session Token ***"
+- debug:
+    msg: "Session: {{ session_res.location  | urlsplit('path') }} -- Session Login Result: {{ session_res.status }}"
+
 - name: Request K8s Manifest refresh
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8smanifest"
