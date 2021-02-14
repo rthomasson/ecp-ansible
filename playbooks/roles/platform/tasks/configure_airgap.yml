@@ -9,19 +9,32 @@
     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
- 
+
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
+    cacheable: True  
+
+- name: Create a fact with the Airgap configuration parameters  
+  set_fact:
+    airgap_config: "{{ lookup('template','configure_airgap.j2') }}"
+    cacheable: True
+
+- debug: 
+    msg: "Airgap configuration: {{ airgap_config }}"
+
 - name: Configure platform for air gap
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/config/k8s"
     return_content: yes
     headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
+      X-BDS-SESSION: "{{ session_id }}" 
       accept: "*/*"
       Content-Type: "application/json"
     method: PUT
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: "{{ lookup('template','configure_airgap.j2') }}"
+    body: "{{ airgap_config }}"
     status_code: 204
   register: airgap_res
 
