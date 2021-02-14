@@ -10,8 +10,8 @@
 {% if airgap.container_repo_secure_flag is defined %}
     "is_secure_container_repo": "{{ airgap.container_repo_secure_flag }}",
 {% endif %}
-{% if airgap.container_repo_cert is defined %}
-    "container_repo_cert": "{{ airgap.container_repo_cert }}",
+{% if airgap.container_repo_cert is defined and platform.version %}
+    "container_repo_client_certificate": "{{ airgap.container_repo_cert }}",
 {% endif %}
 {% if airgap.yum_repo_gpg_key is undefined and airgap.yum_rpm_gpg_key is undefined %}
     "baseurl": "{{ airgap.yum_repo_url }}"
