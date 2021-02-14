@@ -37,7 +37,6 @@
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}" 
       accept: "*/*"
-      Content-Type: "application/json"
     method: POST
     validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
