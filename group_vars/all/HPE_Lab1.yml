@@ -83,7 +83,6 @@ arbiter_host_id: 5
 
 airgap:
   container_repo_url: 16.143.22.165:8080/hpecp
-#  container_repo_url: 16.143.23.200:5000  #HPE QA
   #container_repo_username:
   #container_repo_password:
   #container_repo_secure_flag:
