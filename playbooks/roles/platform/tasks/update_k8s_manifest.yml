@@ -7,6 +7,7 @@
 
 - name: Backup the original manifest
   command: mv /srv/bluedata/kubernetes/k8s_manifest.json /srv/bluedata/kubernetes/k8s_manifest.orig
+  when: st.stat.exists  # Won't exist on arbiter node
 
 # NOTE: be sure to specify the correct version of the manifest file to copy
 - name: Copy the new manifest file
