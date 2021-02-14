@@ -1,13 +1,13 @@
 ---
 # Variables to override which tasks will run in install_platform.yml playbook
-#install_controller: no
-#add_gateways: no
-#add_ha_workers: no
-#configure_ha: no
-#configure_gateway_ports: no
-#configure_airgap: no
+install_controller: no
+add_gateways: no
+add_ha_workers: no
+configure_ha: no
+configure_gateway_ports: no
+configure_airgap: yes
 #configure_notification: no
-#add_host_tags: no
+add_host_tags: yes
 
 # Uncomment the folowing line to force add_k8s_hosts to include hosts in repair_pool
 #force_repair: true
@@ -22,13 +22,11 @@ platform:
   install_as_root: true
   controller: mip-bdcs-vm31.mip.storage.hpecorp.net
   gateways:
-    #- mip-bdcs-vm20.mip.storage.hpecorp.net    # Gateway 1
     - mip-bdcs-vm32.mip.storage.hpecorp.net    # Gateway 1
   ha_workers: 
     #- mip-bdcs-vm22.mip.storage.hpecorp.net    # Shadow
     #- mip-bdcs-vm31.mip.storage.hpecorp.net    # Arbiter
   k8s_workers:
-    #- mip-bdcs-vm21.mip.storage.hpecorp.net    # K8s Master 1
     - mip-bdcs-vm33.mip.storage.hpecorp.net    # K8s Master 1
     - mip-bdcs-vm34.mip.storage.hpecorp.net    # K8s Ingress 1
     - mip-bdcs-vm35.mip.storage.hpecorp.net    # K8s CP Worker 1
@@ -39,7 +37,7 @@ platform:
 
   bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
   version: hpe-cp-rhel-release-5.2-3020
-  #bin_url: "http://16.143.20.46:8080/rock/golden/haathi-5.1-GA/3011/hpe-cp-rhel-release-5.1-3011.bin"
+  #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
   #version: hpe-cp-rhel-release-5.1-3011
 
   disks:
@@ -102,7 +100,7 @@ controller:
   int_end_ip: 172.20.255.254
   int_gw_ip: 172.20.0.1
   int_nw_mask: 16
-  # TO-DO: Clean up certs
+  # TO-DO: Clean up certs. These are on the tower server 16.143.22.165
   ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
   ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
   # Setting for epicctl API calls - usually http regardless of using certs (move variable to platform sometime)
