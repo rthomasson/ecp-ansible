@@ -13,11 +13,11 @@
 - name: Create a fact with the session info from the API call  
   set_fact:
     session_id: "{{ session_res.location  | urlsplit('path') }}"
-   
-# Get the current list of tenants
-- name: Get the current set of tenants 
+
+# Get the current list of K8s tenants 
+- name: Get the current set of K8s tenants 
   uri:
-    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/tenant
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/tenant"
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
@@ -27,9 +27,10 @@
     status_code: 200
   register: tenant_res
 
-- name: Create a fact with parsed list of tenants from the APPI call  
+- name: Create a fact with the list of tenants from the API call  
   set_fact:
     tenants_list: "{{ tenant_res.json }}"
+    cacheable: True
 
 # Parse the k8s tenant name and ID from the JSON result of the GET tenants call and set target tenant ID
 - name: Parse the K8s cluster name and ID from the JSON result of the GET k8scluster call
