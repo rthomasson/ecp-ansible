@@ -51,7 +51,7 @@ platform:
 #      - /dev/sdc
   no_tenant_isolation: false
   precheck_file: "hpe-cp-prechecks-5.1.rhel.bin"
-  rest_protocol: https
+  rest_protocol: http
   validate_certs: no
   tools_dir: "/root/tools"         # place to store the kits like kubectl
 #  snmp:

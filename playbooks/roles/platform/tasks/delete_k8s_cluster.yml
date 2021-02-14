@@ -1,9 +1,10 @@
 ---
 - name: Obtain session token
   uri:
-    url: http://{{ platform.controller }}:8080/api/v1/login
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
     return_content: yes
     method: POST
+    validate_certs: "{{ platform.validate_certs }}"
     body_format: json
     body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
     status_code: 201
@@ -17,12 +18,13 @@
 # Get the current list of K8s clusters 
 - name: Get the current set of K8s clusters 
   uri:
-    url: http://{{ platform.controller }}:8080/api/v2/k8scluster
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8scluster
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_id }}" 
       accept: "application/json"
     method: GET
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 200
   register: k8scluster_res
 
@@ -46,6 +48,7 @@
       X-BDS-SESSION: "{{ session_id }}" 
       accept: "*/*"
     method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
   register: del_cluster_res
 
@@ -67,6 +70,7 @@
     headers:
       X-BDS-SESSION: "{{ session_id }}"  
     method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
   register: delsession_res
 
