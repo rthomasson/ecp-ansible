@@ -5,7 +5,7 @@ add_gateways: no
 add_ha_workers: no
 configure_ha: no
 configure_gateway_ports: no
-configure_airgap: yes
+configure_airgap: no
 #configure_notification: no
 add_host_tags: yes
 
@@ -29,11 +29,11 @@ platform:
   k8s_workers:
     - mip-bdcs-vm33.mip.storage.hpecorp.net    # K8s Master 1
     - mip-bdcs-vm34.mip.storage.hpecorp.net    # K8s Ingress 1
-    - mip-bdcs-vm35.mip.storage.hpecorp.net    # K8s CP Worker 1
-    - mip-bdcs-vm36.mip.storage.hpecorp.net    # K8s CP Worker 2
-    - mip-bdcs-vm37.mip.storage.hpecorp.net    # K8s Worker 1
-    - mip-bdcs-vm38.mip.storage.hpecorp.net    # K8s Worker 2
-    - mip-bdcs-vm39.mip.storage.hpecorp.net    # K8s Worker 3
+    - mip-bdcs-vm35.mip.storage.hpecorp.net    # K8s Ingress 2
+    - mip-bdcs-vm36.mip.storage.hpecorp.net    # K8s CP Worker 1
+    - mip-bdcs-vm37.mip.storage.hpecorp.net    # K8s CP Worker 2
+    - mip-bdcs-vm38.mip.storage.hpecorp.net    # K8s Worker 1
+    - mip-bdcs-vm39.mip.storage.hpecorp.net    # K8s Worker 2
 
   bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
   version: hpe-cp-rhel-release-5.2-3020
@@ -184,15 +184,14 @@ k8s_cluster:
     - mip-bdcs-vm36.mip.storage.hpecorp.net   # K8s CP Worker 2
   # If no host IPs are specified below, the cluster will be created using all K8s hosts in inventory
   master_nodes:
-    - 16.143.22.158                    # K8s Master 1
+    - 16.143.22.158                   # K8s Master 1
   ingress_nodes:
-    #- 16.143.22.158                    # K8s Ingress 1
-    - 16.143.22.159                    # K8s Ingress 2
-  cp_nodes:
-    - 16.143.22.160                   # K8s CP Worker 1
-    - 16.143.22.161                   # K8s CP Worker 2
+    - 16.143.22.159                   # K8s Ingress 1
+    - 16.143.22.160                   # K8s Ingress 2
+    cp_nodes:
+    - 16.143.22.161                   # K8s CP Worker 1
+    - 16.143.22.162                   # K8s CP Worker 2
   worker_nodes:
-    - 16.143.22.162
     - 16.143.22.163
     - 16.143.22.164
   id: 0
