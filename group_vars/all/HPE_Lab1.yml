@@ -28,7 +28,7 @@ platform:
     #- mip-bdcs-vm31.mip.storage.hpecorp.net    # Arbiter
   k8s_workers:
     - mip-bdcs-vm33.mip.storage.hpecorp.net    # K8s Master 1
-    - mip-bdcs-vm34.mip.storage.hpecorp.net    # K8s Ingress 1
+    - hpecp-splunk.mip.storage.hpecorp.net     # K8s Ingress 1
     - mip-bdcs-vm35.mip.storage.hpecorp.net    # K8s Ingress 2
     - mip-bdcs-vm36.mip.storage.hpecorp.net    # K8s CP Worker 1
     - mip-bdcs-vm37.mip.storage.hpecorp.net    # K8s CP Worker 2
@@ -158,9 +158,9 @@ k8s_worker_disks:
 #*** UPDATE file locations as needed
 k8s_tools:
   kubeconfig_dir: "/var/lib/awx/.kube"
-  kubeconfig_file: /tmp/kubeconfig_splunk.conf
+  kubeconfig_file: /tmp/kubeconfig_test.conf
   kubeconfig_context: CICL-splunk-admin
-  kubectl_cli_version: v1.17.5
+  kubectl_cli_version: v1.19.5
 
 k8s_istio:
   istio_home: "/var/lib/awx/istio-1.9.0"
@@ -173,15 +173,15 @@ k8s_openebs:
 k8s_cluster:
   name: test
   description: K8s cluster for Splunk 2.0
-  k8s_version: 1.17.5
+  k8s_version: 1.19.5
   # These FQDN vars are for istio, cert-manager, openebs, and wordpress playbooks
   # TO-DO: Standardize on IPs or FQDNs throughout
   ingress_gateway_hosts:
-    #- mip-bdcs-vm33.mip.storage.hpecorp.net   # K8s Ingress 1
-    - mip-bdcs-vm34.mip.storage.hpecorp.net   # K8s Ingress 2
+    - hpecp-splunk.mip.storage.hpecorp.net    # K8s Ingress 1
+    - mip-bdcs-vm35.mip.storage.hpecorp.net   # K8s Ingress 2
   control_plane_hosts:
-    - mip-bdcs-vm35.mip.storage.hpecorp.net   # K8s CP Worker 1
-    - mip-bdcs-vm36.mip.storage.hpecorp.net   # K8s CP Worker 2
+    - mip-bdcs-vm36.mip.storage.hpecorp.net   # K8s CP Worker 1
+    - mip-bdcs-vm37.mip.storage.hpecorp.net   # K8s CP Worker 2
   # If no host IPs are specified below, the cluster will be created using all K8s hosts in inventory
   master_nodes:
     - 16.143.22.158                   # K8s Master 1
