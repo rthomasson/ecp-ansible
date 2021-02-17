@@ -16,7 +16,7 @@ add_host_tags: yes
 # k8s_workers must be FQDN due to multiple Ansible hostvars[] references
 # TODO: Research how to do IP->FQDN lookup in Ansible inventory (for add_k8s_hosts.j2)
 platform:
-  name: HPE_Lab1
+  name: RTLAB
   type: onprem
   install_type: non-agent-based-install
   install_as_root: true
