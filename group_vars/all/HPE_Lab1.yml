@@ -188,7 +188,7 @@ k8s_cluster:
   ingress_nodes:
     - 16.143.22.159                   # K8s Ingress 1
     - 16.143.22.160                   # K8s Ingress 2
-    cp_nodes:
+  cp_nodes:
     - 16.143.22.161                   # K8s CP Worker 1
     - 16.143.22.162                   # K8s CP Worker 2
   worker_nodes:
