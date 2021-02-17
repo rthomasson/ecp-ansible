@@ -4,7 +4,6 @@ metadata:
   namespace: istio-system
 spec:
   hub: "{{airgap.container_repo_url}}/istio"
-  profile: default
   tag: 1.9.0
 
   meshConfig:
@@ -41,76 +40,6 @@ spec:
             maxSurge: 100%
             maxUnavailable: 25%
 
-    policy:
-      enabled: false
-      k8s:
-        env:
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: metadata.namespace
-        hpaSpec:
-          maxReplicas: 3
-          metrics:
-          - resource:
-              name: cpu
-              targetAverageUtilization: 80
-            type: Resource
-          minReplicas: 3
-          scaleTargetRef:
-            apiVersion: apps/v1
-            kind: Deployment
-            name: istio-policy
-        strategy:
-          rollingUpdate:
-            maxSurge: 100%
-            maxUnavailable: 25%
-
-    telemetry:
-      enabled: false
-      k8s:
-        env:
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              apiVersion: v1
-              fieldPath: metadata.namespace
-        - name: GOMAXPROCS
-          value: "6"
-        hpaSpec:
-          maxReplicas: 3
-          minReplicas: 3
-          scaleTargetRef:
-            apiVersion: apps/v1
-            kind: Deployment
-            name: istio-telemetry
-          metrics:
-          - resource:
-              name: cpu
-              targetAverageUtilization: 80
-            type: Resource
-        replicaCount: 1
-        resources:
-          requests:
-            cpu: 1000m
-            memory: 1G
-          limits:
-            cpu: 4800m
-            memory: 4G
-        strategy:
-          rollingUpdate:
-            maxSurge: "100%"
-            maxUnavailable: "25%"
-
-    citadel:
-      enabled: false
-      k8s:
-        strategy:
-          rollingUpdate:
-            maxSurge: 100%
-            maxUnavailable: 25%
-
     ingressGateways:
     - name: istio-ingressgateway
       enabled: true
@@ -141,7 +70,7 @@ spec:
           - name: s3
             port: 9997
             targetPort: 9997
-       hpaSpec:
+        hpaSpec:
           maxReplicas: {{ k8s_cluster.ingress_gateway_hosts|length }}
           minReplicas: {{ k8s_cluster.ingress_gateway_hosts|length }}
           scaleTargetRef:
@@ -168,71 +97,16 @@ spec:
     egressGateways:
     - name: istio-egressgateway
       enabled: false
-      k8s:
-        env:
-        - name: ISTIO_META_ROUTER_MODE
-          value: sni-dnat
-        service:
-          ports:
-          - name: http2
-            port: 80
-          - name: https
-            port: 443
-          - name: tls
-            port: 15443
-            targetPort: 15443
-        hpaSpec:
-          maxReplicas: 5
-          minReplicas: 1
-          scaleTargetRef:
-            apiVersion: apps/v1
-            kind: Deployment
-            name: istio-egressgateway
-          metrics:
-          - type: Resource
-            resource:
-              name: cpu
-              targetAverageUtilization: 80
-        resources:
-          requests:
-            cpu: 100m
-            memory: 128Mi
-          limits:
-            cpu: 2000m
-            memory: 1024Mi
-        strategy:
-          rollingUpdate:
-            maxSurge: 100%
-            maxUnavailable: 25%
 
     cni:
       enabled: false
   
     istiodRemote:
       enabled: false
-
- addonComponents:
-   prometheus:
-     enabled: true
-     k8s:
-       replicaCount: 1
-   kiali:
-     enabled: true
-     k8s:
-       replicaCount: 1
-   grafana:
-     enabled: true
-     k8s:
-       replicaCount: 1
-   tracing:
-     enabled: true
-   istiocoredns:
-     enabled: false
  
   values:
     base:
       validationURL: ""
-    clusterResources: true
     gateways:
       istio-egressgateway:
         autoscaleEnabled: true
@@ -250,8 +124,6 @@ spec:
       istio-ingressgateway:
         applicationPorts: ""
         autoscaleEnabled: true
-        debug: info
-        domain: ""
         env: {}
         meshExpansionPorts:
         - name: tcp-pilot-grpc-tls
@@ -267,6 +139,7 @@ spec:
           port: 853
           targetPort: 8853
         name: istio-ingressgateway
+        runAsRoot: true
         secretVolumes:
         - mountPath: /etc/istio/ingressgateway-certs
           name: ingressgateway-certs
@@ -276,41 +149,29 @@ spec:
           secretName: istio-ingressgateway-ca-certs
         type: LoadBalancer
         zvpn: {}
- 
- 
- 
     global:
       arch:
         amd64: 2
         ppc64le: 2
         s390x: 2
       configValidation: true
-      controlPlaneSecurityEnabled: true
       defaultNodeSelector: {}
       defaultPodDisruptionBudget:
         enabled: true
       defaultResources:
         requests:
           cpu: 10m
-      enableHelmTest: false
       imagePullPolicy: ""
       imagePullSecrets: []
       istioNamespace: istio-system
       istiod:
         enableAnalysis: false
-        enabled: true
       jwtPolicy: third-party-jwt
       logAsJson: false
       logging:
         level: default:info
-      meshExpansion:
-        enabled: false
-        useILB: false
       meshNetworks: {}
       mountMtlsCerts: false
-      multiCluster:
-        clusterName: ""
-        enabled: false
       network: ""
       omitSidecarInjectorConfigMap: false
       oneNamespace: false
@@ -322,8 +183,6 @@ spec:
         clusterDomain: cluster.local
         componentLogLevel: misc:error
         enableCoreDump: false
-        envoyStatsd:
-          enabled: false
         excludeIPRanges: ""
         excludeInboundPorts: ""
         excludeOutboundPorts: ""
@@ -372,118 +231,9 @@ spec:
           address: ""
       trustDomain: cluster.local
       useMCP: false
-    grafana:
-      accessMode: ReadWriteMany
-      contextPath: /grafana
-      dashboardProviders:
-        dashboardproviders.yaml:
-          apiVersion: 1
-          providers:
-          - disableDeletion: false
-            folder: istio
-            name: istio
-            options:
-              path: /var/lib/grafana/dashboards/istio
-            orgId: 1
-            type: file
-      datasources:
-        datasources.yaml:
-          apiVersion: 1
-      env: {}
-      envSecrets: {}
-      image:
-        repository: "{{airgap.container_repo_url}}/grafana/grafana"
-        tag: 6.7.4
-      nodeSelector: {istio-controlplane: "true"}
-      persist: true
-      podAntiAffinityLabelSelector: []
-      podAntiAffinityTermLabelSelector: []
-      security:
-        enabled: true
-        passphraseKey: passphrase
-        secretName: grafana
-        usernameKey: username
-      service:
-        annotations: {}
-        externalPort: 3000
-        name: http
-        type: ClusterIP
-      storageClassName: "mapr-nfscsi"
-      tolerations: [{key: "istio-controlplane",operator: "Equal", value: "true",effect: "NoSchedule"}]
-    istiocoredns:
-      coreDNSImage: {{airgap.container_repo_url}}/coredns/coredns
-      coreDNSPluginImage: istio/coredns-plugin:0.2-istio-1.1
-      coreDNSTag: 1.6.2
     istiodRemote:
       injectionURL: ""
-    kiali:
-      contextPath: /kiali
-      createDemoSecret: false
-      dashboard:
-        auth:
-          strategy: login
-        grafanaInClusterURL: http://grafana:3000
-        jaegerInClusterURL: http://tracing/jaeger
-        passphraseKey: passphrase
-        secretName: kiali
-        usernameKey: username
-        viewOnlyMode: false
-      hub: {{airgap.container_repo_url}}/quay.io/kiali
-      nodeSelector: {istio-controlplane: "true"}
-      podAntiAffinityLabelSelector: []
-      podAntiAffinityTermLabelSelector: []
-      security:
-        cert_file: /kiali-cert/cert-chain.pem
-        enabled: false
-        private_key_file: /kiali-cert/key.pem
-      service:
-        annotations: {}
-      tag: v1.18
-      tolerations: [{key: "istio-controlplane",operator: "Equal", value: "true",effect: "NoSchedule"}] 
-    mixer:
-      adapters:
-        kubernetesenv:
-          enabled: true
-        prometheus:
-          enabled: true
-          metricsExpiryDuration: 10m
-        stackdriver:
-          auth:
-            apiKey: ""
-            appCredentials: false
-            serviceAccountPath: ""
-          enabled: false
-          tracer:
-            enabled: false
-            sampleProbability: 1
-        stdio:
-          enabled: false
-          outputAsJson: false
-        useAdapterCRDs: false
-      policy:
-        adapters:
-          kubernetesenv:
-            enabled: true
-          useAdapterCRDs: false
-        autoscaleEnabled: true
-        image: mixer
-        sessionAffinityEnabled: false
-      telemetry:
-        autoscaleEnabled: true
-        env:
-          GOMAXPROCS: "6"
-        image: mixer
-        loadshedding:
-          latencyThreshold: 100ms
-          mode: enforce
-        nodeSelector: {}
-        podAntiAffinityLabelSelector: []
-        podAntiAffinityTermLabelSelector: []
-        replicaCount: 1
-        sessionAffinityEnabled: false
-        tolerations: []
     pilot:
-      appNamespaces: []
       autoscaleEnabled: true
       autoscaleMax: {{ k8s_cluster.control_plane_hosts|length }}
       autoscaleMin: {{ k8s_cluster.control_plane_hosts|length }}
@@ -497,37 +247,17 @@ spec:
       image: pilot
       keepaliveMaxServerConnectionAge: 30m
       nodeSelector: {istio-controlplane: "true"}
-      podAntiAffinityLabelSelector: []
-      podAntiAffinityTermLabelSelector: []
-      policy:
-        enabled: false
       replicaCount: {{ k8s_cluster.control_plane_hosts|length }}
       tolerations: [{key: "istio-controlplane",operator: "Equal", value: "true",effect: "NoSchedule"}]
       traceSampling: 1
-    prometheus:
-      contextPath: /prometheus
-      hub: "{{airgap.container_repo_url}}/prom"
-      nodeSelector: {istio-controlplane: "true"}
-      podAntiAffinityLabelSelector: []
-      podAntiAffinityTermLabelSelector: []
-      provisionPrometheusCert: true
-      retention: 6h
-      scrapeInterval: 15s
-      security:
-        enabled: true
-      tag: v2.20.1
-      tolerations: [{key: "istio-controlplane",operator: "Equal", value: "true",effect: "NoSchedule"}]
     sidecarInjectorWebhook:
       enableNamespacesByDefault: false
-      injectLabel: istio-injection
       objectSelector:
         autoInject: true
         enabled: false
       rewriteAppHTTPProbe: true
     telemetry:
       enabled: true
-      v1:
-        enabled: false
       v2:
         enabled: true
         metadataExchange: {}
@@ -539,52 +269,3 @@ spec:
           logging: false
           monitoring: false
           topology: false
-    tracing:
-      jaeger:
-        accessMode: ReadWriteMany
-        hub: "{{airgap.container_repo_url}}/jaegertracing"
-        memory:
-          max_traces: 50000
-        persist: false
-        spanStorageType: badger
-        storageClassName: "mapr-nfscsi"
-        tag: "1.16"
-      nodeSelector: {}
-      opencensus:
-        exporters:
-          stackdriver:
-            enable_tracing: true
-        hub: {{airgap.container_repo_url}}//omnition
-        resources:
-          limits:
-            cpu: "1"
-            memory: 2Gi
-          requests:
-            cpu: 200m
-            memory: 400Mi
-        tag: 0.1.9
-      podAntiAffinityLabelSelector: []
-      podAntiAffinityTermLabelSelector: []
-      provider: jaeger
-      service:
-        annotations: {}
-        externalPort: 9411
-        name: http-query
-        type: ClusterIP
-      zipkin:
-        hub: {{airgap.container_repo_url}}//openzipkin
-        javaOptsHeap: 700
-        maxSpans: 500000
-        node:
-          cpus: 2
-        probeStartupDelay: 10
-        queryPort: 9411
-        resources:
-          limits:
-            cpu: 1000m
-            memory: 2048Mi
-          requests:
-            cpu: 150m
-            memory: 900Mi
-        tag: 2.20.0
-    version: ""
