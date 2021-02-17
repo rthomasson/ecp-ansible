@@ -163,7 +163,7 @@ k8s_tools:
   kubectl_cli_version: v1.17.5
 
 k8s_istio:
-  istio_home: "/var/lib/awx/istio-1.6.5"
+  istio_home: "/var/lib/awx/istio-1.9.0"
 
 k8s_openebs:
   manifest_file: "openebs-operator-HA-1.9.0.yaml"
