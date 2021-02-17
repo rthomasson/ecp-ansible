@@ -116,7 +116,7 @@
     mode: 0777
     
 - name: Install Istio
-  command: "{{ k8s_istio.istio.home}}/bin/istioctl --kubeconfig /tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} install -f /tmp/{{ platform.name }}_istio.yaml --skip-confirmation"
+  command: "{{ k8s_istio.istio.home}}/bin/istioctl --kubeconfig /tmp/kubeconfig_{{platform.name}}_{{ k8s_cluster.name }}_{{credentials.site_admin_id}}.conf --context={{platform.name}}-{{ k8s_cluster.name }}-{{credentials.site_admin_id}} install -f /tmp/{{ platform.name }}_istio.yaml --skip-confirmation --verify"
   register: res_install_istio
   failed_when: res_install_istio.rc != 0
 
