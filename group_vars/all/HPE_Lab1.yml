@@ -7,7 +7,7 @@ configure_ha: no
 configure_gateway_ports: no
 configure_airgap: no
 #configure_notification: no
-add_host_tags: yes
+add_host_tags: no
 
 # Uncomment the folowing line to force add_k8s_hosts to include hosts in repair_pool
 #force_repair: true
