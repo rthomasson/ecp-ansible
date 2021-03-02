@@ -1,7 +1,7 @@
 ---
 # Cleanup tasks for ECP Hosts
-  - include_tasks: uninstall_ecp_on_host.yml
-    when: uninstall_ecp_on_host is defined and uninstall_ecp_on_host
+  - include_tasks: uninstall_ecp_on_hosts.yml
+    when: uninstall_ecp_on_hosts is defined and uninstall_ecp_on_hosts  
  
 # tasks file for controller
   - include_tasks: run_prechecks.yml
