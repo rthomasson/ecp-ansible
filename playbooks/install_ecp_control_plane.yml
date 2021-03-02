@@ -1,0 +1,27 @@
+---
+  - name: Install ECP control plane
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          ansible_user: stack
+          install_controller: yes
+          add_gateways: yes
+          
+          # To configure ECP for HA, set the add_ha_workers and configure_ha variables to yes
+          add_ha_workers: no
+          configure_ha: no
+          
+          # To configure a custom ECP gateway port range, set configure_gateway_ports to yes
+          configure_gateway_ports: no
+
+          # To configure ECP for an airgap installation, set configure_airgap to yes
+          configure_airgap: no
+
+          # To configure ECP notifications, set configure_notficiation to yes
+          configure_notification: no
+
+          # To add ECP host tags for use by K8s hosts, set  add_host_tags to yes
+          add_host_tags: no
+          

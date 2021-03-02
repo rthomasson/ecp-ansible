@@ -1,6 +1,9 @@
 ---
 #
-# This playbook deletes k8s nodes from a cluster (but doesn't delete the host from the platform)
+# This playbook removes nodes from a K8s cluster.
+# The nodes to be removed are designated in the variable:
+# The target cluster is designated by the variable:  
+# However, it does not delete the K8s host from the ECP platform.
 #
 # TODO: Add ability to specify a node state (e.g., "config_error") for nodes to delete
 
@@ -108,7 +111,7 @@
       - "*** K8s nodes to remove from remove_k8s_nodes.from_cluster ***"
       - "{{ lookup('template', 'remove_k8s_nodes_from_cluster.j2') | to_nice_yaml }}"
 
-- name: Remove K8s nodes from Cluster
+- name: Remove the designated nodes from the K8s Cluster
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080{{ target_cluster_id }}/change_task"
     return_content: yes

@@ -3,47 +3,34 @@
   - include_tasks: uninstall_ecp_on_hosts.yml
     when: uninstall_ecp_on_hosts is defined and uninstall_ecp_on_hosts  
  
-# tasks file for controller
+# This task runs ECP prechecks on the designated hosts
   - include_tasks: run_prechecks.yml
-    when: run_checks is defined and run_checks
+    when: run_prechecks is defined and run_prechecks
 
-# These tasks are for platform install via one epicctl call
-  - include_tasks: install_platform.yml
-    when: install is defined and install
-
-# These tasks are for platform install via separate epicctl calls
+############################################################################################
+# These tasks install/configure/patch the ECP control plane using epicctl and REST API calls
+############################################################################################
   - include_tasks: install_controller.yml
     when: install_controller is defined and install_controller
   - include_tasks: add_gateways.yml
     when: add_gateways is defined and add_gateways
-
   - include_tasks: configure_gateway_ports.yml
     when: configure_gateway_ports is defined and configure_gateway_ports
 
   - include_tasks: add_ha_workers.yml
     when: add_ha_workers is defined and add_ha_workers
-
   - include_tasks: configure_ha.yml
     when: configure_ha is defined and configure_ha
 
   - include_tasks: add_host_tags.yml
     when: add_host_tags is defined and add_host_tags
-
   - include_tasks: configure_airgap.yml
     when: configure_airgap is defined and configure_airgap
-
   - include_tasks: configure_notification.yml
     when: configure_notification is defined and configure_notification
 
   - include_tasks: apply_ecp_patches.yml
     when: apply_ecp_patches is defined and apply_ecp_patches
-
-  - include_tasks: apply_k8s_manifest_patch.yml
-    when: apply_k8s_manifest_patch is defined and apply_k8s_manifest_patch
-
-  - include_tasks: update_k8s_manifest.yml
-    when: update_k8s_manifest is defined and update_k8s_manifest
-
   - include_tasks: apply_ntp_fix_primary.yml
     when: apply_ntp_fix_primary is defined and apply_ntp_fix_primary
   - include_tasks: apply_ntp_fix_shadow.yml
@@ -52,46 +39,67 @@
   - include_tasks: configure_auth.yml
     when: configure_auth is defined and configure_auth
 
+#################################################################################
+# These tasks install/configure ECP K8s features using epicctl and REST API calls
+#################################################################################
+# These tasks are used to update ECP so that it will support K8s versions later than 1.18
+  - include_tasks: apply_k8s_manifest_patch.yml
+    when: apply_k8s_manifest_patch is defined and apply_k8s_manifest_patch
+  - include_tasks: update_k8s_manifest.yml
+    when: update_k8s_manifest is defined and update_k8s_manifest
+
+# These tasks add/remove K8s hosts from ECP
   - include_tasks: add_k8s_hosts.yml
     when: add_k8s_hosts is defined and add_k8s_hosts
   - include_tasks: delete_k8s_hosts.yml
     when: delete_k8s_hosts is defined and delete_k8s_hosts
+  - include_tasks: find_unassigned_k8s_hosts.yml
+    when: find_unassigned_k8s_hosts is defined and find_unassigned_k8s_hosts
+
+# These tasks add/delete/configure K8s clusters within ECP
   - include_tasks: create_k8s_cluster.yml
     when: create_k8s_cluster is defined and create_k8s_cluster
-  - include_tasks: add_k8s_nodes_to_cluster.yml
-    when: add_k8s_nodes_to_cluster is defined and add_k8s_nodes_to_cluster
-  - include_tasks: remove_k8s_nodes_from_cluster.yml
-    when: remove_k8s_nodes_from_cluster is defined and remove_k8s_nodes_from_cluster
   - include_tasks: delete_k8s_cluster.yml
     when: delete_k8s_cluster is defined and delete_k8s_cluster
+  - include_tasks: add_nodes_to_k8s_cluster.yml
+    when: add_nodes_to_k8s_cluster is defined and add_nodes_to_k8s_cluster
+  - include_tasks: remove_nodes_from_k8s_cluster.yml
+    when: remove_nodes_from_k8s_cluster is defined and remove_nodes_from_k8s_cluster
+
+# This task installs the MapR NFS Loopback CSI drvier in the K8s cluster
+  - include_tasks: install_k8s_maprcsi.yml
+    when: install_k8s_maprcsi is defined and install_k8s_maprcsi  
+
+# These tasks add/delete K8s tenants 
   - include_tasks: create_k8s_tenant.yml
     when: create_k8s_tenant is defined and create_k8s_tenant
   - include_tasks: delete_k8s_tenant.yml
     when: delete_k8s_tenant is defined and delete_k8s_tenant
-  - include_tasks: find_unassigned_k8s_hosts.yml
-    when: find_unassigned_k8s_hosts is defined and find_unassigned_k8s_hosts
 
+# This task applies K8s labels to K8s hosts using host tags already defined to
   - include_tasks: update_k8s_host_tags.yml
     when: update_k8s_host_tags is defined and update_k8s_host_tags
 
+# This task creates a copy of the kubeconfig file in the /tmp folder on the automation server 
   - include_tasks: setup_k8s_config.yml
     when: setup_k8s_config is defined and setup_k8s_config
 
+# These tasks install Istio and cert_manager into the K8s cluster
   - include_tasks: install_k8s_istio.yml
     when: install_k8s_istio is defined and install_k8s_istio
-  - include_tasks: install_k8s_maprcsi.yml
-    when: install_k8s_maprcsi is defined and install_k8s_maprcsi  
   - include_tasks: install_k8s_cert_manager.yml
     when: install_k8s_cert_manager is defined and install_k8s_cert_manager
 
+# This tasks installs OpenEBS into the K8s cluster
   - include_tasks: install_openebs.yml
     when: install_openebs is defined and install_openebs
 
+# This task installs the GMS Monitoring stack
   - include_tasks: install_k8s_gms_monitoring.yml
     when: install_k8s_gms_monitoring is defined and install_k8s_gms_monitoring
-    
+
+These tasks are for testing purposes    
   - include_tasks: install_wordpress.yml
     when: install_wordpress is defined and install_wordpress
-    
   - include_tasks: test_inventory_vars.yml
     when: test_inventory_vars is defined and test_inventory_vars

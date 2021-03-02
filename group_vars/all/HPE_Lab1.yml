@@ -194,6 +194,14 @@ k8s_cluster:
   worker_nodes:
     - 16.143.22.163
     - 16.143.22.164
+  # NOTE: this variable is only used by the add_nodes_to_k8s_cluster playbook
+  nodes_to_add:
+    - 16.143.22.160                   # K8s Ingress 2
+    - 16.143.22.162                   # K8s CP Worker 2
+  # NOTE: this variable is only used by the remove_nodes_from_k8s_cluster playbook
+  nodes_to_remove:
+    - 16.143.22.160                   # K8s Ingress 2
+    - 16.143.22.162                   # K8s CP Worker 2
   id: 0
   pod_network_range: "10.192.0.0/12"
   service_network_range: "10.96.0.0/12"
