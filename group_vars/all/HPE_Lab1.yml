@@ -1,5 +1,5 @@
 ---
-# Variables to override which tasks will run in install_platform.yml playbook
+# Variables to override which tasks will run in install_ecp_control_plane.yml playbook
 install_controller: no
 add_gateways: no
 add_ha_workers: no
