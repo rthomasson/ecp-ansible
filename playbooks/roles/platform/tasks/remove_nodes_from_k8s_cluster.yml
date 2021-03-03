@@ -121,7 +121,7 @@
 
 - debug:
       msg:
-      - "*** K8s nodes to remove from remove_k8s_nodes.from_cluster ***"
+      - "*** K8s nodes to remove from the {{ k8s_cluster.target_cluster_name }} K8s cluster ***"
       - "{{ nodes_to_remove_JSON | to_nice_yaml }}"
 
 - name: Remove the designated nodes from the K8s Cluster
