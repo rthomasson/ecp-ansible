@@ -65,7 +65,7 @@
       - "{{ k8s_cluster.target_cluster_name }}"
 
 - fail:
-    msg: Error - Specified cluster name -- (k8s_cluster.target_cluster_name) id -- target_cluster_id not found
+    msg: Error - The specified cluster name -- (k8s_cluster.target_cluster_name) does not match any existing K8s cluster
   when: target_cluster_id is undefined
 
 # Get the current set of k8shosts 
