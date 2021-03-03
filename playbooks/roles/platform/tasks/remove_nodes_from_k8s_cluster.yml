@@ -9,11 +9,11 @@
 
 # Validate vars for nodes to delete
 - fail:
-    msg: "Error: Specify only node_list OR node_status"
+    msg: "Error: Specify only node_list OR node_status. Both the nodes to remove list and the status are defined."
   when: k8s_cluster.nodes_to_remove.list is defined and k8s_cluster.nodes_to_remove.status is defined
 
 - fail:
-    msg: "Error: Must specify either node_list OR node_status"
+    msg: "Error: Must specify either node_list OR node_status. Both the nodes to remove list and the status are undefined."
   when: k8s_cluster.nodes_to_remove.list is undefined and k8s_cluster.nodes_to_remove.status is undefined
 
 - name: Obtain session token
