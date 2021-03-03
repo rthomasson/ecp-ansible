@@ -195,7 +195,7 @@ k8s_cluster:
     - 16.143.22.163
     - 16.143.22.164
   # NOTE: this variable is only used by the add_nodes_to_k8s_cluster and remove_nodes_from_k8s_cluster playbooks
-  target_cluster_name: spark
+  target_cluster_name: test
   # NOTE: this variable is only used by the add_nodes_to_k8s_cluster playbook
   nodes_to_add:
     - 16.143.22.160                   # K8s Ingress 2

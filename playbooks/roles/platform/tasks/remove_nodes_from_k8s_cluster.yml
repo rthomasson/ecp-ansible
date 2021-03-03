@@ -65,7 +65,7 @@
       - "{{ k8s_cluster.target_cluster_name }}"
 
 - fail:
-    msg: "Error - The specified cluster name: [{{ k8s_cluster.target_cluster_name }}] does not match any existing K8s cluster"
+    msg: "Error - The specified cluster name: [{{ k8s_cluster.target_cluster_name }}] does not match an existing K8s cluster"
   when: target_cluster_id is undefined
 
 # Get the current set of k8shosts 
@@ -95,6 +95,7 @@
 - name: Create empty list
   set_fact:
     k8s_ips_to_remove: []
+    cacheable: True  
 
 # NOTE: the list of nodes in k8s_cluster.nodes_to_be_removed.list can contain either hostnames or IP addresses
 - name: Create list of validated hosts to remove based on enumerated list of k8s nodes
