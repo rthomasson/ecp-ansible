@@ -24,4 +24,10 @@
 
           # To add ECP host tags for use by K8s hosts, set  add_host_tags to yes
           add_host_tags: no
+
+          # These playbooks are only needed for ECP 5.1
+          apply_ecp_patches: no
+          apply_ntp_fix_primary: no
+          apply_ntp_fix_shadow: no
+          
           

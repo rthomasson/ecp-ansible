@@ -195,9 +195,9 @@ k8s_cluster:
   # In order for ECP 5.2 to support K8s version 1.19, the following playbooks must be run BEFORE creating the K8s cluster
   # apply_k8s_manifest_patch.yml
   # update_k8s_manifest.yml
-   k8s_version: 1.19.5
+  k8s_version: 1.19.5
  
-   # These FQDN vars are for istio, cert-manager, openebs, and wordpress playbooks
+  # These FQDN vars are for istio, cert-manager, openebs, and wordpress playbooks
   # TO-DO: Standardize on IPs or FQDNs throughout
   ingress_gateway_hosts:
     - hpecp-splunk.mip.storage.hpecorp.net    # K8s Ingress 1

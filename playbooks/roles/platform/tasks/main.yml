@@ -66,7 +66,7 @@
   - include_tasks: remove_nodes_from_k8s_cluster.yml
     when: remove_nodes_from_k8s_cluster is defined and remove_nodes_from_k8s_cluster
 
-# This task installs the MapR NFS Loopback CSI drvier in the K8s cluster
+# This task installs the MapR NFS Loopback CSI driver in the K8s cluster
   - include_tasks: install_k8s_maprcsi.yml
     when: install_k8s_maprcsi is defined and install_k8s_maprcsi  
 
