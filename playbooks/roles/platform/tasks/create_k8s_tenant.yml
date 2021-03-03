@@ -9,7 +9,7 @@
     method: POST
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    body: { "name": "{{ ecp_credentials.site_admin_id }}", "password": "{{ ecp_credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
 

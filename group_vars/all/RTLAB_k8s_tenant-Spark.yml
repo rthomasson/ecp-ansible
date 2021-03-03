@@ -7,7 +7,7 @@ platform:
   rest_protocol: http
   validate_certs: no
 
-credentials:
+ecp_credentials:
   # Default installation accounts and password based SSH
   site_admin_id: admin
   site_admin_password: admin123
