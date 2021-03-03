@@ -209,7 +209,7 @@ k8s_cluster:
     list: 
       - 16.143.22.160                   # K8s Ingress 2
       - 16.143.22.162                   # K8s CP Worker 2
-    status:   
+  #  status:   
   id: 0
   pod_network_range: "10.192.0.0/12"
   service_network_range: "10.96.0.0/12"
