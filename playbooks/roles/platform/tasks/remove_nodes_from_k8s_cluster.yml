@@ -109,8 +109,8 @@
 - name: Create list of validated hosts to remove based on k8s node status
   set_fact:
     k8s_ips_to_remove: "{{ k8s_ips_to_remove + [item | json_query('host_id')] }}"
-  when: k8s_cluster.nodes_to_remove.status is defined and
-        item | json_query('status') == k8s_cluster.nodes_to_remove.status
+  when: (k8s_cluster.nodes_to_remove.status is defined and
+        item | json_query('status') == k8s_cluster.nodes_to_remove.status)
   loop: "{{ k8shosts_list }}"
 
 - debug:
