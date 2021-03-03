@@ -82,6 +82,10 @@
       - "*** K8s cluster to add nodes to: ***"
       - "{{ k8s_cluster.target_cluster_name }}"
 
+- fail:
+    msg: "Error - The specified cluster name: [{{ k8s_cluster.target_cluster_name }}] does not match an existing K8s cluster"
+  when: target_cluster_id is undefined
+
 - name: Add K8s nodes to Cluster
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080{{ target_cluster_id }}/change_task"
