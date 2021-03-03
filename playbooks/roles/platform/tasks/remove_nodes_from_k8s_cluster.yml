@@ -9,7 +9,7 @@
 
 # Validate vars for nodes to delete
 - fail:
-    msg: "Error: Specify only node_list OR node_status. Both the nodes to remove list and the status are defined."
+    msg: "Error: Specify only k8s_cluster.nodes_to_remove.list OR k8s_cluster.nodes_to_remove.status. Both the nodes to remove list and the status are defined."
   when: k8s_cluster.nodes_to_remove.list is defined and k8s_cluster.nodes_to_remove.status is defined
 
 - fail:
