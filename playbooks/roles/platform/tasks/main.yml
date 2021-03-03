@@ -98,7 +98,7 @@
   - include_tasks: install_k8s_gms_monitoring.yml
     when: install_k8s_gms_monitoring is defined and install_k8s_gms_monitoring
 
-These tasks are for testing purposes    
+# These tasks are for testing purposes    
   - include_tasks: install_wordpress.yml
     when: install_wordpress is defined and install_wordpress
   - include_tasks: test_inventory_vars.yml
