@@ -39,7 +39,7 @@
     target_tenant_id: "{{ item | json_query('tenant_id') | regex_replace('/api/v2/tenant/') }}"
     #target_tenant_id: "{{ item | json_query('tenant_id') }}"
     cacheable: true
-  when: "{{ item | json_query('tenant_name') == k8s.tenant.target_tenant_name }}"  
+  when: "{{ item | json_query('tenant_name') == ecp_k8s.tenant.target_tenant_name }}"  
   loop: "{{ tenants_list | json_query('_embedded.tenants[*].{tenant_name: label.name, tenant_id: _links.self.href}') }}"
 
 - debug:
