@@ -116,7 +116,7 @@
 # Create a fact for the JSON that will be used in the REST API call to remove the nodes
 - name: Create empty list
   set_fact:
-    nodes_to_remove_JSON: "{{ lookup('template','remove_k8s_nodes_from_cluster.j2') }}"
+    nodes_to_remove_JSON: "{{ lookup('template','remove_nodes_from_k8s_cluster.j2') }}"
     cacheable: True  
 
 - debug:
