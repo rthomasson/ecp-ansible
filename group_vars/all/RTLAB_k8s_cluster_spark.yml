@@ -11,6 +11,16 @@ platform:
   rest_protocol: http
   validate_certs: no
 
+credentials:
+  # Default installation accounts
+  site_admin_id: admin
+  site_admin_password: admin123
+  ssh:
+    access_type: password_access
+    password: admin123
+    username: root
+    usergroup: root
+
 k8s_cluster:
   name: spark
   description: K8s cluster for Spark exploration
