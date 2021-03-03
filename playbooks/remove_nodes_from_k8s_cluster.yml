@@ -5,7 +5,7 @@
     roles:
       - role: platform
         vars:
-          remove_k8s_nodes_from_cluster: yes
+          remove_nodes_from_k8s_cluster: yes
           
    
     
