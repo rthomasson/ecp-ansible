@@ -7,7 +7,7 @@ platform:
   type: onprem
   install_type: non-agent-based-install
   install_as_root: true
-  controller: mip-bdcs-vm35.mip.storage.hpecorp.net
+  controller: mip-bdcs-vm31.mip.storage.hpecorp.net
   rest_protocol: http
   validate_certs: no
 
