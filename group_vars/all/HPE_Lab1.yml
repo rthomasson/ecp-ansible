@@ -1,13 +1,27 @@
 ---
 # Variables to override which tasks will run in install_ecp_control_plane.yml playbook
-install_controller: no
-add_gateways: no
+#install_controller: no
+#add_gateways: no
+
+# This lab is not configured for HA, so don't run the HA playbooks
 add_ha_workers: no
 configure_ha: no
+
+# This lab uses the default gateway port assignments
 configure_gateway_ports: no
+
+# This lab is NOT configured for airgap
 configure_airgap: no
-#configure_notification: no
+
+# This lab is not setup for handling notifications
+configure_notification: no
+
 add_host_tags: no
+
+# This lab is on ECP 5.2 and does not need the patches
+apply_ecp_patches: no
+apply_ntp_fix_primary: no
+apply_ntp_fix_shadow: no
 
 # Uncomment the folowing line to force add_k8s_hosts to include hosts in repair_pool
 #force_repair: true
@@ -35,6 +49,7 @@ platform:
     - mip-bdcs-vm38.mip.storage.hpecorp.net    # K8s Worker 1
     - mip-bdcs-vm39.mip.storage.hpecorp.net    # K8s Worker 2
 
+  # This lab is running ECP 5.2  
   bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
   version: hpe-cp-rhel-release-5.2-3020
   #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
@@ -171,10 +186,18 @@ k8s_openebs:
   persistant_volume_claim_file: "openebs_create_pvc.yaml"
 
 k8s_cluster:
-  name: test
-  description: K8s cluster for Splunk 2.0
-  k8s_version: 1.19.5
-  # These FQDN vars are for istio, cert-manager, openebs, and wordpress playbooks
+  name: spark
+  description: K8s cluster for Spark exploration
+
+  #####################
+  # I M P O R T A N T #
+  #####################
+  # In order for ECP 5.2 to support K8s version 1.19, the following playbooks must be run BEFORE creating the K8s cluster
+  # apply_k8s_manifest_patch.yml
+  # update_k8s_manifest.yml
+   k8s_version: 1.19.5
+ 
+   # These FQDN vars are for istio, cert-manager, openebs, and wordpress playbooks
   # TO-DO: Standardize on IPs or FQDNs throughout
   ingress_gateway_hosts:
     - hpecp-splunk.mip.storage.hpecorp.net    # K8s Ingress 1
@@ -209,6 +232,7 @@ k8s_cluster:
     list: 
       - 16.143.22.160                   # K8s Ingress 2
       - 16.143.22.162                   # K8s CP Worker 2
+      - 16.143.22.164                   # K8s Worker 2
   #  status:   
   id: 0
   pod_network_range: "10.192.0.0/12"
