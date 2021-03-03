@@ -1,0 +1,50 @@
+---
+# To Create a K8s tenant, only basic platform information is needed
+platform:
+  name: RTLAB
+  type: onprem
+  controller: mip-bdcs-vm31.mip.storage.hpecorp.net
+  rest_protocol: http
+  validate_certs: no
+
+credentials:
+  # Default installation accounts and password based SSH
+  site_admin_id: admin
+  site_admin_password: admin123
+  ssh:
+#    access_type: ssh_key_access
+    access_type: password_access
+#    keypair_file: /home/stack/.ssh/prod_ecp_rsa
+#    keypair_name: prod_ecp_rsa
+#    key_passphrase: bubAIdT^k2l}
+    password: admin123
+    username: root
+    usergroup: root
+
+ecp_k8s:
+  tenant:
+    name: Spark
+    description: K8s cluster for Spark
+    # Name of the K8s cluster this tenant is to be associated with
+    cluster_name: test
+    # Set the namespace name to be created or adopted. If not adopting an existing namespace and no namespace name is given, a unique name will be generated
+    specified_namespace_name: spark
+    # Flag to determine if associated namespace and all its contents should be deleted when the tenant is deleted. Defaults to true
+    #is_namespace_owner: true
+    # Flag to enable service mesh. This MUST be set to true for Splunk 2.0
+    #enable_service_mesh_flag: true
+    # Flag to map K8s servceis to HPE CP Gateway. This MUST be set to true for Splunk 2.0
+    map_services_to_gateway_flag: true
+    # Flag to adopt existing namespace fo the tenant. If set to true, a namespace name MUST be provided. If false, a namespace will be created
+    #adopt_existing_namespace_flag: false
+    # The following variables set the resource quotas for the new tenant. If not defined, resources will not be limited.
+    # NOTE: for Splunk 2.0 no resource quotas will be set.
+    quotas: null
+      # cores: 64
+      # Set the ephemeral disk space limit in GB
+      # disk: 512
+      # Set the persistent disk space limit in GB. Must be an integer > 20
+      # persistent: 1024
+      # gpus: 0
+      # Set the maximum memory limit in GB
+      # memory: 1024

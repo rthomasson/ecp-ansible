@@ -1,49 +1,49 @@
 {
   "label": {
-    "name": "{{ k8s_cluster.name }}",
-    "description": "{{ k8s_cluster.description }}"
+    "name": "{{ ecp_k8s.cluster.name }}",
+    "description": "{{ ecp_k8s.cluster.description }}"
   },
-  "k8s_version": "{{ k8s_cluster.k8s_version }}",
-  "pod_network_range": "{{ k8s_cluster.pod_network_range }}",
-  "service_network_range": "{{ k8s_cluster.service_network_range }}",
-  "pod_dns_domain": "{{ k8s_cluster.pod_dns_domain }}",
+  "k8s_version": "{{ ecp_k8s.cluster.k8s_version }}",
+  "pod_network_range": "{{ ecp_k8s.cluster.pod_network_range }}",
+  "service_network_range": "{{ ecp_k8s.cluster.service_network_range }}",
+  "pod_dns_domain": "{{ ecp_k8s.cluster.pod_dns_domain }}",
   "addons": [],
   "k8shosts_config": [
-{% if k8s_cluster.master_nodes is undefined %}
-{% set k8s_cluster.master_nodes = groups['k8s_master_nodes'] %}
+{% if ecp_k8s.cluster.master_nodes is undefined %}
+{% set ecp_k8s.cluster.master_nodes = groups['k8s_master_nodes'] %}
 {% endif %}
-{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in k8s_cluster.master_nodes %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in ecp_k8s.cluster.master_nodes %}
     {
       "node": "{{ item | json_query('host_id') }}",
       "role": "master",
     },
 {% endfor %}
-{% if k8s_cluster.ingress_nodes is undefined %}
-{% set k8s_cluster.ingress_nodes = groups['k8s_ingress_nodes'] %}
+{% if ecp_k8s.cluster.ingress_nodes is undefined %}
+{% set ecp_k8s.cluster.ingress_nodes = groups['k8s_ingress_nodes'] %}
 {% endif %}
-{% if k8s_cluster.ingress_nodes %}
-    {% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in k8s_cluster.ingress_nodes %}
+{% if ecp_k8s.cluster.ingress_nodes %}
+    {% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in ecp_k8s.cluster.ingress_nodes %}
        {
          "node": "{{ item | json_query('host_id') }}",
          "role": "worker",
        },
     {% endfor %}
 {% endif %}
-{% if k8s_cluster.cp_nodes is undefined %}
-{% set k8s_cluster.cp_nodes = groups['k8s_cp_nodes'] %}
+{% if ecp_k8s.cluster.cp_nodes is undefined %}
+{% set ecp_k8s.cluster.cp_nodes = groups['k8s_cp_nodes'] %}
 {% endif %}
-{% if k8s_cluster.cp_nodes %}
-   {% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in k8s_cluster.cp_nodes %}
+{% if ecp_k8s.cluster.cp_nodes %}
+   {% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in ecp_k8s.cluster.cp_nodes %}
        {
          "node": "{{ item | json_query('host_id') }}",
          "role": "worker",
        },
    {% endfor %}
 {% endif %}
-{% if k8s_cluster.worker_nodes is undefined %}
-{% set k8s_cluster.worker_nodes = groups['k8s_worker_nodes'] %}
+{% if ecp_k8s.cluster.worker_nodes is undefined %}
+{% set ecp_k8s.cluster.worker_nodes = groups['k8s_worker_nodes'] %}
 {% endif %}
-{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in k8s_cluster.worker_nodes %}
+{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in ecp_k8s.cluster.worker_nodes %}
     {
       "node": "{{ item | json_query('host_id') }}",
       "role": "worker",

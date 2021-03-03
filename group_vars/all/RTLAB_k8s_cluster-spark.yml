@@ -1,0 +1,101 @@
+---
+# To create a K8s cluster, only basic platform information is needed
+platform:
+  name: RTLAB
+  type: onprem
+  controller: mip-bdcs-vm31.mip.storage.hpecorp.net
+  rest_protocol: http
+  validate_certs: no
+
+credentials:
+  # Default installation accounts and password based SSH access
+  site_admin_id: admin
+  site_admin_password: admin123
+  ssh:
+#    access_type: ssh_key_access
+    access_type: password_access
+#    keypair_file: /home/stack/.ssh/prod_ecp_rsa
+#    keypair_name: prod_ecp_rsa
+#    key_passphrase: bubAIdT^k2l}
+    password: admin123
+    username: root
+    usergroup: root
+
+ecp_k8s:
+  cluster:
+    name: spark
+    description: K8s cluster for Spark exploration
+
+    #####################
+    # I M P O R T A N T #
+    #####################
+    # In order for ECP 5.2 to support K8s version 1.19, the following playbooks must be run BEFORE creating the K8s cluster
+    # apply_k8s_manifest_patch.yml
+    # update_k8s_manifest.yml
+    k8s_version: 1.19.5
+ 
+    # These FQDN vars are for istio, cert-manager, openebs, and wordpress playbooks
+    # TO-DO: Standardize on IPs or FQDNs throughout
+    ingress_gateway_hosts:
+      - mip-bdcs-vm37.mip.storage.hpecorp.net   # K8s Ingress 1
+    control_plane_hosts: null
+    #  - mip-bdcs-vm36.mip.storage.hpecorp.net   # K8s CP Worker 1
+    #  - mip-bdcs-vm37.mip.storage.hpecorp.net   # K8s CP Worker 2
+
+    # If no host IPs are specified below, the cluster will be created using all K8s hosts in inventory
+    master_nodes:
+      - 16.143.22.160                   # K8s Master 1
+    ingress_nodes:
+      - 16.143.22.162                   # K8s Ingress 1
+    cp_nodes: null
+    #  - 16.143.22.161                   # K8s CP Worker 1
+    #  - 16.143.22.162                   # K8s CP Worker 2
+    worker_nodes:
+      - 16.143.22.164
+  
+    # NOTE: this variable is only used by the add_nodes_to_k8s_cluster and remove_nodes_from_k8s_cluster playbooks
+    target_cluster_name: test
+    # NOTE: this variable is only used by the add_nodes_to_k8s_cluster playbook
+    nodes_to_add:
+      - 16.143.22.160                   # K8s Ingress 2
+      - 16.143.22.162                   # K8s CP Worker 2
+    # NOTES:
+    #  1. This variable is only used by the remove_nodes_from_k8s_cluster playbook
+    #  2. The list of nodes to remove can be designated using IP addresses or hostnames
+    #  3. Alternatively, a node status can be used to designate the nodes to remove
+    #     HOWEVER, either the list or the status must be empty. You can't use both 
+    nodes_to_remove:
+      list: 
+        - 16.143.22.160                   # K8s Ingress 2
+        - 16.143.22.162                   # K8s CP Worker 2
+        - 16.143.22.164                   # K8s Worker 2
+    #  status:   
+    id: 0
+    pod_network_range: "10.192.0.0/12"
+    service_network_range: "10.96.0.0/12"
+    pod_dns_domain: "cluster.local"
+    cert_data:
+      root_ca_cert: 
+      root_ca_key:
+      front_proxy_ca_cert:
+      front_proxy_ca_key:
+      etcd_ca_cert:
+      etcd_ca_key:
+    ext_identity_server:
+      type: LDAP
+      ip: 
+      port: 0
+      auth_service_location_host:
+      auth_service_location_port: 0
+      timeout_ms: 1000
+      reorder_after_failover: false
+      user_attribute:
+      bind_type: search_bind
+      base_dn:
+      security_protocol: none
+      cacert_filename:
+      nt_domain:
+      bind_dn:
+      bind_pwd:
+      verify_peer: true
+    external_groups: cn=Common_Name,ou=Organizational_Unit,dc=Domain_Component

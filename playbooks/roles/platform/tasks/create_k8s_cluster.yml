@@ -37,15 +37,15 @@
     msg: "***Creating K8s Cluster***"
 - debug:
     msg: "Cluster Master Node: {{ item }}"
-  loop: "{{ k8s_cluster.master_nodes }}"
+  loop: "{{ ecp_k8s.cluster.master_nodes }}"
 
 - debug:
     msg: "Cluster Ingress Node: {{ item }}"
-  loop: "{{ k8s_cluster.ingress_nodes }}"
+  loop: "{{ ecp_k8s.cluster.ingress_nodes }}"
 
 - debug:
     msg: "Cluster Worker Node: {{ item }}"
-  loop: "{{ k8s_cluster.worker_nodes }}"
+  loop: "{{ ecp_k8s.cluster.worker_nodes }}"
       
 - name: Create K8s Cluster
   uri:
