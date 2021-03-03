@@ -116,7 +116,7 @@
 - debug:
       msg:
       - "*** K8s nodes to remove from remove_k8s_nodes.from_cluster ***"
-      - "{{ lookup('template', 'remove_k8s_nodes_from_cluster.j2') | to_nice_yaml }}"
+      - "{{ lookup('template', 'remove_nodes_from_k8s_cluster.j2') | to_nice_yaml }}"
 
 - fail:
     msg: "******Just debugging for now"
