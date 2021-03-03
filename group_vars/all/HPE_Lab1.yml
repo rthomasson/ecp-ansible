@@ -265,6 +265,9 @@ ecp_k8s:
       # Set the maximum memory limit in GB
       # memory: 1024
 
+    # NOTE: this variable is only used by the delete_k8s_tenant playbook
+    target_tenant_name: test
+
   #*** UPDATE file locations as needed
   tools:
     kubeconfig_dir: "/var/lib/awx/.kube"

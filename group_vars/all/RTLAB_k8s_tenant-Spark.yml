@@ -48,3 +48,6 @@ ecp_k8s:
       # gpus: 0
       # Set the maximum memory limit in GB
       # memory: 1024
+    
+    # NOTE: this variable is only used by the delete_k8s_tenant playbook
+    target_tenant_name: Spark
