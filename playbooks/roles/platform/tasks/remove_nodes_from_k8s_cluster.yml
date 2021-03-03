@@ -113,10 +113,16 @@
         item | json_query('status') == k8s_cluster.nodes_to_remove.status)
   loop: "{{ k8shosts_list }}"
 
+# Create a fact for the JSON that will be used in the REST API call to remove the nodes
+- name: Create empty list
+  set_fact:
+    nodes_to_remove_JSON: "{{ lookup('template','remove_k8s_nodes_from_cluster.j2') }}"
+    cacheable: True  
+
 - debug:
       msg:
       - "*** K8s nodes to remove from remove_k8s_nodes.from_cluster ***"
-      - "{{ lookup('template', 'remove_nodes_from_k8s_cluster.j2') | to_nice_yaml }}"
+      - "{{ nodes_to_remove_JSON | to_nice_yaml }}"
 
 - name: Remove the designated nodes from the K8s Cluster
   uri:
@@ -129,7 +135,7 @@
     method: POST
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: "{{ lookup('template','remove_k8s_nodes_from_cluster.j2') }}"
+    body: "{{ nodes_to_remove_JSON }}"
     status_code: 204
   register: cluster_res
 
