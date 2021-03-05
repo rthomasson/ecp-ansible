@@ -54,7 +54,7 @@
 - debug:
     msg: "Input file Content: "
 - debug:
-    msg: "{{ tenant_JSON | | to_nice_yaml }}"
+    msg: "{{ tenant_JSON | to_nice_yaml }}"
 
 - name: Create K8s tenant
   uri:
