@@ -6,11 +6,11 @@
 # Validate vars for nodes to delete
 - fail:
     msg: "Error: Specify only host_list OR host_status"
-  when: delete_k8s_hosts.host_list is defined and delete_k8s_hosts.host_status is defined
+  when: platform.hosts.k8s_hosts_to_delete.list is defined and platform.hosts.k8s_hosts_to_delete.status is defined
 
 - fail:
     msg: "Error: Must specify either host_list OR host_status"
-  when: delete_k8s_hosts.host_list is undefined and delete_k8s_hosts.host_status is undefined
+  when: platform.hosts.k8s_hosts_to_delete.list is undefined and platform.hosts.k8s_hosts_to_delete.status is undefined
 
 - name: Obtain session token
   uri:
@@ -62,9 +62,9 @@
     k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
     k8s_ips_to_restore: "{{ k8s_ips_to_restore + [item | json_query('hostname')] }}"
     cacheable: True
-  when: delete_k8s_hosts.host_list is defined and
-        (item | json_query('ansible_host') in delete_k8s_hosts.host_list or 
-        item | json_query('hostname') in delete_k8s_hosts.host_list)
+  when: platform.hosts.k8s_hosts_to_delete.list is defined and
+        (item | json_query('ansible_host') in platform.hosts.k8s_hosts_to_delete.list or 
+        item | json_query('hostname') in platform.hosts.k8s_hosts_to_delete.list)
   loop: "{{ k8shosts_list }}"
 
 - name: Create list of hosts to delete based on k8s host status
@@ -72,8 +72,8 @@
     k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
     k8s_ips_to_restore: "{{ k8s_ips_to_restore + [item | json_query('hostname')] }}"
     cacheable: True
-  when: delete_k8s_hosts.host_status is defined and
-        item | json_query('status') == delete_k8s_hosts.host_status
+  when: platform.hosts.k8s_hosts_to_delete.status is defined and
+        item | json_query('status') == platform.hosts.k8s_hosts_to_delete.status
   loop: "{{ k8shosts_list }}"
 
 # Use add_k8s_hosts.j2 to create a YAML file for re-adding the hosts we just deleted
@@ -88,7 +88,7 @@
 #     platform:
 #       k8s_workers: "{{ k8s_ips_to_restore }}" 
 
-- name: Prepare input file for epicctl (skipping any in repair_pool)
+- name: Prepare input file for API REST call (skipping any hosts in the repair_pool host group)
   template:
     src: re-add_k8s_hosts.j2
     dest: "{{ input_file }}"

@@ -103,4 +103,4 @@ ecp_k8s:
         - 16.143.22.160                   # K8s Ingress 2
         - 16.143.22.162                   # K8s CP Worker 2
         - 16.143.22.164                   # K8s Worker 2
-    #  status:   
+      # status:   

@@ -45,12 +45,28 @@ platform:
       - mip-bdcs-vm37.mip.storage.hpecorp.net    # K8s CP Worker 2
       - mip-bdcs-vm38.mip.storage.hpecorp.net    # K8s Worker 1
       - mip-bdcs-vm39.mip.storage.hpecorp.net    # K8s Worker 2
+
+    ###############################################
+    # ONLY USED TO DELETE K8S HOSTS FROM PLATFORM #
+    # The list can be either IPs or FQDNs         #
+    ###############################################
+    k8s_hosts_to_delete:
+      list:
+        - mip-bdcs-vm35.mip.storage.hpecorp.net   
+        - mip-bdcs-vm37.mip.storage.hpecorp.net    
+        - mip-bdcs-vm39.mip.storage.hpecorp.net
+      # status:       
+
   install:
     install_type: non-agent-based-install
     install_as_root: true
-    # This lab is running ECP 5.2  
+    # Installer and version info for ECP 5.3  
     bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
     version: hpe-cp-rhel-release-5.2-3020
+    # Installer and version info for ECP 5.2  
+    bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
+    version: hpe-cp-rhel-release-5.2-3020
+    # Installer and version info for ECP 5.1  
     #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
     #version: hpe-cp-rhel-release-5.1-3011
     precheck_file: "hpe-cp-prechecks-5.1.rhel.bin"
