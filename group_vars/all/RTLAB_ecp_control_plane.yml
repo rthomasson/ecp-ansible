@@ -1,0 +1,133 @@
+---
+#======================================================================================
+# Variables to determine which tasks will run in install_ecp_control_plane.yml playbook
+#======================================================================================
+#install_controller: no
+#add_gateways: no
+
+# This lab is not configured for HA, so don't run the HA playbooks
+add_ha_workers: no
+configure_ha: no
+
+# This lab uses the default gateway port assignments
+configure_gateway_ports: no
+
+# This lab is NOT configured for airgap
+configure_airgap: no
+
+# This lab is not setup for handling notifications
+configure_notification: no
+add_host_tags: no
+
+# This lab does not need the ECP 5.1 patches
+apply_ecp_patches: no
+apply_ntp_fix_primary: no
+apply_ntp_fix_shadow: no
+
+# Controller, gateways, and ha_workers can be either IP or FQDN
+# k8s_workers must be FQDN due to multiple Ansible hostvars[] references
+# TODO: Research how to do IP->FQDN lookup in Ansible inventory (for add_k8s_hosts.j2)
+platform:
+  name: RTLAB
+  type: onprem
+  controller: mip-bdcs-vm31.mip.storage.hpecorp.net
+  hosts:
+    gateways:
+      - mip-bdcs-vm32.mip.storage.hpecorp.net    # Gateway 1
+    ha_hosts: 
+      #- mip-bdcs-vm22.mip.storage.hpecorp.net    # Shadow
+      #- mip-bdcs-vm31.mip.storage.hpecorp.net    # Arbiter
+    k8s_hosts:
+      - mip-bdcs-vm33.mip.storage.hpecorp.net    # K8s Master 1
+      - hpecp-splunk.mip.storage.hpecorp.net     # K8s Ingress 1
+      - mip-bdcs-vm35.mip.storage.hpecorp.net    # K8s Ingress 2
+      - mip-bdcs-vm36.mip.storage.hpecorp.net    # K8s CP Worker 1
+      - mip-bdcs-vm37.mip.storage.hpecorp.net    # K8s CP Worker 2
+      - mip-bdcs-vm38.mip.storage.hpecorp.net    # K8s Worker 1
+      - mip-bdcs-vm39.mip.storage.hpecorp.net    # K8s Worker 2
+  install:
+    install_type: non-agent-based-install
+    install_as_root: true
+    # This lab is running ECP 5.2  
+    bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
+    version: hpe-cp-rhel-release-5.2-3020
+    #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
+    #version: hpe-cp-rhel-release-5.1-3011
+    precheck_file: "hpe-cp-prechecks-5.1.rhel.bin"
+    disks:
+      node_disks:
+        - /dev/sdb
+        - /dev/sdc
+      no_tenant_storage: true
+      hdfs_disks:
+       # - /dev/sdc
+    controller:
+      bd_domain: hpelab
+      bd_prefix: ecp
+      int_start_ip: 172.20.0.2
+      int_end_ip: 172.20.255.254
+      int_gw_ip: 172.20.0.1
+      int_nw_mask: 16
+      # TO-DO: Clean up certs. These are on the tower server 16.143.22.165
+      ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
+      ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
+      # Setting for epicctl API calls - usually http regardless of using certs (move variable to platform sometime)
+      api_scheme: http
+    gateways:
+      gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+      # TO-DO: clean up certs
+      # These are the cert filenames in the platform after install
+      ssl_cert_file: cert.pem
+      ssl_key_file: key.pem
+      port_mapping_start: 10000
+      port_mapping_end: 11000
+    # Set the hosts IDs below to 3 and 4 if one gateway is configured, 4 and 5 if two gateways are configured
+    shadow_host_id: 4
+    arbiter_host_id: 5
+    no_tenant_isolation: false
+  rest_protocol: http
+  validate_certs: no
+  tools_dir: "/root/tools"         # place to store the kits like kubectl
+
+ecp_airgap_settings:
+  container_repo_url: 16.143.22.165:8080/hpecp
+  # container_repo_username:
+  # container_repo_password:
+  # container_repo_secure_flag:
+  # container_repo_cert:
+  # yum_repo_gpg_key:
+  # yum_rpm_gpg_key:
+  # yum_repo_url: http://16.143.20.46:8080/scratch/qa/repos/kubernetes/   # Unsupported - bad RPM
+  yum_repo_url: http://bd-repos1.mip.storage.hpecorp.net/kubernetes/
+  
+ecp_credentials:
+  # Default installation accounts
+  site_admin_id: admin
+  site_admin_password: admin123
+  ssh:
+    # access_type: ssh_key_access
+    access_type: password_access
+    # keypair_file: /home/stack/.ssh/prod_ecp_rsa
+    # keypair_name: prod_ecp_rsa
+    # key_passphrase: bubAIdT^k2l}
+    password: admin123
+    username: root
+    usergroup: root
+
+ecp_notification:
+  # snmp:
+      # server: "10.9.7.232"
+      # community: "public"
+      # engine: "Engine"
+      # user: "Username"
+      # authpassword: "Authpassword"
+      # authprotocol: "MD5"          # SHA, MD5
+      # privilege: "authPriv"        # authPriv, authNoPriv, noAuthNoPriv
+      # privprotocol: "AES"          # AES, DES
+      # privpassword: "privpassword"
+  # smtp:
+      # email: "test@mail.com"
+      # server: "smtp@mail.com"
+      # user: "username"
+      # password: "password"
+

@@ -44,15 +44,16 @@ ecp_k8s:
 
     # If no host IPs are specified below, the cluster will be created using all K8s hosts in inventory
     master_nodes:
-      - 16.143.22.160                   # K8s Master 1
+      - 16.143.22.158                   # K8s Master 1
     ingress_nodes:
-      - 16.143.22.162                   # K8s Ingress 1
+      - 16.143.22.159                   # K8s Ingress 1
     cp_nodes: null
     #  - 16.143.22.161                   # K8s CP Worker 1
     #  - 16.143.22.162                   # K8s CP Worker 2
     worker_nodes:
-      - 16.143.22.164
-  
+      - 16.143.22.161
+      - 16.143.22.163
+
     id: 0
     pod_network_range: "10.192.0.0/12"
     service_network_range: "10.96.0.0/12"
