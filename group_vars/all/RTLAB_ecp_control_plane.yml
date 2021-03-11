@@ -54,8 +54,8 @@ platform:
       list:
         - mip-bdcs-vm35.mip.storage.hpecorp.net   
         - mip-bdcs-vm37.mip.storage.hpecorp.net    
-        - mip-bdcs-vm39.mip.storage.hpecorp.net
-      # status:       
+        # - mip-bdcs-vm39.mip.storage.hpecorp.net
+      # status: ready      
 
   install:
     install_type: non-agent-based-install

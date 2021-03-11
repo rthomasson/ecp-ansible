@@ -88,7 +88,7 @@
 #     platform:
 #       k8s_workers: "{{ k8s_ips_to_restore }}" 
 
-- name: Prepare input file for API REST call (skipping any hosts in the repair_pool host group)
+- name: Prepare input file for API REST call in case we need to recover and put the hosts back in the platform
   template:
     src: re-add_k8s_hosts.j2
     dest: "{{ input_file }}"
