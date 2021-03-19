@@ -4,17 +4,23 @@
 # NOTE: Prior to running this playbook, the installer bin file needs to be placed in the /tmp/ecp folder on the Tower server. 
 
 - name: Find the location(s) of the installer bin file if it exists
-  find:
+  ansible.builtin.find:
     paths: /
     recurse: yes
     patterns: "{{ platform.install.version }}.bin"
   register: result
 
-- name: Create a fact with the file stats of the first installer bin file found on the host  
-  set_fact:
-    file_data: "{{ result.files[0] }}"
-    cacheable: True
+- name: Set file stats when the installer bin file exists
+  stat:
+    path: {{ result.files[0].path }}
+  register: file_data
   when: result.matched >= 0 
+
+# - name: Create a fact with the file stats of the first installer bin file found on the host  
+#   set_fact:
+#     file_data: "{{ result.files[0] }}"
+#     cacheable: True
+#   when: result.matched >= 0 
 
 - name: Report the result of the find
   debug:
