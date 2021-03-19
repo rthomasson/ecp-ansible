@@ -11,12 +11,15 @@
     - "Input file content: "
     - "{{ lookup('template', 'platform_controller.j2') }}"
 
-- name: Run epicctl command to install controller only
-  command: "epicctl op -f /tmp/{{ platform.name }}_platform_controller.yml -n {{ platform.name }}"
+- name: Run epicctl command to output its version
+  command: "epicctl -v"
   register: res
   failed_when: res.rc != 0
 
-# Set hcp_host_id variable values in Ansible inventory
+- name: Run epicctl command to install ECP controller 
+  command: "epicctl op -f /tmp/{{ platform.name }}_platform_controller.yml -n {{ platform.name }}"
+  register: res
+  failed_when: res.rc != 0
 
 - debug:
     msg: "{{ res.stdout }}"

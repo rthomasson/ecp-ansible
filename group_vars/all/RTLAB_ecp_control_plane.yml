@@ -31,6 +31,8 @@ platform:
   name: RTLAB
   type: onprem
   controller: mip-bdcs-vm31.mip.storage.hpecorp.net
+  # Setting for API calls - usually http regardless 
+  api_scheme: http
   hosts:
     gateways:
       - mip-bdcs-vm32.mip.storage.hpecorp.net    # Gateway 1
@@ -61,22 +63,24 @@ platform:
     install_type: non-agent-based-install
     install_as_root: true
     # Installer and version info for ECP 5.3  
-    bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
-    version: hpe-cp-rhel-release-5.2-3020
+    bin_url: "file://mip-bdcs-vm40.mip.storage.hpecorp.net/tmp/ecp/hpe-cp-rhel-release-5.3-151.bin"  
+    version: hpe-cp-rhel-release-5.3-151
     # Installer and version info for ECP 5.2  
-    bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
-    version: hpe-cp-rhel-release-5.2-3020
+    # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
+    # version: hpe-cp-rhel-release-5.2-3020
     # Installer and version info for ECP 5.1  
     #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
     #version: hpe-cp-rhel-release-5.1-3011
     precheck_file: "hpe-cp-prechecks-5.1.rhel.bin"
+    
     disks:
       node_disks:
         - /dev/sdb
-        - /dev/sdc
-      no_tenant_storage: true
+        # - /dev/sdc
+      no_tenant_storage: false
       hdfs_disks:
-       # - /dev/sdc
+       - /dev/sdc
+    
     controller:
       bd_domain: hpelab
       bd_prefix: ecp
@@ -87,20 +91,21 @@ platform:
       # TO-DO: Clean up certs. These are on the tower server 16.143.22.165
       ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
       ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
-      # Setting for epicctl API calls - usually http regardless of using certs (move variable to platform sometime)
-      api_scheme: http
+
     gateways:
       gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
       # TO-DO: clean up certs
       # These are the cert filenames in the platform after install
-      ssl_cert_file: cert.pem
-      ssl_key_file: key.pem
+      # ssl_cert_file: cert.pem
+      # ssl_key_file: key.pem
       port_mapping_start: 10000
       port_mapping_end: 11000
+
     # Set the hosts IDs below to 3 and 4 if one gateway is configured, 4 and 5 if two gateways are configured
     shadow_host_id: 4
     arbiter_host_id: 5
     no_tenant_isolation: false
+  proxy: http://web-proxy.corp.hpecorp.net:8080 
   rest_protocol: http
   validate_certs: no
   tools_dir: "/root/tools"         # place to store the kits like kubectl

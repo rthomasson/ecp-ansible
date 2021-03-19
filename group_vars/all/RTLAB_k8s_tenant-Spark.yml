@@ -26,7 +26,7 @@ ecp_k8s:
     name: Spark
     description: K8s cluster for Spark
     # Name of the K8s cluster this tenant is to be associated with
-    cluster_name: test
+    cluster_name: spark
     # Set the namespace name to be created or adopted. If not adopting an existing namespace and no namespace name is given, a unique name will be generated
     specified_namespace_name: spark
     # Flag to determine if associated namespace and all its contents should be deleted when the tenant is deleted. Defaults to true

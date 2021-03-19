@@ -1,0 +1,294 @@
+---
+#======================================================================================
+# Variables to determine which tasks will run in install_ecp_control_plane.yml playbook
+#======================================================================================
+#install_controller: no
+#add_gateways: no
+# This lab is not configured for HA, so don't run the HA playbooks
+add_ha_workers: no
+configure_ha: no
+# This lab uses the default gateway port assignments
+configure_gateway_ports: no
+# This lab is NOT configured for airgap
+configure_airgap: no
+# This lab is not setup for handling notifications
+configure_notification: no
+add_host_tags: no
+# This lab is on ECP 5.2 and does not need the patches
+apply_ecp_patches: no
+apply_ntp_fix_primary: no
+apply_ntp_fix_shadow: no
+
+# Controller, gateways, and ha_workers can be either IP or FQDN
+# k8s_workers must be FQDN due to multiple Ansible hostvars[] references
+# TODO: Research how to do IP->FQDN lookup in Ansible inventory (for add_k8s_hosts.j2)
+platform:
+  name: RTLAB
+  type: onprem
+  controller: mip-bdcs-vm31.mip.storage.hpecorp.net
+  hosts:
+    gateways:
+      - mip-bdcs-vm32.mip.storage.hpecorp.net    # Gateway 1
+    ha_hosts: 
+      #- mip-bdcs-vm22.mip.storage.hpecorp.net    # Shadow
+      #- mip-bdcs-vm31.mip.storage.hpecorp.net    # Arbiter
+    k8s_hosts:
+      - mip-bdcs-vm33.mip.storage.hpecorp.net    # K8s Master 1
+      - hpecp-splunk.mip.storage.hpecorp.net     # K8s Ingress 1
+      - mip-bdcs-vm35.mip.storage.hpecorp.net    # K8s Ingress 2
+      - mip-bdcs-vm36.mip.storage.hpecorp.net    # K8s CP Worker 1
+      - mip-bdcs-vm37.mip.storage.hpecorp.net    # K8s CP Worker 2
+      - mip-bdcs-vm38.mip.storage.hpecorp.net    # K8s Worker 1
+      - mip-bdcs-vm39.mip.storage.hpecorp.net    # K8s Worker 2
+  install:
+    install_type: non-agent-based-install
+    install_as_root: true
+    # This lab is running ECP 5.2  
+    bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
+    version: hpe-cp-rhel-release-5.2-3020
+    #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
+    #version: hpe-cp-rhel-release-5.1-3011
+    precheck_file: "hpe-cp-prechecks-5.1.rhel.bin"
+    disks:
+      node_disks:
+        - /dev/sdb
+        - /dev/sdc
+      no_tenant_storage: true
+      hdfs_disks:
+       # - /dev/sdc
+    controller:
+      bd_domain: hpelab
+      bd_prefix: ecp
+      int_start_ip: 172.20.0.2
+      int_end_ip: 172.20.255.254
+      int_gw_ip: 172.20.0.1
+      int_nw_mask: 16
+      # TO-DO: Clean up certs. These are on the tower server 16.143.22.165
+      ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
+      ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
+      # Setting for epicctl API calls - usually http regardless of using certs (move variable to platform sometime)
+      api_scheme: http
+    gateways:
+      gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+      # TO-DO: clean up certs
+      # These are the cert filenames in the platform after install
+      ssl_cert_file: cert.pem
+      ssl_key_file: key.pem
+      port_mapping_start: 10000
+      port_mapping_end: 11000
+    # Set the hosts IDs below to 3 and 4 if one gateway is configured, 4 and 5 if two gateways are configured
+    shadow_host_id: 4
+    arbiter_host_id: 5
+    no_tenant_isolation: false
+  rest_protocol: http
+  validate_certs: no
+  tools_dir: "/root/tools"         # place to store the kits like kubectl
+
+ecp_airgap_settings:
+  container_repo_url: 16.143.22.165:8080/hpecp
+  #container_repo_username:
+  #container_repo_password:
+  #container_repo_secure_flag:
+  #container_repo_cert:
+  #yum_repo_gpg_key:
+  #yum_rpm_gpg_key:
+  #yum_repo_url: http://16.143.20.46:8080/scratch/qa/repos/kubernetes/   # Unsupported - bad RPM
+  yum_repo_url: http://bd-repos1.mip.storage.hpecorp.net/kubernetes/
+  
+ecp_credentials:
+  # Default installation accounts
+  site_admin_id: admin
+  site_admin_password: admin123
+  ssh:
+#    access_type: ssh_key_access
+    access_type: password_access
+#    keypair_file: /home/stack/.ssh/prod_ecp_rsa
+#    keypair_name: prod_ecp_rsa
+#    key_passphrase: bubAIdT^k2l}
+    password: admin123
+    username: root
+    usergroup: root
+
+ecp_k8s:
+  configuration:
+    # Disk configuration for k8s masters
+    master_node_disks:
+      ephemeral_disks:
+        - /dev/sdb
+        - /dev/sdc
+      no_tenant_storage: true
+      persistent_disks:
+    #    - /dev/sdc
+
+    # Disk configuration for k8s ingress
+    ingress_node_disks:
+      ephemeral_disks:
+        - /dev/sdb
+        - /dev/sdc
+      no_tenant_storage: true
+      persistent_disks:
+    #    - /dev/sdc
+
+    # Disk configuration for k8s cp workers
+    cp_nodes_disks:
+      ephemeral_disks:
+        - /dev/sdb
+        - /dev/sdc
+      no_tenant_storage: true
+      persistent_disks:
+    #    - /dev/sdc
+
+    # Disk configuration for k8s workers
+    worker_node_disks:
+      ephemeral_disks:
+        - /dev/sdb
+        - /dev/sdc
+      no_tenant_storage: true
+      persistent_disks:
+    #      - /dev/sdc
+
+  cluster:
+    name: spark
+    description: K8s cluster for Spark exploration
+
+    #####################
+    # I M P O R T A N T #
+    #####################
+    # In order for ECP 5.2 to support K8s version 1.19, the following playbooks must be run BEFORE creating the K8s cluster
+    # apply_k8s_manifest_patch.yml
+    # update_k8s_manifest.yml
+    k8s_version: 1.19.5
+ 
+    # These FQDN vars are for istio, cert-manager, openebs, and wordpress playbooks
+    # TO-DO: Standardize on IPs or FQDNs throughout
+    ingress_gateway_hosts:
+    #  - hpecp-splunk.mip.storage.hpecorp.net    # K8s Ingress 1
+      - mip-bdcs-vm35.mip.storage.hpecorp.net   # K8s Ingress 2
+    control_plane_hosts:
+    #  - mip-bdcs-vm36.mip.storage.hpecorp.net   # K8s CP Worker 1
+    #  - mip-bdcs-vm37.mip.storage.hpecorp.net   # K8s CP Worker 2
+
+    # If no host IPs are specified below, the cluster will be created using all K8s hosts in inventory
+    master_nodes:
+    #  - 16.143.22.158                   # K8s Master 1
+    ingress_nodes:
+      - 16.143.22.159                   # K8s Ingress 1
+      - 16.143.22.160                   # K8s Ingress 2
+    cp_nodes:
+      - 16.143.22.161                   # K8s CP Worker 1
+      - 16.143.22.162                   # K8s CP Worker 2
+    worker_nodes:
+      - 16.143.22.163
+      - 16.143.22.164
+    # NOTE: this variable is only used by the add_nodes_to_k8s_cluster and remove_nodes_from_k8s_cluster playbooks
+    target_cluster_name: test
+    # NOTE: this variable is only used by the add_nodes_to_k8s_cluster playbook
+    nodes_to_add:
+      - 16.143.22.160                   # K8s Ingress 2
+      - 16.143.22.162                   # K8s CP Worker 2
+    # NOTES:
+    #  1. This variable is only used by the remove_nodes_from_k8s_cluster playbook
+    #  2. The list of nodes to remove can be designated using IP addresses or hostnames
+    #  3. Alternatively, a node status can be used to designate the nodes to remove
+    #     HOWEVER, either the list or the status must be empty. You can't use both 
+    nodes_to_remove:
+      list: 
+        - 16.143.22.160                   # K8s Ingress 2
+        - 16.143.22.162                   # K8s CP Worker 2
+        - 16.143.22.164                   # K8s Worker 2
+    #  status:   
+    id: 0
+    pod_network_range: "10.192.0.0/12"
+    service_network_range: "10.96.0.0/12"
+    pod_dns_domain: "cluster.local"
+    cert_data:
+      root_ca_cert: 
+      root_ca_key:
+      front_proxy_ca_cert:
+      front_proxy_ca_key:
+      etcd_ca_cert:
+      etcd_ca_key:
+    ext_identity_server:
+      type: LDAP
+      ip: 
+      port: 0
+      auth_service_location_host:
+      auth_service_location_port: 0
+      timeout_ms: 1000
+      reorder_after_failover: false
+      user_attribute:
+      bind_type: search_bind
+      base_dn:
+      security_protocol: none
+      cacert_filename:
+      nt_domain:
+      bind_dn:
+      bind_pwd:
+      verify_peer: true
+    external_groups: cn=Common_Name,ou=Organizational_Unit,dc=Domain_Component
+
+  # Uncomment the folowing line to force the add_k8s_hosts playbook to include hosts in the repair_pool
+  #force_repair: true
+
+  istio:
+    istio_home: "/var/lib/awx/istio-1.9.0"
+
+  openebs:
+    manifest_file: "openebs-operator-HA-1.9.0.yaml"
+    storage_class_file: "openebs_create_storageclass.yaml"
+    persistant_volume_claim_file: "openebs_create_pvc.yaml"
+
+  tenant:
+    name: Spark
+    description: K8s cluster for Spark
+    # Name of the K8s cluster this tenant is to be associated with
+    cluster_name: test
+    # Set the namespace name to be created or adopted. If not adopting an existing namespace and no namespace name is given, a unique name will be generated
+    specified_namespace_name: spark
+    # Flag to determine if associated namespace and all its contents should be deleted when the tenant is deleted. Defaults to true
+    #is_namespace_owner: true
+    # Flag to enable service mesh. This MUST be set to true for Splunk 2.0
+    #enable_service_mesh_flag: true
+    # Flag to map K8s servceis to HPE CP Gateway. This MUST be set to true for Splunk 2.0
+    map_services_to_gateway_flag: true
+    # Flag to adopt existing namespace fo the tenant. If set to true, a namespace name MUST be provided. If false, a namespace will be created
+    #adopt_existing_namespace_flag: false
+    # The following variables set the resource quotas for the new tenant. If not defined, resources will not be limited.
+    # NOTE: for Splunk 2.0 no resource quotas will be set.
+    quotas: 
+      # cores: 64
+      # Set the ephemeral disk space limit in GB
+      # disk: 512
+      # Set the persistent disk space limit in GB. Must be an integer > 20
+      # persistent: 1024
+      # gpus: 0
+      # Set the maximum memory limit in GB
+      # memory: 1024
+
+    # NOTE: this variable is only used by the delete_k8s_tenant playbook
+    target_tenant_name: test
+
+  #*** UPDATE file locations as needed
+  tools:
+    kubeconfig_dir: "/var/lib/awx/.kube"
+    kubeconfig_file: /tmp/kubeconfig_test.conf
+    kubeconfig_context: CICL-splunk-admin
+    kubectl_cli_version: v1.19.5
+
+ecp_notification:
+  #  snmp:
+  #    server: "10.9.7.232"
+  #    community: "public"
+  #    engine: "Engine"
+  #    user: "Username"
+  #    authpassword: "Authpassword"
+  #    authprotocol: "MD5"          # SHA, MD5
+  #    privilege: "authPriv"        # authPriv, authNoPriv, noAuthNoPriv
+  #    privprotocol: "AES"          # AES, DES
+  #    privpassword: "privpassword"
+  #  smtp:
+  #    email: "test@mail.com"
+  #    server: "smtp@mail.com"
+  #    user: "username"
+  #    password: "password"
+
