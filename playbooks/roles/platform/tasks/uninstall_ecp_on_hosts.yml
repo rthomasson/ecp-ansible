@@ -1,12 +1,13 @@
 ---
 # This task uninstalls ECP components on the designated hosts by running the installer with the --erase option on each host and then removing the installer.
+# It uses only one platform variable - platform.install.version as it mostly concerned with file manipulation and does not interact with ECP directly  
 # NOTE: Prior to running this playbook, the installer bin file needs to be placed in the /tmp/ecp folder on the Tower server. 
 
 - name: Find the location(s) of the installer bin file if it exists
   find:
     paths: /
     recurse: yes
-    patterns: "{{ platform.version }}.bin"
+    patterns: "{{ platform.install.version }}.bin"
     register: matched_files
 
  - name: Create a fact with the file stats of the first installer bin file found on the host  
@@ -15,35 +16,35 @@
       cacheable: True
     when: matched_files.matched >= 0 
 
-- name: Set file stats when the installer bin file does not exists
+- name: Set file stats when the installer bin file does not exist
   stat:
-    path: /opt/bluedata/bundles/{{ platform.version }}
+    path: /opt/bluedata/bundles/{{ platform.install.version }}
   register: file_data
   when: matched_files.matched = 0 
 
 - name: Report if the bin file exists and is executable
   debug:
-    msg: "The file {{ platform.version }} exists and is executable. Preparing to uninstall ECP..."
+    msg: "The file {{ platform.install.version }} exists and is executable. Preparing to uninstall ECP..."
   when: 
     - file_data.stat.exists
     - file_data.stat.executable  
 
 - name: Report if the bin file exists and is NOT executable
   debug:
-    msg: "The file {{ platform.version }} exists but is NOT executable. Changing installer file to executable and preparing to uninstall ECP..."
+    msg: "The file {{ platform.install.version }} exists but is NOT executable. Changing installer file to executable and preparing to uninstall ECP..."
   when: 
     - file_data.stat.exists
     - not file_data.stat.executable  
 
 - name: Report if the bin file does NOT exist
   debug:
-    msg: "The file {{ platform.version }} does NOT exist. Preparing to copy the installer bin from the Tower server..."
+    msg: "The file {{ platform.install.version }} does NOT exist. Preparing to copy the installer bin from the Tower server..."
   when: not file_data.stat.exists
 
 # - name: Copy the bin file from the Tower server if it doesn't exist on the target host
 #   fetch:
-#     src: "/tmp/ecp/{{ platform.version }}.bin"
-#     dest: "/tmp/{{ platform.verion }}.bin"
+#     src: "/tmp/ecp/{{ platform.install.version }}.bin"
+#     dest: "/tmp/{{ platform.install.verion }}.bin"
 #     remote_src: yes
 #     mode: a+x
     # NOTE: include the following options if SELinux is set to enforcing
