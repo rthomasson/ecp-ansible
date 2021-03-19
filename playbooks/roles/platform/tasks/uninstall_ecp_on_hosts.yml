@@ -16,18 +16,12 @@
     cacheable: True
   when: matched_files.matched >= 0 
 
-- name: Set file stats when the installer bin file does not exist
-  stat:
-    path: /opt/bluedata/bundles/{{ platform.install.version }}
-  register: file_data
-  when: matched_files.matched == 0 
-
 - name: Report if the bin file exists and is executable
   debug:
     msg: "The file {{ platform.install.version }} exists and is executable. Preparing to uninstall ECP..."
   when: 
-    - file_data.stat.exists
-    - file_data.stat.executable  
+    - file_data.exists
+    - file_data.executable  
 
 - name: Report if the bin file exists and is NOT executable
   debug:
@@ -35,6 +29,18 @@
   when: 
     - file_data.stat.exists
     - not file_data.stat.executable  
+
+- name: Set file stats when the installer bin file does not exist
+  stat:
+    path: /opt/bluedata/bundles/{{ platform.install.version }}
+  register: file_stats
+  when: matched_files.matched == 0 
+
+- name: Update fact if installer bin file does not exist  
+  set_fact:
+    file_data: file_stats.stat
+    cacheable: True
+  when: matched_files.matched == 0 
 
 - name: Report if the bin file does NOT exist
   debug:
