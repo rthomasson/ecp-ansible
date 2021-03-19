@@ -12,7 +12,7 @@
 
 - name: Set file stats when the installer bin file exists
   stat:
-    path: {{ result.files[0].path }}
+    path: result.files[0].path 
   register: file_data
   when: result.matched >= 0 
 
