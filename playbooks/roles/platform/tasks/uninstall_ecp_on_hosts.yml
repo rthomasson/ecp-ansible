@@ -10,6 +10,10 @@
     patterns: "{{ platform.install.version }}.bin"
   register: result
 
+- name: Report the path from the result of the find
+  debug:
+    msg: "The path file data is: {{ result.files[0].path }}"
+
 - name: Set file stats when the installer bin file exists
   stat:
     path: result.files[0].path 
