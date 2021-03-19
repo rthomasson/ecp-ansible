@@ -12,9 +12,9 @@
 
 - name: Create a fact with the file stats of the first installer bin file found on the host  
   set_fact:
-    file_data: "{{ result.results[0] }}"
+    file_data: "{{ result.files[0] }}"
     cacheable: True
-  when: matched_files.matched >= 0 
+  when: result.matched >= 0 
 
 - name: Report the result of the find
   debug:
