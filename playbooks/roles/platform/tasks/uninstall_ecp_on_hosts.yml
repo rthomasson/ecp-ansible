@@ -16,7 +16,8 @@
 
 - name: Set file stats when the installer bin file exists
   stat:
-    path: result.files[0].path 
+    # path: result.files[0].path 
+    path: /root/{{platform.install.version}}.bin
   register: file_data
   when: result.matched >= 0 
 
