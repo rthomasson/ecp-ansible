@@ -10,22 +10,22 @@
     patterns: "{{ platform.install.version }}.bin"
   register: result
 
+- name: Create a fact with the file stats of the first installer bin file found on the host  
+  set_fact:
+    file_path: result.files[0].path
+    cacheable: True
+  when: result.matched >= 0 
+
 - name: Report the path from the result of the find
   debug:
-    msg: "There were {{result.matched}} instances of the installer file found. The path to the first instance of the installer file is: {{ result.files[0].path }}"
+    msg: "There were {{result.matched}} instances of the installer file found. The path to the first instance of the installer file is: {{ file_path }}"
 
 - name: Set file stats when the installer bin file exists
   stat:
     # path: result.files[0].path 
-    path: /root/{{platform.install.version}}.bin
+    path: file_path
   register: file_data
   when: result.matched >= 0 
-
-# - name: Create a fact with the file stats of the first installer bin file found on the host  
-#   set_fact:
-#     file_data: "{{ result.files[0] }}"
-#     cacheable: True
-#   when: result.matched >= 0 
 
 - name: Report the result of the find
   debug:
