@@ -12,7 +12,7 @@
 
 - name: Report the path from the result of the find
   debug:
-    msg: "There were {{result.matched}} instances of the installer file found. The path to the first instance of installer file is: {{ result.files[0].path }}"
+    msg: "There were {{result.matched}} instances of the installer file found. The path to the first instance of the installer file is: {{ result.files[0].path }}"
 
 - name: Set file stats when the installer bin file exists
   stat:
