@@ -16,6 +16,10 @@
     cacheable: True
   when: matched_files.matched >= 0 
 
+- name: Report the result of the find
+  debug:
+    msg: "The file data is: {{ file_data }}"
+
 - name: Report if the bin file exists and is executable
   debug:
     msg: "The file {{ platform.install.version }} exists and is executable. Preparing to uninstall ECP..."
