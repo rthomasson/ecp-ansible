@@ -10,11 +10,11 @@
     patterns: "{{ platform.install.version }}.bin"
     register: matched_files
 
- - name: Create a fact with the file stats of the first installer bin file found on the host  
-    set_fact:
-      file_data: matched_files[0]
-      cacheable: True
-    when: matched_files.matched >= 0 
+- name: Create a fact with the file stats of the first installer bin file found on the host  
+  set_fact:
+    file_data: matched_files[0]
+    cacheable: True
+  when: matched_files.matched >= 0 
 
 - name: Set file stats when the installer bin file does not exist
   stat:
