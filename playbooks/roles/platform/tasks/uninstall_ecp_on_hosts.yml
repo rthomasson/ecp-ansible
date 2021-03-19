@@ -12,7 +12,7 @@
 
 - name: Create a fact with the file stats of the first installer bin file found on the host  
   set_fact:
-    file_path: result.files[0].path
+    file_path: {{ result.files[0].path }}
     cacheable: True
   when: result.matched >= 0 
 
