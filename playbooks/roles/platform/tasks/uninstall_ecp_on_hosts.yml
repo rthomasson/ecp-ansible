@@ -8,7 +8,7 @@
     paths: /
     recurse: yes
     patterns: "{{ platform.install.version }}.bin"
-    register: matched_files
+  register: matched_files
 
 - name: Create a fact with the file stats of the first installer bin file found on the host  
   set_fact:
