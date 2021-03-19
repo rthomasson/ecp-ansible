@@ -20,7 +20,7 @@
   stat:
     path: /opt/bluedata/bundles/{{ platform.install.version }}
   register: file_data
-  when: matched_files.matched = 0 
+  when: matched_files.matched == 0 
 
 - name: Report if the bin file exists and is executable
   debug:
