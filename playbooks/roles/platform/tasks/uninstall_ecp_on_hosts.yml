@@ -77,7 +77,7 @@
     - not file_data.stat.executable
 
 - name: Run the installer with the --erase option
-  command: "{{ file_path }}.bin --erase"
+  command: "{{ file_path }} --erase"
 
 
 
