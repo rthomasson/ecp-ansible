@@ -5,14 +5,6 @@
     dest: "/tmp/{{ platform.name }}_platform.yml"
     mode: 0777
 
-# - name: Get current version of epicctl
-#   copy:
-#     src: files/epicctl
-#     dest: "/usr/local/bin/epicctl"
-#     owner: root
-#     group: root
-#     mode: 0777
-
 - debug:
     msg: 
     - "*** Installing HPE CP Control Plane ***"
@@ -24,7 +16,7 @@
   register: res
   failed_when: res.rc != 0
 
-- name: Run epicctl command to install controller, gateways and two EPIC workers (for shadow and arbiter)
+- name: Run epicctl command to install controller, gateways and two EPIC workers (for shadow and arbiter) if HA is configured
   command: "epicctl op -f /tmp/{{ platform.name }}_platform.yml -n {{ platform.name }}"
   register: res
   failed_when: res.rc != 0

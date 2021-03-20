@@ -43,11 +43,14 @@ platform:
   install:
     install_type: non-agent-based-install
     install_as_root: true
+    # Installer and version info for engineering release of ECP 5.3  
+    bin_url: "file://mip-bdcs-vm40.mip.storage.hpecorp.net/tmp/ecp/hpe-cp-rhel-release-5.3-151.bin"  
+    version: hpe-cp-rhel-release-5.3-151
     # This lab is running ECP 5.2  
-    bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
-    version: hpe-cp-rhel-release-5.2-3020
-    #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
-    #version: hpe-cp-rhel-release-5.1-3011
+    # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
+    # version: hpe-cp-rhel-release-5.2-3020
+    # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
+    # version: hpe-cp-rhel-release-5.1-3011
     precheck_file: "hpe-cp-prechecks-5.1.rhel.bin"
     disks:
       node_disks:

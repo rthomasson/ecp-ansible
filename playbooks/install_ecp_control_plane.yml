@@ -5,27 +5,29 @@
     roles:
       - role: platform
         vars:
+          # For RTLAB the ansible user is awx
           ansible_user: stack
+          # ansible_user: stack
           install_controller: yes
           add_gateways: yes
           
-          # To configure ECP for HA, set the add_ha_workers and configure_ha variables to yes
+          # RTLAB is NOT configured for HA. To run the tasks to configure ECP for HA, set the add_ha_workers and configure_ha variables to yes
           add_ha_workers: no
           configure_ha: no
           
-          # To configure a custom ECP gateway port range, set configure_gateway_ports to yes
+          # RTLAB uses the default gateway port range. To run the task to configure a custom ECP gateway port range, set configure_gateway_ports to yes
           configure_gateway_ports: no
 
-          # To configure ECP for an airgap installation, set configure_airgap to yes
+          # RTLAB is NOT configured for airgap. To run the task to configure ECP for an airgap installation, set configure_airgap to yes
           configure_airgap: no
 
-          # To configure ECP notifications, set configure_notficiation to yes
+          # RTLAB does not have notifications configured. To run the task to configure ECP notifications, set configure_notficiation to yes
           configure_notification: no
 
-          # To add ECP host tags for use by K8s hosts, set  add_host_tags to yes
-          add_host_tags: no
+          # To run the task to add ECP host tags for use by K8s hosts, set add_host_tags to yes
+          add_host_tags: yes
 
-          # These playbooks are only needed for ECP 5.1
+          # RTLAB is running ECP 5.3 These playbooks are only needed for ECP 5.1
           apply_ecp_patches: no
           apply_ntp_fix_primary: no
           apply_ntp_fix_shadow: no

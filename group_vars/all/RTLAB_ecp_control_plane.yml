@@ -89,8 +89,8 @@ platform:
       int_gw_ip: 172.20.0.1
       int_nw_mask: 16
       # TO-DO: Clean up certs. These are on the tower server 16.143.22.165
-      ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
-      ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
+      # ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
+      # ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
 
     gateways:
       gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
@@ -102,8 +102,8 @@ platform:
       port_mapping_end: 11000
 
     # Set the hosts IDs below to 3 and 4 if one gateway is configured, 4 and 5 if two gateways are configured
-    shadow_host_id: 4
-    arbiter_host_id: 5
+    shadow_host_id: 3
+    arbiter_host_id: 4
     no_tenant_isolation: false
   proxy: http://web-proxy.corp.hpecorp.net:8080 
   rest_protocol: http
