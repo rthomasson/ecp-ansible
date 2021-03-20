@@ -23,8 +23,8 @@ ecp_credentials:
 
 ecp_k8s:
   cluster:
-    name: spark
-    description: K8s cluster for Spark exploration
+    name: test
+    description: K8s cluster for Testing
 
     #####################
     # I M P O R T A N T #
