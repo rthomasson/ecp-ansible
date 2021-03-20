@@ -10,13 +10,20 @@
     patterns: "*-cp-*-release-*.bin"
   register: result
 
-- name: Report the path from the result of the find
+- name: Report the number of installer files found on the host
   debug:
-    msg: "There were {{ result.matched }} instances of the installer file found. The path to the first instance of the installer file is: {{ result.files[0].path }}"
+    msg: "There were {{ result.matched }} instances of the installer file found."
+    
+- name: Report the path of the first installer file instance found on the host
+  debug:
+    msg: "There were {{ result.matched }} instances of the installer file found."
+    " The path to the first instance of the installer file is: {{ result.files[0].path }}"
+  when: result.matched >= 0
 
 - name: Report the result of the find
   debug:
     msg: "The file data is: {{ result.files[0] }}"
+  when: result.matched >= 0
 
 - name: Create a fact for the path of the installer file if one exists on the host 
   set_fact:
@@ -34,6 +41,7 @@
   debug:
     msg: "The file {{ file_path }} exists and is executable. Preparing to uninstall ECP..."
   when: 
+    - result.matched >= 0
     - file_data.stat.exists
     - file_data.stat.executable  
 
@@ -41,8 +49,18 @@
   debug:
     msg: "The file {{ file_path }} exists but is NOT executable. Changing installer file to executable and preparing to uninstall ECP..."
   when: 
+    - result.matched >= 0
     - file_data.stat.exists
     - not file_data.stat.executable  
+
+- name: Make the installer bin executable if it exists and iasn't executable
+  file:
+    path: "{{ file_path }}"
+    mode: a+x
+  when: 
+    - result.matched >= 0
+    - file_data.stat.exists
+    - not file_data.stat.executable
 
 - name: Report if the bin file does NOT exist
   debug:
@@ -60,15 +78,7 @@
     # serole: "object_r"
     # setype: "httpd_sys_content_t"
     # selevel: "s0"
-  when: results.matched == 0
-
-- name: Make the installer bin executable if it exists and isn't executable
-  file:
-    path: "{{ file_path }}"
-    mode: a+x
-  when: 
-    - file_data.stat.exists
-    - not file_data.stat.executable
+  when: result.matched == 0
 
 - name: Run the installer with the --erase option
   command: "{{ file_path }} --erase"
