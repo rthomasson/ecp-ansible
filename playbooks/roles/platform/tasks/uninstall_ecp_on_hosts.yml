@@ -73,12 +73,12 @@
   file:
     path: "{{ file_path }}"
     mode: a+x
-    when: 
-      - file_data.stat.exists
-      - not file_data.stat.executable
+  when: 
+    - file_data.stat.exists
+    - not file_data.stat.executable
 
 - name: Run the installer with the --erase option
   command: "{{ file_path }}.bin --erase"
-  
+
 
 
