@@ -1,12 +1,12 @@
 {# Configure gateway installation YAML file for epicctl #}
-{% for gw in platform.gateways %}
+{% for gw in platform.hosts.gateways %}
 ---
 op: GatewayConfig
 parameters:
   config:
-    gateway_set_hostname: {{ gateway.gateway_set_hostname }}
-    api_scheme: {{ controller.api_scheme }}
-    install_type: {{ platform.install_type }}
+    gateway_set_hostname: {{ platform.install.gateways.gateway_set_hostname }}
+    api_scheme: {{ platform.api_scheme }}
+    install_type: {{ platform.install.install_type }}
   host:
 {% if gw | ipv4 %}   
     internal_ip: {{ gw }}
@@ -14,15 +14,15 @@ parameters:
     internal_ip: {{ hostvars[gw].ansible_host }}
 {% endif %}
   ssh:
-    username: {{ credentials.ssh.username }}
-    access_type: {{ credentials.ssh.access_type }}
-{% if credentials.ssh.access_type == 'password_access' %}
-    password: {{ credentials.ssh.password }}
+    username: {{ ecp_credentials.ssh.username }}
+    access_type: {{ ecp_credentials.ssh.access_type }}
+{% if ecp_credentials.ssh.access_type == 'password_access' %}
+    password: {{ ecp_credentials.ssh.password }}
 {% else %}
-    keypair_file: {{ credentials.ssh.keypair_file }}
-    keypair_name: {{ credentials.ssh.keypair_name }}
-{% if credentials.ssh.key_passphrase is defined %}
-    priv_keypair_password: {{ credentials.ssh.key_passphrase }}
+    keypair_file: {{ ecp_credentials.ssh.keypair_file }}
+    keypair_name: {{ ecp_credentials.ssh.keypair_name }}
+{% if ecp_credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ ecp_credentials.ssh.key_passphrase }}
 {% endif %}
 {% endif %}
   verbose: true

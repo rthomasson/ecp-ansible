@@ -1,40 +1,40 @@
 {
-{% if platform.snmp is defined %}
+{% if ecp_notification.snmp is defined %}
   "snmp": {
-    "server": "{{ platform.snmp.server }}",
-    "community": "{{ platform.snmp.community }}",
-{% if platform.snmp.engine is defined %}
-    "engine": "{{ platform.snmp.engine }}",
+    "server": "{{ ecp_notification.snmp.server }}",
+    "community": "{{ ecp_notification.snmp.community }}",
+{% if ecp_notification.snmp.engine is defined %}
+    "engine": "{{ ecp_notification.snmp.engine }}",
 {% endif %}
-{% if platform.snmp.user is defined %}
-    "user": "{{ platform.snmp.user }}",
+{% if ecp_notification.snmp.user is defined %}
+    "user": "{{ ecp_notification.snmp.user }}",
 {% endif %}
-{% if platform.snmp.authpassword is defined %}
-    "authpassword": "{{ platform.snmp.authpassword }}",
+{% if ecp_notification.snmp.authpassword is defined %}
+    "authpassword": "{{ ecp_notification.snmp.authpassword }}",
 {% endif %}
-{% if platform.snmp.authprotocol is defined %}
-    "authprotocol": "{{ platform.snmp.authprotocol }}",
+{% if ecp_notification.snmp.authprotocol is defined %}
+    "authprotocol": "{{ ecp_notification.snmp.authprotocol }}",
 {% endif %}
-{% if platform.snmp.privilege is defined %}
-    "privilege": "{{ platform.snmp.privilege }}",
+{% if ecp_notification.snmp.privilege is defined %}
+    "privilege": "{{ ecp_notification.snmp.privilege }}",
 {% endif %}
-{% if platform.snmp.privprotocol is defined %}
-    "privprotocol": "{{ platform.snmp.privprotocol }}",
+{% if ecp_notification.snmp.privprotocol is defined %}
+    "privprotocol": "{{ ecp_notification.snmp.privprotocol }}",
 {% endif %}
-{% if platform.snmp.password is defined %}
-    "privpassword": "{{ platform.snmp.privpassword }}"
+{% if ecp_notification.snmp.password is defined %}
+    "privpassword": "{{ ecp_notification.snmp.privpassword }}"
 {% endif %}
   }
-{% if platform.smtp is defined %}
+{% if ecp_notification.smtp is defined %}
   ,
 {% endif %}
 {% endif %}
-{% if platform.smtp is defined %}
+{% if ecp_notification.smtp is defined %}
   "smtp": {
-    "email": "{{ platform.smtp.email }}",
-    "server": "{{ platform.smtp.server }}",
-    "user": "{{ platform.smtp.user }}",
-    "password": "{{ platform.smtp.password }}"
+    "email": "{{ ecp_notification.smtp.email }}",
+    "server": "{{ ecp_notification.smtp.server }}",
+    "user": "{{ ecp_notification.smtp.user }}",
+    "password": "{{ ecp_notification.smtp.password }}"
   }
 {% endif %}
 }

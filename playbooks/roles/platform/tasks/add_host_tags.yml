@@ -6,19 +6,19 @@
 
 - name: Obtain session token
   uri:
-    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    url: "{{ platform.api_scheme }}://{{ platform.controller }}:8080/api/v1/login"
     return_content: yes
     method: POST
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    body: { "name": "{{ ecp_credentials.site_admin_id }}", "password": "{{ ecp_credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
 
 # status_code = 201 on success, 409 if tag/label already exists
 - name: Add each defined tag
   uri:
-    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/tag"
+    url: "{{ platform.api_scheme }}://{{ platform.controller }}:8080/api/v2/tag"
     return_content: yes
     headers:
       X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  

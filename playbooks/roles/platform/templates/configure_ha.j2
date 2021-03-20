@@ -1,12 +1,12 @@
 {
   "cluster_dns_name": "",
-{% if shadow_host_id is number and shadow_host_id > 2 %}
-  "shadow":"/api/v1/workers/{{ shadow_host_id }}",
+{% if platform.install.shadow_host_id is number and platform.install.shadow_host_id > 2 %}
+  "shadow":"/api/v1/workers/{{ platform.install.shadow_host_id }}",
 {% else %}
   "shadow":"/api/v1/workers/{{ groups.controllers[1].hcp_host_id }}",
 {% endif %}
-{% if arbiter_host_id is number and arbiter_host_id > 3 %}
-  "arbiter":"/api/v1/workers/{{ arbiter_host_id }}"
+{% if platform.install.arbiter_host_id is number and platform.install.arbiter_host_id > 3 %}
+  "arbiter":"/api/v1/workers/{{ platform.install.arbiter_host_id }}"
 {% else %}
   "arbiter":"/api/v1/workers/{{ groups.controllers[2].hcp_host_id }}"
 {% endif %}

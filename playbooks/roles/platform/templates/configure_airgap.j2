@@ -1,33 +1,33 @@
 {
   "airgap_parameters": {
-    "container_repo_url": "{{ airgap.container_repo_url }}",
-{% if airgap.container_repo_username is defined %}
-    "container_repo_username": "{{ airgap.container_repo_username }}",
+    "container_repo_url": "{{ ecp_airgap.container_repo_url }}",
+{% if ecp_airgap.container_repo_username is defined %}
+    "container_repo_username": "{{ ecp_airgap.container_repo_username }}",
 {% endif %}
-{% if airgap.container_repo_password is defined %}
-    "container_repo_password": "{{ airgap.container_repo_password }}",
+{% if ecp_airgap.container_repo_password is defined %}
+    "container_repo_password": "{{ ecp_airgap.container_repo_password }}",
 {% endif %}
-{% if airgap.container_repo_secure_flag is defined %}
-    "is_secure_container_repo": "{{ airgap.container_repo_secure_flag }}",
+{% if ecp_airgap.container_repo_secure_flag is defined %}
+    "is_secure_container_repo": "{{ ecp_airgap.container_repo_secure_flag }}",
 {% endif %}
-{% if airgap.container_repo_cert is defined and platform.version %}
-    "container_repo_client_certificate": "{{ airgap.container_repo_cert }}",
+{% if ecp_airgap.container_repo_cert is defined and platform.version %}
+    "container_repo_client_certificate": "{{ ecp_airgap.container_repo_cert }}",
 {% endif %}
-{% if airgap.yum_repo_gpg_key is undefined and airgap.yum_rpm_gpg_key is undefined %}
-    "baseurl": "{{ airgap.yum_repo_url }}"
+{% if ecp_airgap.yum_repo_gpg_key is undefined and ecp_airgap.yum_rpm_gpg_key is undefined %}
+    "baseurl": "{{ ecp_airgap.yum_repo_url }}"
   }  
 {% else %}
-    "baseurl": "{{ airgap.yum_repo_url }}",
+    "baseurl": "{{ ecp_airgap.yum_repo_url }}",
 {% endif %}  
-{% if airgap.yum_repo_gpg_key is defined and airgap.yum_rpm_gpg_key is defined %}
-    "repo_gpg_key": "{{ airgap.yum_repo_gpg_key }}",
-    "rpm_gpg_key": "{{ airgap.yum_repo_gpg_key }}"
+{% if ecp_airgap.yum_repo_gpg_key is defined and ecp_airgap.yum_rpm_gpg_key is defined %}
+    "repo_gpg_key": "{{ ecp_airgap.yum_repo_gpg_key }}",
+    "rpm_gpg_key": "{{ ecp_airgap.yum_repo_gpg_key }}"
   }
-{% elif airgap.yum_repo_gpg_key is defined and airgap.yum_rpm_gpg_key is undefined %}
-    "repo_gpg_key": "{{ airgap.yum_repo_gpg_key }}"
+{% elif ecp_airgap.yum_repo_gpg_key is defined and ecp_airgap.yum_rpm_gpg_key is undefined %}
+    "repo_gpg_key": "{{ ecp_airgap.yum_repo_gpg_key }}"
   }
-{% elif airgap.yum_repo_gpg_key is undefined and airgap.yum_rpm_gpg_key is defined %}
-    "rpm_gpg_key": "{{ airgap.yum_rpm_gpg_key }}"
+{% elif ecp_airgap.yum_repo_gpg_key is undefined and ecp_airgap.yum_rpm_gpg_key is defined %}
+    "rpm_gpg_key": "{{ ecp_airgap.yum_rpm_gpg_key }}"
   }
 {% endif %}
 }

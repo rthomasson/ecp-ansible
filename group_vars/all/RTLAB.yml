@@ -72,7 +72,7 @@ platform:
       # Setting for epicctl API calls - usually http regardless of using certs (move variable to platform sometime)
       api_scheme: http
     gateways:
-      gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+      gateway_set_hostname: mip-bdcs-vm32.mip.storage.hpecorp.net
       # TO-DO: clean up certs
       # These are the cert filenames in the platform after install
       ssl_cert_file: cert.pem
@@ -83,11 +83,10 @@ platform:
     shadow_host_id: 4
     arbiter_host_id: 5
     no_tenant_isolation: false
-  rest_protocol: http
   validate_certs: no
   tools_dir: "/root/tools"         # place to store the kits like kubectl
 
-ecp_airgap_settings:
+ecp_airgap:
   container_repo_url: 16.143.22.165:8080/hpecp
   #container_repo_username:
   #container_repo_password:

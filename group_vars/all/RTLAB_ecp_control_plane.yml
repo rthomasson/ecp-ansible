@@ -93,7 +93,7 @@ platform:
       # ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
 
     gateways:
-      gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+      gateway_set_hostname: mip-bdcs-vm32.mip.storage.hpecorp.net
       # TO-DO: clean up certs
       # These are the cert filenames in the platform after install
       # ssl_cert_file: cert.pem
@@ -106,11 +106,10 @@ platform:
     arbiter_host_id: 4
     no_tenant_isolation: false
   proxy: http://web-proxy.corp.hpecorp.net:8080 
-  rest_protocol: http
   validate_certs: no
   tools_dir: "/root/tools"         # place to store the kits like kubectl
 
-ecp_airgap_settings:
+ecp_airgap:
   container_repo_url: 16.143.22.165:8080/hpecp
   # container_repo_username:
   # container_repo_password:
