@@ -130,7 +130,7 @@ ecp_k8s:
     #    - /dev/sdc
 
     # Disk configuration for k8s cp workers
-    cp_nodes_disks:
+    cp_node_disks:
       ephemeral_disks:
         - /dev/sdb
         - /dev/sdc

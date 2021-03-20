@@ -5,31 +5,31 @@ platform: {{ platform.type }}
 parameters:
   verbose: true
   config:
-{% if k8s_cluster.master_nodes is defined and hostvars[kw].ansible_host in k8s_cluster.master_nodes %}
-    ephemeral_disks: {{k8s_master_disks.ephemeral_disks|join(',') }}
-{% if k8s_master_disks.no_tenant_storage is defined and not k8s_master_disks.no_tenant_storage %}
-    persistent_disks: {{ k8s_master_disks.persistent_disks|join(',') }}
+{% if ecp_k8s.cluster.master_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.master_nodes %}
+    ephemeral_disks: {{ecp_k8s.configuration.master_node_disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.configuration.master_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.master_node_disks.no_tenant_storage %}
+    persistent_disks: {{ ecp_k8s.configuration.master_node_disks.persistent_disks|join(',') }}
 {% else %}
     persistent_disks:
 {% endif %}
-{% elif k8s_cluster.ingress_nodes is defined and hostvars[kw].ansible_host in k8s_cluster.ingress_nodes %}
-    ephemeral_disks: {{k8s_ingress_disks.ephemeral_disks|join(',') }}
-{% if k8s_ingress_disks.no_tenant_storage is defined and not k8s_ingress_disks.no_tenant_storage %}
-    persistent_disks: {{ k8s_ingress_disks.persistent_disks|join(',') }}
+{% elif ecp_k8s.cluster.ingress_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.ingress_nodes %}
+    ephemeral_disks: {{ecp_k8s.configuration.ingress_node_disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.configuration.ingress_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.ingress_node_disks.no_tenant_storage %}
+    persistent_disks: {{ ecp_k8s.configuration.ingress_node_disks.persistent_disks|join(',') }}
 {% else %}
     persistent_disks:
 {% endif %}
-{% elif k8s_cluster.cp_nodes is defined and hostvars[kw].ansible_host in k8s_cluster.cp_nodes %}
-    ephemeral_disks: {{k8s_cp_disks.ephemeral_disks|join(',') }}
-{% if k8s_cp_disks.no_tenant_storage is defined and not k8s_cp_disks.no_tenant_storage %}
-    persistent_disks: {{ k8s_cp_disks.persistent_disks|join(',') }}
+{% elif ecp_k8s.cluster.cp_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.cp_nodes %}
+    ephemeral_disks: {{ecp_k8s.configuration.cp_node_disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.configuration.cp_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.cp_node_disks.no_tenant_storage %}
+    persistent_disks: {{ ecp_k8s.configuration.cp_node_disks.persistent_disks|join(',') }}
 {% else %}
     persistent_disks:
 {% endif %}
 {% else %}
-    ephemeral_disks: {{k8s_worker_disks.ephemeral_disks|join(',') }}
-{% if k8s_worker_disks.no_tenant_storage is defined and not k8s_worker_disks.no_tenant_storage %}
-    persistent_disks: {{ k8s_worker_disks.persistent_disks|join(',') }}
+    ephemeral_disks: {{ecp_k8s.configuration.worker_node_disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.configuration.worker_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.worker_node_disks.no_tenant_storage %}
+    persistent_disks: {{ ecp_k8s.configuration.worker_node_disks.persistent_disks|join(',') }}
 {% else %}
     persistent_disks:
 {% endif %}
@@ -57,7 +57,7 @@ parameters:
       - name: ru_tag
         value: {{ hostvars[kw].tag_ru }}
 {% endif %}
-{% if k8s_cluster.ingress_nodes is defined and hostvars[kw].ansible_host in k8s_cluster.ingress_nodes %}
+{% if ecp_k8s.cluster.ingress_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.ingress_nodes %}
 {% if have_tags == false %}
     tags:
 {% set have_tags = true %}
@@ -65,7 +65,7 @@ parameters:
       - name: istio-ingressgateway
         value: true
 {% endif %}
-{% if k8s_cluster.cp_nodes is defined and hostvars[kw].ansible_host in k8s_cluster.cp_nodes %}
+{% if ecp_k8s.cluster.cp_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.cp_nodes %}
 {% if have_tags == false %}
     tags:
 {% set have_tags = true %}
@@ -82,15 +82,15 @@ parameters:
     internal_ip: {{ hostvars[kw].ansible_host }}
 {% endif %}
   ssh:
-    username: {{ credentials.ssh.username }}
-    access_type: {{ credentials.ssh.access_type }}
-{% if credentials.ssh.access_type == 'password_access' %}
-    password: {{ credentials.ssh.password }}
+    username: {{ ecp_credentials.ssh.username }}
+    access_type: {{ ecp_credentials.ssh.access_type }}
+{% if ecp_credentials.ssh.access_type == 'password_access' %}
+    password: {{ ecp_credentials.ssh.password }}
 {% else %}
-    keypair_file: {{ credentials.ssh.keypair_file }}
-    keypair_name: {{ credentials.ssh.keypair_name }}
-{% if credentials.ssh.key_passphrase is defined %}
-    priv_keypair_password: {{ credentials.ssh.key_passphrase }}
+    keypair_file: {{ ecp_credentials.ssh.keypair_file }}
+    keypair_name: {{ ecp_credentials.ssh.keypair_name }}
+{% if ecp_credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ ecp_credentials.ssh.key_passphrase }}
 {% endif %}
 {% endif %}
 {% endfor %}
