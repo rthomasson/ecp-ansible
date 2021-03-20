@@ -16,8 +16,7 @@
     
 - name: Report the path of the first installer file instance found on the host
   debug:
-    msg: "There were {{ result.matched }} instances of the installer file found."
-    " The path to the first instance of the installer file is: {{ result.files[0].path }}"
+    msg: " The path to the first instance of the installer file is: {{ result.files[0].path }}"
   when: result.matched >= 0
 
 - name: Report the result of the find
