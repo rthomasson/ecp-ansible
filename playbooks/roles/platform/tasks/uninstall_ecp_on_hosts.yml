@@ -78,7 +78,8 @@
   when: result.matched == 0
 
 - name: Copy the bin file from the Tower server where the playbook is running if it doesn't exist on the target host
-  fetch:
+  # fetch:
+  copy:
     src: "/tmp/ecp/{{ platform.install.version }}.bin"
     dest: "/tmp/{{ platform.install.version }}.bin"
     mode: a+x
