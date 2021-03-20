@@ -18,14 +18,14 @@
   debug:
     msg: " The path to the first instance of the installer file is: {{ result.files[0].path }}"
   when: 
-    - result.files is defined
+    - result.files[0] is defined
     - result.matched >= 0
 
 - name: Report the result of the find
   debug:
     msg: "The file data is: {{ result.files[0] }}"
   when: 
-    - result.files is defined
+    - result.files[0] is defined
     - result.matched >= 0
 
 - name: Create a fact for the path of the installer file if one exists on the host 
@@ -33,7 +33,7 @@
     file_path: "{{ result.files[0].path }}"
     cacheable: True
   when:  
-    - result.files is defined
+    - result.files[0] is defined
     - result.matched >= 0
 
 - name: Set file stats for the installer file
@@ -41,14 +41,14 @@
     path: "{{ file_path }}"
   register: file_data
   when:  
-    - result.files is defined
+    - result.files[0] is defined
     - result.matched >= 0
 
 - name: Report if the bin file exists and is executable
   debug:
     msg: "The file {{ file_path }} exists and is executable. Preparing to uninstall ECP..."
   when: 
-    - result.files is defined
+    - result.files[0] is defined
     - result.matched >= 0
     - file_data.stat.exists
     - file_data.stat.executable  
@@ -57,7 +57,7 @@
   debug:
     msg: "The file {{ file_path }} exists but is NOT executable. Changing installer file to executable and preparing to uninstall ECP..."
   when: 
-    - result.files is defined
+    - result.files[0] is defined
     - result.matched >= 0
     - file_data.stat.exists
     - not file_data.stat.executable  
@@ -67,7 +67,7 @@
     path: "{{ file_path }}"
     mode: a+x
   when: 
-    - result.files is defined
+    - result.files[0] is defined
     - result.matched >= 0
     - file_data.stat.exists
     - not file_data.stat.executable
