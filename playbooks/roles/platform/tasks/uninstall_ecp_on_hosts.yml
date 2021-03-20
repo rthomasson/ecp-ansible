@@ -77,11 +77,10 @@
     msg: "No installer file exists - searched for `*-cp-*-release-*.bin`. Preparing to copy the installer bin from the Tower server..."
   when: result.matched == 0
 
-- name: Copy the bin file from the Tower server if it doesn't exist on the target host
+- name: Copy the bin file from the Tower server where the playbook is running if it doesn't exist on the target host
   fetch:
     src: "/tmp/ecp/{{ platform.install.version }}.bin"
     dest: "/tmp/{{ platform.install.version }}.bin"
-    remote_src: yes
     mode: a+x
     # NOTE: include the following options if SELinux is set to enforcing
     # seuser: "system_u"
