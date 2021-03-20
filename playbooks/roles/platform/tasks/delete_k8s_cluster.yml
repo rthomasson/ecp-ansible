@@ -1,4 +1,7 @@
 ---
+# This playbook deletes a K8s cluster by making a REST API call.
+# It uses platform, credentials and k8s_tenant variables  
+
 - name: Obtain session token
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
@@ -6,7 +9,7 @@
     method: POST
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    body: { "name": "{{ ecp_credentials.site_admin_id }}", "password": "{{ ecp_credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
 
