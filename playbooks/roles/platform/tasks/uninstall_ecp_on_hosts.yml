@@ -10,26 +10,31 @@
     patterns: "{{ platform.install.version }}.bin"
   register: result
 
-- name: Create a fact with the file stats of the first installer bin file found on the host  
+- name: Report the path from the result of the find
+  debug:
+    msg: "There were {{result.matched}} instances of the installer file found. The path to the first instance of the installer file is: {{ result.file[0].path }}"
+
+- name: Report the result of the find
+  debug:
+    msg: "The file data is: {{ file_data }}"
+
+- name: Create a fact for the path of the installer file if one exists on the host 
   set_fact:
     file_path: "{{ result.files[0].path }}"
     cacheable: True
   when: result.matched >= 0 
 
-- name: Report the path from the result of the find
-  debug:
-    msg: "There were {{result.matched}} instances of the installer file found. The path to the first instance of the installer file is: {{ file_path }}"
+- name: Create a fact for the path of the installer file if one doesn't exist 
+  set_fact:
+    file_path: "/opt/bluedata/bundles/{{ platform.install.version }}.bin"
+    cacheable: True
+  when: result.matched == 0 
 
-- name: Set file stats when the installer bin file exists
+- name: Set file stats for the installer file
   stat:
-    # path: result.files[0].path 
     path: "{{ file_path }}"
   register: file_data
   when: result.matched >= 0 
-
-- name: Report the result of the find
-  debug:
-    msg: "The file data is: {{ file_data }}"
 
 - name: Report if the bin file exists and is executable
   debug:
@@ -44,12 +49,6 @@
   when: 
     - file_data.stat.exists
     - not file_data.stat.executable  
-
-- name: Set file stats when the installer bin file does not exist
-  stat:
-    path: "/opt/bluedata/bundles/{{ platform.install.version }}"
-  register: file_data
-  when: result.matched == 0 
 
 - name: Report if the bin file does NOT exist
   debug:
