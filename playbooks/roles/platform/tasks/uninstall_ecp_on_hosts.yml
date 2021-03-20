@@ -18,22 +18,28 @@
   debug:
     msg: "The file data is: {{ result.files[0] }}"
 
-- name: Create a fact for installer file data if one exists on the host 
+- name: Create a fact for the path of the installer file if one exists on the host 
   set_fact:
-    file_data: "{{ result.files[0] }}"
+    file_path: "{{ result.files[0].path }}"
     cacheable: True
+  when: result.matched >= 0 
+
+- name: Set file stats for the installer file
+  stat:
+    path: "{{ file_path }}"
+  register: file_data
   when: result.matched >= 0 
 
 - name: Report if the bin file exists and is executable
   debug:
-    msg: "The file {{ file_data.path }} exists and is executable. Preparing to uninstall ECP..."
+    msg: "The file {{ file_path }} exists and is executable. Preparing to uninstall ECP..."
   when: 
-    - file_data.exists
-    - file_data.executable  
+    - file_data.stat.exists
+    - file_data.stat.executable  
 
 - name: Report if the bin file exists and is NOT executable
   debug:
-    msg: "The file {{ file_data.path }} exists but is NOT executable. Changing installer file to executable and preparing to uninstall ECP..."
+    msg: "The file {{ file_path }} exists but is NOT executable. Changing installer file to executable and preparing to uninstall ECP..."
   when: 
     - file_data.stat.exists
     - not file_data.stat.executable  
@@ -41,7 +47,7 @@
 - name: Report if the bin file does NOT exist
   debug:
     msg: "No installer file exists - searched for `*-cp-*-release-*.bin`. Preparing to copy the installer bin from the Tower server..."
-  when: not file_data.stat.exists
+  when: result.matched == 0
 
 - name: Copy the bin file from the Tower server if it doesn't exist on the target host
   fetch:
