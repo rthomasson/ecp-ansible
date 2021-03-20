@@ -18,7 +18,7 @@
   debug:
     msg: "The file data is: {{ result.files[0] }}"
 
-- name: Create a fact for the path of the installer file if one exists on the host 
+- name: Create a fact for installer file data if one exists on the host 
   set_fact:
     file_data: "{{ result.files[0] }}"
     cacheable: True
@@ -28,8 +28,8 @@
   debug:
     msg: "The file {{ file_data.path }} exists and is executable. Preparing to uninstall ECP..."
   when: 
-    - file_data.stat.exists
-    - file_data.stat.executable  
+    - file_data.exists
+    - file_data.executable  
 
 - name: Report if the bin file exists and is NOT executable
   debug:
