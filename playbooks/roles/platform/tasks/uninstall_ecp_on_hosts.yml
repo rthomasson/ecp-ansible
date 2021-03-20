@@ -16,7 +16,7 @@
 
 - name: Report the result of the find
   debug:
-    msg: "The file data is: {{ file_data }}"
+    msg: "The file data is: {{ result.files[0] }}"
 
 - name: Create a fact for the path of the installer file if one exists on the host 
   set_fact:
