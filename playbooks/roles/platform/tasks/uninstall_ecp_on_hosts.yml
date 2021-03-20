@@ -7,7 +7,7 @@
   ansible.builtin.find:
     paths: /
     recurse: yes
-    patterns: "{{ platform.install.version }}.bin"
+    patterns: "*-cp-*-release-*.bin"
   register: result
 
 - name: Report the path from the result of the find
@@ -38,21 +38,21 @@
 
 - name: Report if the bin file exists and is executable
   debug:
-    msg: "The file {{ platform.install.version }} exists and is executable. Preparing to uninstall ECP..."
+    msg: "The file {{ file_path }} exists and is executable. Preparing to uninstall ECP..."
   when: 
     - file_data.stat.exists
     - file_data.stat.executable  
 
 - name: Report if the bin file exists and is NOT executable
   debug:
-    msg: "The file {{ platform.install.version }} exists but is NOT executable. Changing installer file to executable and preparing to uninstall ECP..."
+    msg: "The file {{ file_path }} exists but is NOT executable. Changing installer file to executable and preparing to uninstall ECP..."
   when: 
     - file_data.stat.exists
     - not file_data.stat.executable  
 
 - name: Report if the bin file does NOT exist
   debug:
-    msg: "The file {{ platform.install.version }} does NOT exist. Preparing to copy the installer bin from the Tower server..."
+    msg: "The file {{ file_path }} does NOT exist. Preparing to copy the installer bin from the Tower server..."
   when: not file_data.stat.exists
 
 - name: Copy the bin file from the Tower server if it doesn't exist on the target host
