@@ -47,7 +47,7 @@
 
 - name: Set file stats when the installer bin file does not exist
   stat:
-    path: /opt/bluedata/bundles/{{ platform.install.version }}
+    path: "/opt/bluedata/bundles/{{ platform.install.version }}"
   register: file_data
   when: result.matched == 0 
 
