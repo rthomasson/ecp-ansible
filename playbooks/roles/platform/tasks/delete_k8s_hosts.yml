@@ -85,7 +85,7 @@
 - name: Create a fact with the session info from the API call  
   set_fact:
 #    k8s_hosts_list: "{{ k8s_ips_to_restore }}"    # Override variable add_k8s_hosts.j2 will be looking for
-    input_file: "/tmp/{{platform.name }}_re-add_deleted_k8s_hosts.yml"
+    input_file: "/tmp/{{ platform.name }}_re-add_deleted_k8s_hosts.yml"
     cacheable: True
 
 # - name: Set var
