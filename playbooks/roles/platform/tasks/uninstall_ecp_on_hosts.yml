@@ -92,6 +92,17 @@
 
 - name: Run the installer with the --erase option
   command: "{{ file_path }} --erase"
+  when: 
+    - result.files[0] is defined
+    - result.matched >= 0
+    - file_data.stat.exists
+    - file_data.stat.executable
+
+- name: Run the installer with the --erase option
+  command: "/tmp/{{ platform.install.version }}.bin --erase"
+  when: result.matched == 0
+
+
 
 
 
