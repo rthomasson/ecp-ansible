@@ -34,8 +34,8 @@ parameters:
     persistent_disks:
 {% endif %}
 {% endif %}
-    api_scheme: {{ controller.api_scheme }}
-    install_type: {{ platform.install_type }}
+    api_scheme: {{ platform.install.controller.api_scheme }}
+    install_type: {{ platform.install.install_type }}
 {% set have_tags = false %}
 {% if hostvars[kw].tag_dc is defined or hostvars[kw].tag_rack is defined or hostvars[kw].tag_ru is defined or hostvars[kw].tag_zone is defined %}
     tags:
