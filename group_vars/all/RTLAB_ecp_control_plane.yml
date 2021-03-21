@@ -35,7 +35,7 @@ platform:
   api_scheme: http
   hosts:
     gateways:
-      - mip-bdcs-vm32.mip.storage.hpecorp.net    # Gateway 1
+      - hpecp-lab-gw.mip.storage.hpecorp.net    # Gateway 1
     ha_hosts: 
       #- mip-bdcs-vm22.mip.storage.hpecorp.net    # Shadow
       #- mip-bdcs-vm31.mip.storage.hpecorp.net    # Arbiter

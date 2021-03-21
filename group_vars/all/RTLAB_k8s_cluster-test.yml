@@ -22,6 +22,43 @@ ecp_credentials:
     usergroup: root
 
 ecp_k8s:
+  configuration:
+    # Disk configuration for k8s masters
+    master_node_disks:
+      ephemeral_disks:
+        - /dev/sdb
+        - /dev/sdc
+      no_tenant_storage: true
+      persistent_disks:
+    #    - /dev/sdc
+
+    # Disk configuration for k8s ingress
+    ingress_node_disks:
+      ephemeral_disks:
+        - /dev/sdb
+        - /dev/sdc
+      no_tenant_storage: true
+      persistent_disks:
+    #    - /dev/sdc
+
+    # Disk configuration for k8s cp workers
+    cp_node_disks:
+      ephemeral_disks:
+        - /dev/sdb
+        - /dev/sdc
+      no_tenant_storage: true
+      persistent_disks:
+    #    - /dev/sdc
+
+    # Disk configuration for k8s workers
+    worker_node_disks:
+      ephemeral_disks:
+        - /dev/sdb
+        - /dev/sdc
+      no_tenant_storage: true
+      persistent_disks:
+    #      - /dev/sdc
+
   cluster:
     name: test
     description: K8s cluster for Testing
@@ -37,7 +74,7 @@ ecp_k8s:
     # These FQDN vars are for istio, cert-manager, openebs, and wordpress playbooks
     # TO-DO: Standardize on IPs or FQDNs throughout
     ingress_gateway_hosts:
-      - mip-bdcs-vm37.mip.storage.hpecorp.net   # K8s Ingress 1
+    #  - mip-bdcs-vm37.mip.storage.hpecorp.net   # K8s Ingress 1
     control_plane_hosts: null
     #  - mip-bdcs-vm36.mip.storage.hpecorp.net   # K8s CP Worker 1
     #  - mip-bdcs-vm37.mip.storage.hpecorp.net   # K8s CP Worker 2
@@ -46,11 +83,16 @@ ecp_k8s:
     master_nodes:
       - 16.143.22.158                   # K8s Master 1
     ingress_nodes:
-      - 16.143.22.159                   # K8s Ingress 1
+      # - 16.143.22.159                   # K8s Ingress 1
+      # - 16.143.22.160                   # K8s Ingress 1
     cp_nodes: null
-    #  - 16.143.22.161                   # K8s CP Worker 1
-    #  - 16.143.22.162                   # K8s CP Worker 2
+      # - 16.143.22.161                   # K8s CP Worker 1
+      # - 16.143.22.162                   # K8s CP Worker 2
     worker_nodes:
+      - 16.143.22.159                   # K8s Ingress 1
+      - 16.143.22.160                   # K8s Ingress 1
+      - 16.143.22.161                   # K8s CP Worker 1
+      - 16.143.22.162                   # K8s CP Worker 2
       - 16.143.22.161
       - 16.143.22.163
 
