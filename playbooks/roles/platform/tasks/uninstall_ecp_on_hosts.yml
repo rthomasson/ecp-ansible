@@ -105,6 +105,10 @@
 - name: Run the installer with the --erase and --force option
   command: "{{ file_path }} --erase --force"
 
+- name: Report the command being run to remove the ECP installer
+  debug:
+    msg: "Running the command: /bin/rm -f {{ file_path }}"
+
 # Use /bin/rm in case rm is aliased to rm -i
 - name: Remove the installer file
   command: "/bin/rm -f {{ file_path }}"
