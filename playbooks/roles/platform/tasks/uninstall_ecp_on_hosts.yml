@@ -8,7 +8,7 @@
   ansible.builtin.find:
     paths: /
     recurse: yes
-    patterns: "hpe-cp-*-release-*.bin"
+    patterns: "*hpe-cp-*-release-*.bin"
   register: result
 
 - name: Report the number of installer files found on the host

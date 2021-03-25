@@ -16,7 +16,7 @@
   register: res
   failed_when: res.rc != 0
 
-- name: Run epicctl command to install controller, gateways and two EPIC workers (for shadow and arbiter) if HA is configured
+- name: Run epicctl command to install the ECP controller
   command: "epicctl op -f /tmp/{{ platform.name }}_platform.yml -n {{ platform.name }} --defaultpassword {{ ecp_credentials.site_admin_password }}"
   register: res
   failed_when: res.rc != 0
