@@ -1,10 +1,10 @@
 ---
-#======================================================================================
-# Variables to determine which tasks will run in install_ecp_control_plane.yml playbook
-#======================================================================================
+#========================================================================================================================
+# Variables to override the playbookd defaults and specify which tasks will run in install_ecp_control_plane.yml playbook
+#========================================================================================================================
 # Uncomment the following two lines to install the ECP control plane and add gateways
-#install_platform: no
-#add_gateways: no
+#install_platform: yes
+#add_gateways: yes
 
 # This lab is not configured for HA, so don't run the HA playbooks
 add_ha_workers: no

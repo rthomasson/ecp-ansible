@@ -6,7 +6,7 @@
       - role: platform
         vars:
           # For RTLAB the ansible user is awx
-          ansible_user: stack
+          ansible_user: awx
           # ansible_user: stack
           install_platform: yes
           add_gateways: yes
