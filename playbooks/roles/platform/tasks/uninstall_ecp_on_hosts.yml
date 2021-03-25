@@ -8,7 +8,7 @@
   ansible.builtin.find:
     paths: /
     recurse: yes
-    patterns: "*hpe-cp-*-release-*.bin"
+    patterns: "*cp-*-release-*.bin"
   register: result
 
 - name: Report the number of installer files found on the host
@@ -95,8 +95,7 @@
   set_fact:
     file_path: "/tmp/{{ platform.install.version }}.bin"
     cacheable: True
-  when:  
-    - result.matched == 0
+  when: result.matched == 0
 
 - name: Report the command being run to uninstall ECP
   debug:
