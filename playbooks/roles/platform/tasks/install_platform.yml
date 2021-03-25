@@ -1,7 +1,7 @@
 ---
 - name: Prepare input file for epicctl.
   template:
-    src: platform.j2
+    src: install_platform_controller.j2
     dest: "/tmp/{{ platform.name }}_platform.yml"
     mode: 0777
 
@@ -9,7 +9,7 @@
     msg: 
     - "*** Installing ECP Control Plane ***"
     - "Input file content: "
-    - "{{ lookup('template', 'platform_controller.j2') }}"
+    - "{{ lookup('template', 'install_platform_controller.j2') }}"
 
 - name: Run epicctl command to output its version
   command: "epicctl -v"

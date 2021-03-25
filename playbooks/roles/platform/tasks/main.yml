@@ -1,8 +1,4 @@
 ---
-# Cleanup tasks for ECP Hosts
-  - include_tasks: uninstall_ecp_on_hosts.yml
-    when: uninstall_ecp_on_hosts is defined and uninstall_ecp_on_hosts  
- 
 # This task runs ECP prechecks on the designated hosts
   - include_tasks: run_prechecks.yml
     when: run_prechecks is defined and run_prechecks
@@ -103,3 +99,10 @@
     when: install_wordpress is defined and install_wordpress
   - include_tasks: test_inventory_vars.yml
     when: test_inventory_vars is defined and test_inventory_vars
+
+###################################################
+# This task uninstall ECP on the designated hosts
+###################################################
+  - include_tasks: uninstall_ecp_on_hosts.yml
+    when: uninstall_ecp_on_hosts is defined and uninstall_ecp_on_hosts  
+ 
