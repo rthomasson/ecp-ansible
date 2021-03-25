@@ -101,8 +101,9 @@
 - name: Run the installer with the --erase and --force option
   command: "{{ file_path }} --erase --force"
 
+# Use /bin/rm in case rm is aliased to rm -i
 - name: Remove the installer file
-  command: "rm {{ file_path }}"
+  command: "/bin/rm -f {{ file_path }}"
 
 - name: Reboot the host
   command: "reboot "
