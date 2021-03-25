@@ -2,7 +2,8 @@
 #======================================================================================
 # Variables to determine which tasks will run in install_ecp_control_plane.yml playbook
 #======================================================================================
-#install_controller: no
+# Uncomment the following two lines to install the ECP control plane and add gateways
+#install_platform: no
 #add_gateways: no
 
 # This lab is not configured for HA, so don't run the HA playbooks
@@ -121,8 +122,9 @@ ecp_airgap:
   yum_repo_url: http://bd-repos1.mip.storage.hpecorp.net/kubernetes/
   
 ecp_credentials:
-  # Default installation accounts
+  # Default credentials for site admin account
   site_admin_id: admin
+  # This will be used by epicctl to set the default password for the site admin account during installation
   site_admin_password: admin123
   ssh:
     # access_type: ssh_key_access

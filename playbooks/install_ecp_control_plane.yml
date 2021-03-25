@@ -8,7 +8,7 @@
           # For RTLAB the ansible user is awx
           ansible_user: stack
           # ansible_user: stack
-          install_controller: yes
+          install_platform: yes
           add_gateways: yes
           
           # RTLAB is NOT configured for HA. To run the tasks to configure ECP for HA, set the add_ha_workers and configure_ha variables to yes
