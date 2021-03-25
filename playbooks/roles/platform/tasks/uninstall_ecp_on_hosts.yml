@@ -4,11 +4,11 @@
 # It uses only one platform variable - platform.install.version as it mostly concerned with file manipulation and does not interact with ECP directly  
 # NOTE: Prior to running this playbook, the installer bin file needs to be placed in the /tmp/ecp folder on the Tower server. 
 
-- name: Find the location(s) of the installer bin file if it exists
+- name: Find the location(s) of any ECP installer bin files if they exist
   ansible.builtin.find:
     paths: /
     recurse: yes
-    patterns: "*-cp-*-release-*.bin"
+    patterns: "hpe-cp-*-release-*.bin"
   register: result
 
 - name: Report the number of installer files found on the host
@@ -97,6 +97,10 @@
     cacheable: True
   when:  
     - result.matched == 0
+
+- name: Report the command being run to uninstall ECP
+  debug:
+    msg: "Running the command: {{ file_path }} --erase --force"
 
 - name: Run the installer with the --erase and --force option
   command: "{{ file_path }} --erase --force"
