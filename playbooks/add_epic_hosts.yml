@@ -1,0 +1,7 @@
+  - name: Add EPIC hosts
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          add_epic_hosts: yes

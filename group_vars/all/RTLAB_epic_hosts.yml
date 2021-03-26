@@ -1,0 +1,44 @@
+---
+# Controller, gateways, and ha_workers can be either IP or FQDN
+# TODO: Research how to do IP->FQDN lookup in Ansible inventory (for add_k8s_hosts.j2)
+platform:
+  name: RTLAB
+  type: onprem
+  controller: mip-bdcs-vm31.mip.storage.hpecorp.net
+
+ecp_credentials:
+  # Default installation accounts
+  site_admin_id: admin
+  site_admin_password: admin123
+  ssh:
+#    access_type: ssh_key_access
+    access_type: password_access
+#    keypair_file: /home/stack/.ssh/prod_ecp_rsa
+#    keypair_name: prod_ecp_rsa
+#    key_passphrase: bubAIdT^k2l}
+    password: admin123
+    username: root
+    usergroup: root
+
+ecp_epic:
+  configuration:
+    # Disk configuration for EPIC workers
+    worker_node_disks:
+      node_disks:
+        - /dev/sdb
+      no_tenant_storage: false
+      hdfs_disks:
+        - /dev/sdc
+  hosts:
+    - mip-bdcs-vm39.mip.storage.hpecorp.net    # EPIC Worker 1
+
+  ###############################################
+  # ONLY USED TO DELETE EPIC HOSTS FROM PLATFORM #
+  # The list can be either IPs or FQDNs         #
+  ###############################################
+  hosts_to_delete:
+    list:
+      - mip-bdcs-vm35.mip.storage.hpecorp.net   
+      - mip-bdcs-vm37.mip.storage.hpecorp.net    
+      # - mip-bdcs-vm39.mip.storage.hpecorp.net
+    # status: ready      
