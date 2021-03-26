@@ -4,6 +4,8 @@ platform:
   type: onprem
   controller: mip-bdcs-vm31.mip.storage.hpecorp.net
   api_scheme: http
+  install:
+    install_type: non-agent-based-install
 
 ecp_credentials:
   # Default installation accounts
