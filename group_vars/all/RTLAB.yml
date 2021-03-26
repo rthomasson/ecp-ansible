@@ -1,11 +1,12 @@
 ---
-#======================================================================================
-# Variables to determine which tasks will run in install_ecp_control_plane.yml playbook
-#======================================================================================
-#install_controller: no
-#add_gateways: no
+#========================================================================================================================
+# Variables to override the playbookd defaults and specify which tasks will run in install_ecp_control_plane.yml playbook
+#========================================================================================================================
+# Uncomment the following two lines to install the ECP control plane and add gateways
+#install_platform: yes
+#add_gateways: yes
 # This lab is not configured for HA, so don't run the HA playbooks
-add_ha_workers: no
+add_ha_hosts: no
 configure_ha: no
 # This lab uses the default gateway port assignments
 configure_gateway_ports: no
@@ -14,7 +15,7 @@ configure_airgap: no
 # This lab is not setup for handling notifications
 configure_notification: no
 add_host_tags: no
-# This lab is on ECP 5.2 and does not need the patches
+# This lab is on ECP 5.3 and does not need the patches
 apply_ecp_patches: no
 apply_ntp_fix_primary: no
 apply_ntp_fix_shadow: no
@@ -43,22 +44,31 @@ platform:
   install:
     install_type: non-agent-based-install
     install_as_root: true
-    # Installer and version info for engineering release of ECP 5.3  
-    bin_url: "file://mip-bdcs-vm40.mip.storage.hpecorp.net/tmp/ecp/hpe-cp-rhel-release-5.3-151.bin"  
-    version: hpe-cp-rhel-release-5.3-151
-    # This lab is running ECP 5.2  
+    # Installer and version info for ECP 5.3  
+    bin_url: "https://bdk8s.s3.us-east-2.amazonaws.com/5.3/hpe-cp-rhel-release-5.3-3025.bin"
+    version: hpe-cp-rhel-release-5.3-3025
+    # Engineering pre-release Installer file staged on Tower server
+    # bin_url: "file://mip-bdcs-vm40.mip.storage.hpecorp.net/tmp/ecp/hpe-cp-rhel-release-5.3-151.bin"  
+    # version: hpe-cp-rhel-release-5.3-151
+    # Installer and version info for ECP 5.2  
     # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
     # version: hpe-cp-rhel-release-5.2-3020
-    # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
-    # version: hpe-cp-rhel-release-5.1-3011
+    # Installer and version info for ECP 5.1  
+    #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
+    #version: hpe-cp-rhel-release-5.1-3011
     precheck_file: "hpe-cp-prechecks-5.1.rhel.bin"
-    disks:
+    control_plane_disks:
       node_disks:
         - /dev/sdb
-        - /dev/sdc
-      no_tenant_storage: true
+      no_tenant_storage: false
       hdfs_disks:
-       # - /dev/sdc
+        - /dev/sdc
+    ha_node_disks:
+      node_disks:
+        - /dev/sdb
+      no_tenant_storage: false
+      hdfs_disks:
+        - /dev/sdc
     controller:
       bd_domain: hpelab
       bd_prefix: ecp
@@ -110,6 +120,17 @@ ecp_credentials:
     password: admin123
     username: root
     usergroup: root
+
+ecp_epic:
+  configuration:
+    # Disk configuration for EPIC workers
+    worker_node_disks:
+      node_disks:
+        - /dev/sdb
+      no_tenant_storage: false
+      hdfs_disks:
+        - /dev/sdc
+
 
 ecp_k8s:
   configuration:
@@ -172,7 +193,7 @@ ecp_k8s:
 
     # If no host IPs are specified below, the cluster will be created using all K8s hosts in inventory
     master_nodes:
-    #  - 16.143.22.158                   # K8s Master 1
+      - 16.143.22.158                   # K8s Master 1
     ingress_nodes:
       - 16.143.22.159                   # K8s Ingress 1
       - 16.143.22.160                   # K8s Ingress 2

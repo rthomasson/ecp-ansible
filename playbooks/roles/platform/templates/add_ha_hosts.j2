@@ -4,9 +4,9 @@
 op: WorkerConfig
 parameters:
   config:
-    node_disks: {{platform.install.disks.node_disks|join(',') }}
-{% if platform.install.disks.no_tenant_storage is defined and not platform.install.disks.no_tenant_storage %}
-    hdfs_disks: {{ platform.install.disks.hdfs_disks|join(',') }}
+    node_disks: {{platform.install.ha_node_disks.node_disks|join(',') }}
+{% if platform.install.ha_node_disks.no_tenant_storage is defined and not platform.install.ha_node_disks.no_tenant_storage %}
+    hdfs_disks: {{ platform.install.ha_node_disks.hdfs_disks|join(',') }}
     no_tenant_storage: false
 {% else %}
     hdfs_disks:

@@ -13,8 +13,8 @@
   - include_tasks: configure_gateway_ports.yml
     when: configure_gateway_ports is defined and configure_gateway_ports
 
-  - include_tasks: add_ha_workers.yml
-    when: add_ha_workers is defined and add_ha_workers
+  - include_tasks: add_ha_hosts.yml
+    when: add_ha_hosts is defined and add_ha_hosts
   - include_tasks: configure_ha.yml
     when: configure_ha is defined and configure_ha
 
@@ -34,6 +34,14 @@
 
   - include_tasks: configure_auth.yml
     when: configure_auth is defined and configure_auth
+
+##################################################################################
+# These tasks install/configure ECP EPIC features using epicctl and REST API calls
+##################################################################################
+  - include_tasks: add_epic_hosts.yml
+    when: add_epic_hosts is defined and add_epic_hosts
+
+
 
 #################################################################################
 # These tasks install/configure ECP K8s features using epicctl and REST API calls
