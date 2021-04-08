@@ -4,14 +4,19 @@
 # It uses only one platform variable - platform.install.version as it mostly concerned with file manipulation and does not interact with ECP directly  
 # NOTE: Prior to running this playbook, the installer bin file needs to be placed in the /tmp/ecp folder on the Tower server. 
 
-- name: Find the location(s) of any ECP installer bin files if they exist
+- name: Set facts for the source and destination paths
+  set_fact:
+    installer_filename: {{ platform.bin_url | regex_findall('[^\/]+$') }}
+
+- name: Find the location(s) of any matching ECP precheck bin files if they exist
   ansible.builtin.find:
     paths: /
     recurse: yes
-    patterns: "*cp-*-release-*.bin"
+    patterns: {{ installer_filename }}
+    use_regex: yes
   register: result
 
-- name: Report the number of installer files found on the host
+- name: Report the number of matching installer files found on the host
   debug:
     msg: "There were {{ result.matched }} instances of the installer file found."
     
@@ -75,14 +80,14 @@
 
 - name: Report if the bin file does NOT exist
   debug:
-    msg: "No installer file exists - searched for `*-cp-*-release-*.bin`. Preparing to copy the installer bin from the Tower server..."
+    msg: "No installer file exists - searched for {{ installer_filename }}. Preparing to copy the installer bin from the Tower server..."
   when: result.matched == 0
 
 - name: Copy the bin file from the Tower server where the playbook is running if it doesn't exist on the target host
   # fetch:
   copy:
-    src: "/tmp/ecp/{{ platform.install.version }}.bin"
-    dest: "/tmp/{{ platform.install.version }}.bin"
+    src: "/tmp/ecp/{{ installer_filename }}n"
+    dest: "/tmp/{{ installer_filename }}"
     mode: a+x
     # NOTE: include the following options if SELinux is set to enforcing
     # seuser: "system_u"
@@ -93,7 +98,7 @@
 
 - name: Update the fact for the path with location of the copied installer file  
   set_fact:
-    file_path: "/tmp/{{ platform.install.version }}.bin"
+    file_path: "/tmp/{{ installer_filename }}"
     cacheable: True
   when: result.matched == 0
 

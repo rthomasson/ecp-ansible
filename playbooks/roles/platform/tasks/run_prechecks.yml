@@ -2,43 +2,98 @@
 - name: Set facts for the source and destination paths
   set_fact:
     file_src: "files/{{ platform.precheck_file }}" 
-#    file_dest: "/home/stack/{{ platform.precheck_file }}"
-#    file_dest: "/home/{{ credentials.username }}/{{ platform.precheck_file }}"
     file_dest: "~/{{ platform.precheck_file }}"
+    prechecks_version: {{ platform.precheck_file | regex_findall('prechecks\-\d.\d+(.\d+)*(-\d+)*.bin') }}
 
-- debug:
-    msg: "Copying: {{ file_src }} to: {{ file_dest }}"
+- name: Find the location(s) of any matching ECP precheck bin files if they exist
+  ansible.builtin.find:
+    paths: /
+    recurse: yes
+    patterns: {{ prechecks_version }}
+    use_regex: yes
+  register: result
 
-- name: Copy the file from the automation server to the target server.
-  copy: 
+- name: Report the number of prechecks files found on the host
+  debug:
+    msg: "There were {{ result.matched }} instances of the prechecks file {{ prechecks_version }} found."
+    
+- name: Report the path of the first matching prechecks file instance found on the host
+  debug:
+    msg: " The path to the first instance of the installer file is: {{ result.files[0].path }}"
+  when: 
+    - result.files[0] is defined
+    - result.matched >= 0
+
+- name: Set file stats for the prechecks file
+  stat:
+    path: "{{ file_dest }}"
+  register: file_data
+  when:  
+    - result.files[0] is defined
+    - result.matched >= 0
+
+- name: Report if the prechecks file exists and is executable
+  debug:
+    msg: "The file {{ file_dest }} exists and is executable. Preparing to run ECP Prechecks..."
+  when: 
+    - result.files[0] is defined
+    - result.matched >= 0
+    - file_data.stat.exists
+    - file_data.stat.executable  
+
+- name: Report if the prechecks file exists and is NOT executable
+  debug:
+    msg: "The file {{ file_dest }} exists but is NOT executable. Changing prechecks file to be executable and preparing to run ECP Prechecks..."
+  when: 
+    - result.files[0] is defined
+    - result.matched >= 0
+    - file_data.stat.exists
+    - not file_data.stat.executable  
+
+- name: Make the prechecks bin executable if it exists and isn't executable
+  file:
+    path: "{{ file_dest }}"
+    mode: a+x
+  when: 
+    - result.files[0] is defined
+    - result.matched >= 0
+    - file_data.stat.exists
+    - not file_data.stat.executable
+
+- name: Report if the prechecks file does NOT exist
+  debug:
+    msg: "No prechecks file exists - searched for {{ prechecks_version }}. Preparing to copy the installer bin from the Tower server..."
+  when: result.matched == 0
+
+- name: Copy the prechecks bin file from the Tower server where the playbook is running if it doesn't exist on the target host
+  # fetch:
+  copy:
     src: "{{ file_src }}"
     dest: "{{ file_dest }}"
-#    owner: stack
-#    group: stack
-    owner: "{{ credentials.ssh.username }}"
-    group: "{{ credentials.ssh.usergroup }}"
-    mode: preserve
-  register: cp_res
+    mode: a+x
+    # NOTE: include the following options if SELinux is set to enforcing
+    # seuser: "system_u"
+    # serole: "object_r"
+    # setype: "httpd_sys_content_t"
+    # selevel: "s0"
+  when: result.matched == 0
 
-#- name: Source the profile so that all precheck tests run
-#  shell: "bash -l"
-#  command: "bash -l"
-#  changed_when: false
-#  register: res
-#  failed_when: res.rc != 0
-  
-- name: Make the precheck file executable
-  shell: "chmod a+x {{file_dest}}"
-  changed_when: false
-  register: res
-  failed_when: res.rc != 0
-  
+- name: Update the fact for the path with location of the copied installer file  
+  set_fact:
+    file_path: "{{ file_dest }}"
+    cacheable: True
+  when: result.matched == 0
+
 - name: Add proxy if defined.
   set_fact:
     add_proxy: "--proxy {{ platform.proxy }}"
   when: platform.proxy is defined
 
-- name: Run the pre-checks.
+- name: Report the command being run to perform the ECP prechecks
+  debug:
+    msg: "Running the command: {{ file_dest }} {{add_proxy|default('') }}"
+
+- name: Run the prechecks.
   shell: "{{ file_dest }} {{ add_proxy|default('') }}"
   changed_when: false
   register: res
