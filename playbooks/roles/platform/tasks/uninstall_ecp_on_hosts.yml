@@ -76,7 +76,7 @@
 
 - name: Report if the bin file does NOT exist
   debug:
-    msg: "No installer file exists - searched for {{ installer_filename }}. Preparing to copy the installer bin from the Tower server..."
+    msg: "No installer file exists - searched for {{ platform.install.installer_file }}. Preparing to copy the installer bin from the Tower server..."
   when: result.matched == 0
 
 - name: Copy the bin file from the Tower server where the playbook is running if it doesn't exist on the target host
