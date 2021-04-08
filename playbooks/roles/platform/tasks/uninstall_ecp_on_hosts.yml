@@ -82,7 +82,7 @@
 - name: Copy the bin file from the Tower server where the playbook is running if it doesn't exist on the target host
   # fetch:
   copy:
-    src: "/tmp/ecp/{{ platform.install.installer_file }}n"
+    src: "/tmp/ecp/{{ platform.install.installer_file }}"
     dest: "/tmp/{{ platform.install.installer_file }}"
     mode: a+x
     # NOTE: include the following options if SELinux is set to enforcing
