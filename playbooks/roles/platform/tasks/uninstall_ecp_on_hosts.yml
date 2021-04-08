@@ -4,15 +4,11 @@
 # It uses only one platform variable - platform.install.version as it mostly concerned with file manipulation and does not interact with ECP directly  
 # NOTE: Prior to running this playbook, the installer bin file needs to be placed in the /tmp/ecp folder on the Tower server. 
 
-- name: Set facts for the source and destination paths
-  set_fact:
-    installer_filename: "{{ platform.bin_url | regex_search('[^\\/]+$') }}"
-
 - name: Find the location(s) of any matching ECP precheck bin files if they exist
   ansible.builtin.find:
     paths: /
     recurse: yes
-    patterns: "{{ installer_filename }}"
+    patterns: "{{ platform.install.installer_file }}"
     use_regex: yes
   register: result
 
@@ -86,8 +82,8 @@
 - name: Copy the bin file from the Tower server where the playbook is running if it doesn't exist on the target host
   # fetch:
   copy:
-    src: "/tmp/ecp/{{ installer_filename }}n"
-    dest: "/tmp/{{ installer_filename }}"
+    src: "/tmp/ecp/{{ platform.install.installer_file }}n"
+    dest: "/tmp/{{ platform.install.installer_file }}"
     mode: a+x
     # NOTE: include the following options if SELinux is set to enforcing
     # seuser: "system_u"

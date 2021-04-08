@@ -46,7 +46,7 @@ platform:
     install_as_root: true
     # Installer and version info for ECP 5.3  
     bin_url: "https://bdk8s.s3.us-east-2.amazonaws.com/5.3/3030/hpe-cp-rhel-release-5.3-3030.bin"
-    version: hpe-cp-rhel-release-5.3-3030
+    installer_file: hpe-cp-rhel-release-5.3-3030.bin
     # Engineering pre-release Installer file staged on Tower server
     # bin_url: "file://mip-bdcs-vm40.mip.storage.hpecorp.net/tmp/ecp/hpe-cp-rhel-release-5.3-151.bin"  
     # version: hpe-cp-rhel-release-5.3-151
