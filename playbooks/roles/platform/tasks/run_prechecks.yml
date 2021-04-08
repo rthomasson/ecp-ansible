@@ -62,7 +62,7 @@
 
 - name: Report if the prechecks file does NOT exist
   debug:
-    msg: "No prechecks file exists - searched for {{ prechecks_version }}. Preparing to copy the installer bin from the Tower server..."
+    msg: "No prechecks file exists - searched for {{ prechecks_filename }}. Preparing to copy the prechecks bin file from the Tower server..."
   when: result.matched == 0
 
 - name: Copy the prechecks bin file from the Tower server where the playbook is running if it doesn't exist on the target host
