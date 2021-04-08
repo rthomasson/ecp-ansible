@@ -3,7 +3,7 @@
   set_fact:
     file_src: "files/{{ platform.precheck_file }}" 
     file_dest: "~/{{ platform.precheck_file }}"
-    prechecks_version: "{{ platform.precheck_file | regex_findall('prechecks\-\d.\d+(.\d+)*(-\d+)*.bin') }}"
+    prechecks_version: "{{ platform.precheck_file | regex_findall('prechecks\\-\\d.\\d+(.\\d+)*(-\\d+)*.bin') }}"
 
 - name: Find the location(s) of any matching ECP precheck bin files if they exist
   ansible.builtin.find:
