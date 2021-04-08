@@ -12,7 +12,7 @@
   ansible.builtin.find:
     paths: /
     recurse: yes
-    patterns: {{ installer_filename }}
+    patterns: "{{ installer_filename }}"
     use_regex: yes
   register: result
 
