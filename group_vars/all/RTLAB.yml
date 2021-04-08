@@ -56,7 +56,7 @@ platform:
     # Installer and version info for ECP 5.1  
     #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
     #version: hpe-cp-rhel-release-5.1-3011
-    precheck_file: "hpe-cp-rhel-prechecks-5.3.bin"
+    prechecks_file: "hpe-cp-rhel-prechecks-5.3.bin"
     control_plane_disks:
       node_disks:
         - /dev/sdb
