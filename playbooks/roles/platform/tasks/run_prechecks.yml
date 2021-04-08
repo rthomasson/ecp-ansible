@@ -3,19 +3,19 @@
   set_fact:
     file_src: "files/{{ platform.install.prechecks_file }}" 
     file_dest: "~/{{ platform.install.prechecks_file }}"
-    prechecks_version: "{{ platform.install.prechecks_file | regex_findall('prechecks\\-\\d.\\d+(.\\d+)*(-\\d+)*.bin') }}"
+    prechecks_filename: "{{ platform.install.prechecks_file }}"
 
 - name: Find the location(s) of any matching ECP precheck bin files if they exist
   ansible.builtin.find:
     paths: /
     recurse: yes
-    patterns: "{{ prechecks_version }}"
+    patterns: "{{ prechecks_filename }}"
     use_regex: yes
   register: result
 
 - name: Report the number of prechecks files found on the host
   debug:
-    msg: "There were {{ result.matched }} instances of the prechecks file {{ prechecks_version }} found."
+    msg: "There were {{ result.matched }} instances of the prechecks file {{ prechecks_filename }} found."
     
 - name: Report the path of the first matching prechecks file instance found on the host
   debug:
