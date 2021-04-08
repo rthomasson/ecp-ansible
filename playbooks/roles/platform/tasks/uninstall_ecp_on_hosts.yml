@@ -6,7 +6,7 @@
 
 - name: Set facts for the source and destination paths
   set_fact:
-    installer_filename: "{{ platform.bin_url | regex_findall('[^\\/]+$') }}"
+    installer_filename: "{{ platform.bin_url | regex_search('[^\\/]+$') }}"
 
 - name: Find the location(s) of any matching ECP precheck bin files if they exist
   ansible.builtin.find:
