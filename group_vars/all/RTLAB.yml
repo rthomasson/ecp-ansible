@@ -45,8 +45,8 @@ platform:
     install_type: non-agent-based-install
     install_as_root: true
     # Installer and version info for ECP 5.3  
-    bin_url: "https://bdk8s.s3.us-east-2.amazonaws.com/5.3/hpe-cp-rhel-release-5.3-3025.bin"
-    version: hpe-cp-rhel-release-5.3-3025
+    bin_url: "https://bdk8s.s3.us-east-2.amazonaws.com/5.3/5030/hpe-cp-rhel-release-5.3-3030.bin"
+    version: hpe-cp-rhel-release-5.3-3030
     # Engineering pre-release Installer file staged on Tower server
     # bin_url: "file://mip-bdcs-vm40.mip.storage.hpecorp.net/tmp/ecp/hpe-cp-rhel-release-5.3-151.bin"  
     # version: hpe-cp-rhel-release-5.3-151
@@ -56,7 +56,7 @@ platform:
     # Installer and version info for ECP 5.1  
     #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
     #version: hpe-cp-rhel-release-5.1-3011
-    precheck_file: "hpe-cp-prechecks-5.1.rhel.bin"
+    precheck_file: "hpe-cp-rhel-prechecks-5.3.bin"
     control_plane_disks:
       node_disks:
         - /dev/sdb

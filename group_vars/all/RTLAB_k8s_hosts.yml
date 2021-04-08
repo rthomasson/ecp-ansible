@@ -1,11 +1,11 @@
 ---
-# Controller, gateways, and ha_workers can be either IP or FQDN
-# k8s_workers must be FQDN due to multiple Ansible hostvars[] references
-# TODO: Research how to do IP->FQDN lookup in Ansible inventory (for add_k8s_hosts.j2)
 platform:
   name: RTLAB
   type: onprem
   controller: mip-bdcs-vm31.mip.storage.hpecorp.net
+  api_scheme: http
+  install:
+    install_type: non-agent-based-install
 
 ecp_credentials:
   # Default installation accounts
