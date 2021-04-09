@@ -94,7 +94,7 @@
 
 - name: Update the fact for the path with location of the copied installer file  
   set_fact:
-    file_path: "/tmp/{{ platform.installer.installer_file }}"
+    file_path: "/tmp/{{ platform.install.installer_file }}"
     cacheable: True
   when: result.matched == 0
 
