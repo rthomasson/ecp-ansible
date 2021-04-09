@@ -83,7 +83,6 @@ ecp_k8s:
     - mip-bdcs-vm36.mip.storage.hpecorp.net    # K8s CP Worker 1
     - mip-bdcs-vm37.mip.storage.hpecorp.net    # K8s CP Worker 2
     - mip-bdcs-vm38.mip.storage.hpecorp.net    # K8s Worker 1
-    - mip-bdcs-vm39.mip.storage.hpecorp.net    # K8s Worker 2
 
   ###############################################
   # ONLY USED TO DELETE K8S HOSTS FROM PLATFORM #
