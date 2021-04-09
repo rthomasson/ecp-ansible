@@ -2,7 +2,7 @@
 - name: Prepare input file for epicctl.
   template:
     src: add_epic_hosts.j2
-    dest: "/tmp/{{ platform.name }}_epic_hosts.yml"
+    dest: "/tmp/{{ platform.name }}add_epic_hosts.yml"
     mode: 0777
 
 - debug:
@@ -17,7 +17,7 @@
   failed_when: res_ver.rc != 0
 
 - name: Run epicctl command to install epic workers for HA
-  command: "epicctl op -f /tmp/{{ platform.name }}_epic_hosts.yml -n {{ platform.name }}"
+  command: "epicctl op -f /tmp/{{ platform.name }}add_epic_hosts.yml -n {{ platform.name }}"
   register: res
   failed_when: res.rc != 0
 
