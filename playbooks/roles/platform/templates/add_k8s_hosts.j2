@@ -1,7 +1,7 @@
-{% if platform.hosts.k8s_hosts is undefined %}
-{% set platform.hosts.k8s_hosts = groups.k8s_workers %}
+{% if ecp_k8s.hosts is undefined %}
+{% set ecp_k8s.hosts = groups.k8s_hosts %}
 {% endif %}
-{% for kw in platform.hosts.k8s_workers if kw not in groups.repair_pool or force_repair is defined and force_repair %}
+{% for kw in ecp_k8s.hosts if kw not in groups.repair_pool or force_repair is defined and force_repair %}
 ---
 op: K8sHostConfig
 platform: {{ platform.type }}
