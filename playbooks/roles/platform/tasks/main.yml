@@ -6,8 +6,8 @@
 ############################################################################################
 # These tasks install/configure/patch the ECP control plane using epicctl and REST API calls
 ############################################################################################
-  - include_tasks: install_platform.yml
-    when: install_platform is defined and install_platform
+  - include_tasks: install_controller.yml
+    when: install_controller is defined and install_controller
   - include_tasks: add_gateways.yml
     when: add_gateways is defined and add_gateways
   - include_tasks: configure_gateway_ports.yml
