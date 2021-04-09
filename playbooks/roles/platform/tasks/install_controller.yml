@@ -17,7 +17,7 @@
   failed_when: res.rc != 0
 
 - name: Run epicctl command to install ECP controller 
-  command: "epicctl op -f /tmp/{{ platform.name }}_platform_controller.yml -n {{ platform.name }}"
+  command: "epicctl op -f /tmp/{{ platform.name }}_install_platform_controller.yml -n {{ platform.name }}"
   register: res
   failed_when: res.rc != 0
 
