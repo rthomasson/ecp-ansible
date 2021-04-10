@@ -2,7 +2,9 @@
 {% for host in ecp_epic.hosts if host not in groups.repair_pool or force_repair is defined and force_repair %}
 ---
 op: WorkerConfig
+platform: {{ platform.type }} 
 parameters:
+  verbose: true
   config:
     node_disks: {{ecp_epic.configuration.worker_node_disks.node_disks|join(',') }}
 {% if ecp_epic.configuration.worker_node_disks.no_tenant_storage is defined and not ecp_epic.configuration.worker_node_disks.no_tenant_storage %}
@@ -32,6 +34,4 @@ parameters:
     priv_keypair_password: {{ ecp_credentials.ssh.key_passphrase }}
 {% endif %}
 {% endif %}
-  verbose: true
-platform: {{ platform.type }} 
 {% endfor %}
