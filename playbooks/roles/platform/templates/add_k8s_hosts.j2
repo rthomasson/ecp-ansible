@@ -1,9 +1,7 @@
 {% for kw in hosts_to_add %}
 ---
 op: K8sHostConfig
-platform: {{ platform.type }}
 parameters:
-  verbose: true
   config:
 {% if ecp_k8s.cluster.master_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.master_nodes %}
     ephemeral_disks: {{ecp_k8s.configuration.master_node_disks.ephemeral_disks|join(',') }}
@@ -97,4 +95,6 @@ parameters:
     priv_keypair_password: {{ ecp_credentials.ssh.key_passphrase }}
 {% endif %}
 {% endif %}
+  verbose: true
+platform: {{ platform.type }}
 {% endfor %}
