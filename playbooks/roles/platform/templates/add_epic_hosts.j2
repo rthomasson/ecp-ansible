@@ -1,5 +1,5 @@
-{# Configure platform installation YAML file for epicctl #}
-{% for ew in ecp_epic.hosts %}
+{# Configure EPIC Host installation YAML file for epicctl #}
+{% for host in ecp_epic.hosts if host not in groups.repair_pool or force_repair is defined and force_repair %}
 ---
 op: WorkerConfig
 parameters:
@@ -15,10 +15,10 @@ parameters:
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
   host:
-{% if ew | ipv4 %}
-    internal_ip: {{ ew }} 
+{% if host | ipv4 %}
+    internal_ip: {{ host }} 
 {% else %}
-    internal_ip: {{ hostvars[ew].ansible_host }}
+    internal_ip: {{ hostvars[host].ansible_host }}
 {% endif %}
   ssh: 
     username: {{ ecp_credentials.ssh.username }}

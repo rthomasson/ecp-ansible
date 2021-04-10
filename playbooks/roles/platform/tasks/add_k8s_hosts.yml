@@ -21,7 +21,7 @@
       - "*** K8s Hosts to add: ***"
       - "*** List contents: "
       - "{{ hosts_to_add }}"
-      - "*** Is Iterable? ***"
+      - "*** Is it Iterable? ***"
       - "{{ hosts_to_add is iterable }}"
 
   - name: Prepare input file for epicctl (skipping any in repair_pool)
