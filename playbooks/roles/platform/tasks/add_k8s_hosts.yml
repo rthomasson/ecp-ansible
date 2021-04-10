@@ -13,6 +13,8 @@
       hosts_to_add:  "{{ groups.k8s_hosts }}"
     when: ecp_k8s.hosts is undefined  
 
+  - debug: var=hosts_to_add
+  
   - debug:
       msg:
       - "*** K8s Hosts to add: ***"
