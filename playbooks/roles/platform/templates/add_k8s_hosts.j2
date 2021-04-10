@@ -1,8 +1,9 @@
-{% for kw in ecp_k8s.hosts %}
 ---
 op: K8sHostConfig
+platform: {{ platform.type }}
 parameters:
   config:
+{% for kw in ecp_k8s.hosts %}
 {% if ecp_k8s.cluster.master_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.master_nodes %}
     ephemeral_disks: {{ecp_k8s.configuration.master_node_disks.ephemeral_disks|join(',') }}
 {% if ecp_k8s.configuration.master_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.master_node_disks.no_tenant_storage %}
@@ -95,6 +96,5 @@ parameters:
     priv_keypair_password: {{ ecp_credentials.ssh.key_passphrase }}
 {% endif %}
 {% endif %}
-  verbose: true
-platform: {{ platform.type }}
 {% endfor %}
+  verbose: true
