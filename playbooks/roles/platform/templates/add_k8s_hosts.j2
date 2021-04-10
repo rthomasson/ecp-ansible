@@ -35,7 +35,7 @@ parameters:
 {% endif %}
 {% endif %}
     api_scheme: {{ platform.api_scheme }}
-    install_type: {{ platform.install_type }}
+    install_type: {{ platform.install.install_type }}
 {% set have_tags = false %}
 {% if hostvars[ecp_host].tag_dc is defined or hostvars[ecp_host].tag_rack is defined or hostvars[ecp_host].tag_ru is defined or hostvars[ecp_host].tag_zone is defined %}
     tags:
