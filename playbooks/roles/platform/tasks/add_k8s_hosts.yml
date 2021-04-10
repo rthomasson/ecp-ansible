@@ -16,6 +16,14 @@
       cacheable: True
     when: ecp_k8s.hosts is undefined  
 
+  - debug:
+      msg:
+      - "*** K8s Hosts to add: ***"
+      - "*** List contents: "
+      - "{{ hosts_to_add }}"
+      - "*** Is Iterable? ***"
+      - "{{ hosts_to_add is iterable }}"
+
   - name: Prepare input file for epicctl (skipping any in repair_pool)
     template:
       src: add_k8s_hosts.j2
