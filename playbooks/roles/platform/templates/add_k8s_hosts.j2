@@ -3,22 +3,22 @@ op: K8sHostConfig
 platform: {{ platform.type }}
 parameters:
   config:
-{% for kw in ecp_k8s.hosts %}
-{% if ecp_k8s.cluster.master_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.master_nodes %}
+{% for host in ecp_epic.hosts if host not in groups.repair_pool or force_repair is defined and force_repair %}
+{% if ecp_k8s.cluster.master_nodes is defined and hostvars[host].ansible_host in ecp_k8s.cluster.master_nodes %}
     ephemeral_disks: {{ecp_k8s.configuration.master_node_disks.ephemeral_disks|join(',') }}
 {% if ecp_k8s.configuration.master_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.master_node_disks.no_tenant_storage %}
     persistent_disks: {{ ecp_k8s.configuration.master_node_disks.persistent_disks|join(',') }}
 {% else %}
     persistent_disks:
 {% endif %}
-{% elif ecp_k8s.cluster.ingress_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.ingress_nodes %}
+{% elif ecp_k8s.cluster.ingress_nodes is defined and hostvars[host].ansible_host in ecp_k8s.cluster.ingress_nodes %}
     ephemeral_disks: {{ecp_k8s.configuration.ingress_node_disks.ephemeral_disks|join(',') }}
 {% if ecp_k8s.configuration.ingress_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.ingress_node_disks.no_tenant_storage %}
     persistent_disks: {{ ecp_k8s.configuration.ingress_node_disks.persistent_disks|join(',') }}
 {% else %}
     persistent_disks:
 {% endif %}
-{% elif ecp_k8s.cluster.cp_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.cp_nodes %}
+{% elif ecp_k8s.cluster.cp_nodes is defined and hostvars[host].ansible_host in ecp_k8s.cluster.cp_nodes %}
     ephemeral_disks: {{ecp_k8s.configuration.cp_node_disks.ephemeral_disks|join(',') }}
 {% if ecp_k8s.configuration.cp_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.cp_node_disks.no_tenant_storage %}
     persistent_disks: {{ ecp_k8s.configuration.cp_node_disks.persistent_disks|join(',') }}
@@ -36,31 +36,31 @@ parameters:
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
 {% set have_tags = false %}
-{% if hostvars[kw].tag_dc is defined or hostvars[kw].tag_rack is defined or hostvars[kw].tag_ru is defined or hostvars[kw].tag_zone is defined %}
+{% if hostvars[host].tag_dc is defined or hostvars[host].tag_rack is defined or hostvars[host].tag_ru is defined or hostvars[host].tag_zone is defined %}
     tags:
 {% set have_tags = true %}
 {% endif %}
-{% if hostvars[kw].tag_dc is defined %}
+{% if hostvars[host].tag_dc is defined %}
       - name: dc_tag
-        value: {{ hostvars[kw].tag_dc }}
+        value: {{ hostvars[host].tag_dc }}
       - name: topology.kubernetes.io/region
-        value: {{ hostvars[kw].tag_dc }}
+        value: {{ hostvars[host].tag_dc }}
 {% endif %}
-{% if hostvars[kw].tag_zone is defined %}
+{% if hostvars[host].tag_zone is defined %}
       - name: zone_tag
-        value: {{ hostvars[kw].tag_zone }}
+        value: {{ hostvars[host].tag_zone }}
       - name: topology.kubernetes.io/zone
-        value: {{ hostvars[kw].tag_zone }}
+        value: {{ hostvars[host].tag_zone }}
 {% endif %}
-{% if hostvars[kw].tag_rack is defined %}
+{% if hostvars[host].tag_rack is defined %}
       - name: rack_tag
-        value: {{ hostvars[kw].tag_rack }}
+        value: {{ hostvars[host].tag_rack }}
 {% endif %}
-{% if hostvars[kw].tag_ru is defined %}
+{% if hostvars[host].tag_ru is defined %}
       - name: ru_tag
-        value: {{ hostvars[kw].tag_ru }}
+        value: {{ hostvars[host].tag_ru }}
 {% endif %}
-{% if ecp_k8s.cluster.ingress_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.ingress_nodes %}
+{% if ecp_k8s.cluster.ingress_nodes is defined and hostvars[host].ansible_host in ecp_k8s.cluster.ingress_nodes %}
 {% if have_tags == false %}
     tags:
 {% set have_tags = true %}
@@ -68,7 +68,7 @@ parameters:
       - name: istio-ingressgateway
         value: true
 {% endif %}
-{% if ecp_k8s.cluster.cp_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.cp_nodes %}
+{% if ecp_k8s.cluster.cp_nodes is defined and hostvars[host].ansible_host in ecp_k8s.cluster.cp_nodes %}
 {% if have_tags == false %}
     tags:
 {% set have_tags = true %}
@@ -79,10 +79,10 @@ parameters:
         value: true
 {% endif %}
   host:
-{% if kw | ipv4 %}
-    internal_ip: {{ kw }}
+{% if host | ipv4 %}
+    internal_ip: {{ host }}
 {% else %}
-    internal_ip: {{ hostvars[kw].ansible_host }}
+    internal_ip: {{ hostvars[host].ansible_host }}
 {% endif %}
   ssh:
     username: {{ ecp_credentials.ssh.username }}
