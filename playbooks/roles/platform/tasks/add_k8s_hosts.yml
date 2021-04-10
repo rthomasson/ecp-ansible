@@ -13,14 +13,9 @@
       hosts_to_add:  "{{ groups.k8s_hosts }}"
     when: ecp_k8s.hosts is undefined  
 
-  - debug: var=hosts_to_add
-  
   - debug:
       msg:
-      - "*** K8s Hosts to add: ***"
-      - "*** List contents: "
-      - "{{ hosts_to_add }}"
-      - "*** Is it Iterable? ***"
+      - "*** Is hosts_to_add iterable? ***"
       - "{{ hosts_to_add is iterable }}"
 
   - name: Prepare input file for epicctl (skipping any in repair_pool)
