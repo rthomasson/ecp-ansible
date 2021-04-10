@@ -1,4 +1,4 @@
-{% for ecp_host in hosts_to_add if ecp_host not in groups.repair_pool or force_repair is defined and force_repair %}
+{% for ecp_host in ecp_k8s.hosts if ecp_host not in groups.repair_pool or force_repair is defined and force_repair %}
 ---
 op: K8sHostConfig
 platform: {{ platform.type }}
