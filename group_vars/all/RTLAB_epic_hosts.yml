@@ -22,16 +22,15 @@ ecp_credentials:
     usergroup: root
 
 ecp_epic:
-  configuration:
-    # Disk configuration for EPIC workers
-    worker_node_disks:
-      node_disks:
-        - /dev/sdb
+    worker_nodes:
+      disks:
+        node:
+          - /dev/sdb
+        hdfs:
+          - /dev/sdc
+      hosts:
+        - mip-bdcs-vm39.mip.storage.hpecorp.net    # EPIC Worker 1
       no_tenant_storage: false
-      hdfs_disks:
-        - /dev/sdc
-  hosts:
-    - mip-bdcs-vm39.mip.storage.hpecorp.net    # EPIC Worker 1
 
   ###############################################
   # ONLY USED TO DELETE EPIC HOSTS FROM PLATFORM #
