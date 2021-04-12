@@ -5,31 +5,31 @@ platform: {{ platform.type }}
 parameters:
   config:
 {% for host in hosts_to_add if host not in groups.repair_pool or force_repair is defined and force_repair %}
-{% if ecp_k8s.cluster.master_nodes is defined and ecp_k8s.cluster.master_nodes is iterable and hostvars[host].ansible_host in ecp_k8s.cluster.master_nodes %}
-    ephemeral_disks: {{ecp_k8s.configuration.master_node_disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.configuration.master_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.master_node_disks.no_tenant_storage %}
-    persistent_disks: {{ ecp_k8s.configuration.master_node_disks.persistent_disks|join(',') }}
+{% if hostvars[host].ansible_host in ecp_k8s.master_nodes.hosts %}
+    ephemeral_disks: {{ecp_k8s.master_nodes.disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.master_nodes.disks.persistent_disks is defined and ecp_k8s.master_nodes.disks.persistent_disks is iterable and not ecp_k8s.master_nodes.no_tenant_storage %}
+    persistent_disks: {{ ecp_k8s.master_nodes.disks.persistent_disks|join(',') }}
 {% else %}
     persistent_disks:
 {% endif %}
-{% elif ecp_k8s.cluster.ingress_nodes is defined and ecp_k8s.cluster.ingress_nodes is iterable and hostvars[host].ansible_host in ecp_k8s.cluster.ingress_nodes %}
-    ephemeral_disks: {{ecp_k8s.configuration.ingress_node_disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.configuration.ingress_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.ingress_node_disks.no_tenant_storage %}
-    persistent_disks: {{ ecp_k8s.configuration.ingress_node_disks.persistent_disks|join(',') }}
+{% elif ecp_k8s.ingress_nodes.hosts is defined and ecp_k8s.ingress_nodes.hosts is iterable and hostvars[host].ansible_host in ecp_k8s.ingress_nodes.hosts %}
+    ephemeral_disks: {{ecp_k8s.ingress_nodes.disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.ingress_nodes.disks.persistent_disks is defined and ecp_k8s.ingress_nodes.disks.persistent_disks is iterable and not ecp_k8s.ingress_nodes.no_tenant_storage %}
+    persistent_disks: {{ ecp_k8s.ingress_nodes.disks.persistent_disks|join(',') }}
 {% else %}
     persistent_disks:
 {% endif %}
-{% elif ecp_k8s.cluster.cp_nodes is defined and ecp_k8s.cluster.cp_nodes is iterable and hostvars[host].ansible_host in ecp_k8s.cluster.cp_nodes %}
-    ephemeral_disks: {{ecp_k8s.configuration.cp_node_disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.configuration.cp_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.cp_node_disks.no_tenant_storage %}
-    persistent_disks: {{ ecp_k8s.configuration.cp_node_disks.persistent_disks|join(',') }}
+{% elif ecp_k8s.cp_nodes.hosts is defined and ecp_k8s.cp_nodes.hosts is iterable and hostvars[host].ansible_host in ecp_k8s.cp_nodes.hosts %}
+    ephemeral_disks: {{ecp_k8s.cp_nodes.disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.cp_nodes.disks.persistent_disks is iterable and ecp_k8s.cp_nodes.persistent_disks is iterable and not ecp_k8s.cp_nodes.no_tenant_storage %}
+    persistent_disks: {{ ecp_k8s.cp_nodes.disks.persistent_disks|join(',') }}
 {% else %}
     persistent_disks:
 {% endif %}
-{% elif ecp_k8s.cluster.worker_nodes is defined and ecp_k8s.cluster.worker_nodes is iterable and hostvars[host].ansible_host in ecp_k8s.cluster.worker_nodes  %}
-    ephemeral_disks: {{ecp_k8s.configuration.worker_node_disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.configuration.worker_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.worker_node_disks.no_tenant_storage %}
-    persistent_disks: {{ ecp_k8s.configuration.worker_node_disks.persistent_disks|join(',') }}
+{% elif ecp_k8s.worker_nodes.hosts is defined and ecp_k8s.worker_nodes.hosts is iterable and hostvars[host].ansible_host in ecp_k8s.worker_nodes.hosts  %}
+    ephemeral_disks: {{ecp_k8s.worker_nodes.disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.worker_nodes.disks.persistent_disks is defined and ecp_k8s.worker_nodes.disks.persistent_disks is iterable and not ecp_k8s.worker_nodes.no_tenant_storage %}
+    persistent_disks: {{ ecp_k8s.worker_nodes.disks.persistent_disks|join(',') }}
 {% else %}
     persistent_disks:
 {% endif %}
