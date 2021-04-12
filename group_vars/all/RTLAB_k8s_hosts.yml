@@ -30,7 +30,7 @@ ecp_k8s:
       persistent_disks:
         # - /dev/sdc
     hosts:
-      - 16.143.22.158                   # K8s Master 1
+      - mip-bdcs-vm33.mip.storage.hpecorp.net     # 16.143.22.158  K8s Master 1
     no_tenant_storage: true
 
   ingress_nodes:
@@ -41,8 +41,8 @@ ecp_k8s:
       persistent_disks:
         # - /dev/sdc
     hosts:
-      # - 16.143.22.159                   # K8s Ingress 1
-      # - 16.143.22.160                   # K8s Ingress 2
+      # - hpecp-splunk.mip.storage.hpecorp.net      # 16.143.22.159  K8s Ingress 1
+      # - mip-bdcs-vm35.mip.storage.hpecorp.net     # 16.143.22.160  K8s Ingress 2
     no_tenant_storage: true
 
   cp_nodes:
@@ -53,8 +53,8 @@ ecp_k8s:
       persistent_disks:
         # - /dev/sdc
     hosts:
-      # - 16.143.22.161                   # K8s CP Worker 1
-      # - 16.143.22.162                   # K8s CP Worker 2
+      # - hpecp-splunk-master.mip.storage.hpecorp.net   # 16.143.22.161  K8s CP Worker 1
+      # - mip-bdcs-vm37.mip.storage.hpecorp.net         # 16.143.22.162  K8s CP Worker 2
     no_tenant_storage: true
 
   worker_nodes:
@@ -65,12 +65,12 @@ ecp_k8s:
       persistent_disks:
         # - /dev/sdc
     hosts:
-      - 16.143.22.159                   # K8s Ingress 1
-      - 16.143.22.160                   # K8s Ingress 2
-      - 16.143.22.161                   # K8s CP Worker 1
-      - 16.143.22.162                   # K8s CP Worker 2
-      - 16.143.22.163
-      - 16.143.22.164
+      # - hpecp-splunk.mip.storage.hpecorp.net          # 16.143.22.159  K8s Ingress 1
+      # - mip-bdcs-vm35.mip.storage.hpecorp.net         # 16.143.22.160  K8s Ingress 2
+      # - hpecp-splunk-master.mip.storage.hpecorp.net   # 16.143.22.161  K8s CP Worker 1
+      # - mip-bdcs-vm37.mip.storage.hpecorp.net         # 16.143.22.162  K8s CP Worker 2
+      - mip-bdcs-vm38.mip.storage.hpecorp.net         # 16.143.22.163
+      # - mip-bdcs-vm39.mip.storage.hpecorp.net         # 16.143.22.164
     no_tenant_storage: true
 
   ###############################################
