@@ -26,7 +26,7 @@ parameters:
 {% else %}
     persistent_disks:
 {% endif %}
-{% elif ecp_k8s.worker_nodes.hosts is defined and ((host in ecp_k8s.worker_nodes.hosts) or (hostvars[host].ansible_host in ecp_k8s.worker_nodes.hosts))   %}
+{% elif (host in ecp_k8s.worker_nodes.hosts) or (hostvars[host].ansible_host in ecp_k8s.worker_nodes.hosts)  %}
     ephemeral_disks: {{ecp_k8s.worker_nodes.disks.ephemeral_disks|join(',') }}
 {% if ecp_k8s.worker_nodes.disks.persistent_disks is defined and ecp_k8s.worker_nodes.disks.persistent_disks is not none and not ecp_k8s.worker_nodes.no_tenant_storage %}
     persistent_disks: {{ ecp_k8s.worker_nodes.disks.persistent_disks|join(',') }}

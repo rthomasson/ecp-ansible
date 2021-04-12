@@ -18,9 +18,9 @@
   - fail:
       msg: "Error: If you specify Ingress nodes, then the disk configuration, hosts and tenant_storage flag must be specified"
     when: 
-      - ecp_k8s.ingress_nodes.hosts is defined
-      - ecp_k8s.ingress_nodes.hosts is defined and ecp_k8s.ingress_nodes.hosts is iterable
-      - ecp_k8s.ingress_nodes.disks.ephemeral_disks is defined and ecp_k8s.ingress_nodes.disks.ephemeral_disks is iterable
+      - ecp_k8s.ingress_nodes is defined
+      - ecp_k8s.ingress_nodes.hosts is defined and ecp_k8s.ingress_nodes.hosts is iterable and ecp_k8s.master_nodes.hosts|length < 1
+      - ecp_k8s.ingress_nodes.disks.ephemeral_disks is defined and ecp_k8s.ingress_nodes.disks.ephemeral_disks is iterable and ecp_k8s.ingress_nodes.disks.ephemeral_disks|length < 1
       - ecp_k8s.ingress_nodes.no_tenant_storage is defined and ecp_k8s.ingress_nodes.no_tenant_storage is boolean
 
   - name: Create a fact with the list of K8s Ingress node hosts to be added    
@@ -35,7 +35,7 @@
     when: 
       - ecp_k8s.cp_nodes is defined
       - ecp_k8s.cp_nodes.hosts is defined and ecp_k8s.cp_nodes.hosts is iterable
-      - ecp_k8s.cp_nodes.disks.ephemeral is defined and ecp_k8s.cp_nodes.disks.ephemeral disks is iterable
+      - ecp_k8s.cp_nodes.disks.ephemeral is defined and ecp_k8s.cp_nodes.disks.ephemeral disks is iterable and ecp_k8s.cp_nodes.disks.ephemeral disks|length < 1
       - ecp_k8s.cp_nodes.no_tenant_storage is defined and ecp_k8s.cp_nodes.no_tenant_storage is boolean
 
   - name: Create a fact with the list of K8s CP Worker node hosts to be added    
