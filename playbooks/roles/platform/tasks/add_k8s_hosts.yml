@@ -13,6 +13,7 @@
       ecp_k8s: "{{ ecp_k8s | combine({ 'hosts': groups.k8s_hosts })}}"
     when: ecp_k8s.hosts is undefined  
 
+  - debug: var=ecp_k8s
   - debug:
       msg:
       - "*** Is ecp_k8s.hosts iterable? ***"
