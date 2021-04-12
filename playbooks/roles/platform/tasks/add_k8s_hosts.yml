@@ -8,13 +8,13 @@
       msg: "Error: You must specify at least one K8s Master Node and one K8s Worker Node"
     when: 
       (ecp_k8s.master_nodes is undefined) or
-      (ecp_k8s.master_nodes is defined and (ecp_k8s.master_nodes.no_tenant_storage is undefined or ecp_k8s.master_nodes.no_tenant_storage is not boolean)) or
-      (ecp_k8s.master_nodes.hosts is undefined) or
-      (ecp_k8s.master_nodes.hosts is defined and (ecp_k8s.master_nodes.hosts is not iterable or ecp_k8s.master_nodes.hosts|length < 1)) or 
-      (ecp_k8s.worker_nodes is undefined) or
-      (ecp_k8s.worker_nodes is defined and (ecp_k8s.worker_nodes.no_tenant_storage is undefined or ecp_k8s.worker_nodes.no_tenant_storage is not boolean)) or
-      (ecp_k8s.worker_nodes.hosts is undefined) or
-      (ecp_k8s.worker_nodes.hosts is defined and (ecp_k8s.worker_nodes.hosts is not iterable or ecp_k8s.worker_nodes.hosts|length < 1))
+      (ecp_k8s.master_nodes is defined and (ecp_k8s.master_nodes.no_tenant_storage is undefined or ecp_k8s.master_nodes.no_tenant_storage is not boolean)) # or
+      # (ecp_k8s.master_nodes.hosts is undefined) or
+      # (ecp_k8s.master_nodes.hosts is defined and (ecp_k8s.master_nodes.hosts is not iterable or ecp_k8s.master_nodes.hosts|length < 1)) or 
+      # (ecp_k8s.worker_nodes is undefined) or
+      # (ecp_k8s.worker_nodes is defined and (ecp_k8s.worker_nodes.no_tenant_storage is undefined or ecp_k8s.worker_nodes.no_tenant_storage is not boolean)) or
+      # (ecp_k8s.worker_nodes.hosts is undefined) or
+      # (ecp_k8s.worker_nodes.hosts is defined and (ecp_k8s.worker_nodes.hosts is not iterable or ecp_k8s.worker_nodes.hosts|length < 1))
       
   - name: Create a fact with the list of K8s master node and worker node hosts to be added    
     set_fact:
