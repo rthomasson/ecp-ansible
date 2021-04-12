@@ -19,49 +19,7 @@ parameters:
 {% endif %}
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
-{% set have_tags = false %}
-{% if hostvars[host].tag_dc is defined or hostvars[host].tag_rack is defined or hostvars[host].tag_ru is defined or hostvars[host].tag_zone is defined %}
-    tags:
-{% set have_tags = true %}
-{% endif %}
-{% if hostvars[host].tag_dc is defined %}
-      - name: dc_tag
-        value: {{ hostvars[host].tag_dc }}
-      - name: topology.kubernetes.io/region
-        value: {{ hostvars[host].tag_dc }}
-{% endif %}
-{% if hostvars[host].tag_zone is defined %}
-      - name: zone_tag
-        value: {{ hostvars[host].tag_zone }}
-      - name: topology.kubernetes.io/zone
-        value: {{ hostvars[host].tag_zone }}
-{% endif %}
-{% if hostvars[host].tag_rack is defined %}
-      - name: rack_tag
-        value: {{ hostvars[host].tag_rack }}
-{% endif %}
-{% if hostvars[host].tag_ru is defined %}
-      - name: ru_tag
-        value: {{ hostvars[host].tag_ru }}
-{% endif %}
-{% if ecp_k8s.cluster.ingress_nodes is defined and hostvars[host].ansible_host in ecp_k8s.cluster.ingress_nodes %}
-{% if have_tags == false %}
-    tags:
-{% set have_tags = true %}
-{% endif %}
-      - name: istio-ingressgateway
-        value: true
-{% endif %}
-{% if ecp_k8s.cluster.cp_nodes is defined and hostvars[host].ansible_host in ecp_k8s.cluster.cp_nodes %}
-{% if have_tags == false %}
-    tags:
-{% set have_tags = true %}
-{% endif %}
-      - name: istio-controlplane
-        value: true
-      - name: openebs-controlplane
-        value: true
-{% endif %}
+{# instert tag text here #}
   host:
 {% if host | ipv4 %}
     internal_ip: {{ host }}
