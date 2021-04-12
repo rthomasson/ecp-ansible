@@ -1,13 +1,10 @@
 {# Configure K8s Host installation YAML file for epicctl #}
-{% if ecp_k8s.hosts is undefined %}
-{% set ecp_k8s.hosts = groups.k8s_hosts %}
-{% endif %}
 ---
 op: K8sHostConfig
 platform: {{ platform.type }}
 parameters:
   config:
-{% for host in ecp_k8s.hosts if host not in groups.repair_pool or force_repair is defined and force_repair %}
+{% for host in hosts_to_add if host not in groups.repair_pool or force_repair is defined and force_repair %}
 {% if ecp_k8s.cluster.master_nodes is defined and hostvars[host].ansible_host in ecp_k8s.cluster.master_nodes %}
     ephemeral_disks: {{ecp_k8s.configuration.master_node_disks.ephemeral_disks|join(',') }}
 {% if ecp_k8s.configuration.master_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.master_node_disks.no_tenant_storage %}
