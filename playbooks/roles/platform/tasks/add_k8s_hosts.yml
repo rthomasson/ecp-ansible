@@ -5,7 +5,7 @@
 
   # Validate vars for minimmal K8s hosts to add
   - fail:
-      msg: "Error: You must specify at least one K8s Master Node and one K8s Worker Node"
+      msg: "Error: You must specify at least one K8s Master Node and one K8s Worker Node to create a K8s cluster"
     when: 
       (ecp_k8s.master_nodes is undefined) or
       (ecp_k8s.master_nodes.no_tenant_storage is undefined) or
@@ -69,8 +69,8 @@
       - "*** Input file content: "
       - "{{ lookup('template', 'add_k8s_hosts.j2') | to_nice_yaml }}"
 
-  # - name: Setting up and configuring k8s hosts.
-  #   shell: epicctl op -f {{ input_file }} -n {{ platform.name }} --defaultpassword "{{ ecp_credentials.site_admin_password }}"
-  #   register: res
-  #   failed_when: res.rc != 0
+  - name: Setting up and configuring k8s hosts.
+    shell: epicctl op -f {{ input_file }} -n {{ platform.name }} --defaultpassword "{{ ecp_credentials.site_admin_password }}"
+    register: res
+    failed_when: res.rc != 0
 
