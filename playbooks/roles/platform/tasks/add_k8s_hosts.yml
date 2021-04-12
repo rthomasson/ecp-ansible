@@ -44,8 +44,8 @@
       (ecp_k8s.cp_nodes.hosts is defined and (ecp_k8s.cp_nodes.hosts is not iterable or ecp_k8s.cp_nodes.hosts|length < 1)) or
       (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.disks.ephemeral_disks is undefined) or
       (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.disks.ephemeral_disks is defined and (ecp_k8s.cp_nodes.disks.ephemeral_disks is not iterable or ecp_k8s.cp_nodes.disks.ephemeral_disks|length < 1)) or
-      (ecp_k8s.cp_nodes is defined and (ecp_k8s.cp_nodes.no_tenant_storage is undefined or ecp_k8s.cp_nodes.no_tenant_storage is not boolean))
-
+      (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.no_tenant_storage is undefined)
+      
   - name: Create a fact with the list of K8s CP Worker node hosts to be added    
     set_fact:
       hosts_to_add:  "{{ hosts_to_add + ecp_k8s.cp_nodes.hosts }}"
