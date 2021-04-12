@@ -7,9 +7,11 @@
   - fail:
       msg: "Error: You must specify at least one K8s Master Node and one K8s Worker Node"
     when: 
-      - ecp_k8s.master_nodes.hosts is defined and ecp_k8s.master_nodes.hosts is iterable
+      - ecp_k8s.master_nodes.hosts is defined
+      - ecp_k8s.master_nodes.hosts is iterable
       - ecp_k8s.master_nodes.hosts|length > 0
-      - ecp_k8s.worker_nodes is defined and ecp_k8s.worker_nodes is iterable
+      - ecp_k8s.worker_nodes is defined
+      - ecp_k8s.worker_nodes is iterable
       - ecp_k8s.worker_nodes.hosts|length > 0
 
   - name: Create a fact with the list of K8s master node and worker node hosts to be added    
