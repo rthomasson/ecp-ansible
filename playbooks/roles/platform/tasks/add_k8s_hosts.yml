@@ -22,7 +22,7 @@
 
   # Validate vars for K8s Ingress nodes hosts to add
   - fail:
-      msg: "Error: If you specify Ingress nodes, then the disk configuration, hosts and tenant_storage flag must be specified"
+      msg: "Error: If you specify Ingress nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
     when: 
       (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.hosts is undefined) or
       (ecp_k8s.ingress_nodes.hosts is defined and (ecp_k8s.ingress_nodes.hosts is not iterable or ecp_k8s.ingress_nodes.hosts|length < 1)) or
@@ -38,7 +38,7 @@
 
   # Validate vars for K8s CP Worker nodes hosts to add
   - fail:
-      msg: "Error: If you specify CP Worker nodes, then the disk configuration, hosts and tenant_storage flag must be specified"
+      msg: "Error: If you specify CP Worker nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
     when: 
       (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.hosts is undefined) or
       (ecp_k8s.cp_nodes.hosts is defined and (ecp_k8s.cp_nodes.hosts is not iterable or ecp_k8s.cp_nodes.hosts|length < 1)) or
