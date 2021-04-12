@@ -5,7 +5,7 @@ platform: {{ platform.type }}
 parameters:
   config:
 {% for host in hosts_to_add if host not in groups.repair_pool or force_repair is defined and force_repair %}
-{% if ecp_k8s.cluster.master_nodes is defined and ecp_k8s.cluster.master_nodes not none and hostvars[host].ansible_host in ecp_k8s.cluster.master_nodes %}
+{% if ecp_k8s.cluster.master_nodes is defined and ecp_k8s.cluster.master_nodes is not none and hostvars[host].ansible_host in ecp_k8s.cluster.master_nodes %}
     ephemeral_disks: {{ecp_k8s.configuration.master_node_disks.ephemeral_disks|join(',') }}
 {% if ecp_k8s.configuration.master_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.master_node_disks.no_tenant_storage %}
     persistent_disks: {{ ecp_k8s.configuration.master_node_disks.persistent_disks|join(',') }}
