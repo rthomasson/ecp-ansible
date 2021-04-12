@@ -1,3 +1,4 @@
+{# Configure K8s Host installation YAML file for epicctl #}
 {% if ecp_k8s.hosts is undefined %}
 {% set ecp_k8s.hosts = groups.k8s_hosts %}
 {% endif %}
