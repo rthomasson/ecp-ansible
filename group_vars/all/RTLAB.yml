@@ -15,17 +15,16 @@ configure_airgap: no
 # This lab is not setup for handling notifications
 configure_notification: no
 add_host_tags: no
-# This lab is on ECP 5.3 and does not need the patches
+# This lab does not need the ECP 5.1 patches
 apply_ecp_patches: no
 apply_ntp_fix_primary: no
 apply_ntp_fix_shadow: no
 
-# Controller, gateways, and ha_workers can be either IP or FQDN
-# k8s_workers must be FQDN due to multiple Ansible hostvars[] references
-# TODO: Research how to do IP->FQDN lookup in Ansible inventory (for add_k8s_hosts.j2)
 platform:
   name: RTLAB
   type: onprem
+  # Setting for API calls - usually http regardless 
+  api_scheme: http
   controller: mip-bdcs-vm31.mip.storage.hpecorp.net
   hosts:
     gateways:
@@ -33,30 +32,27 @@ platform:
     ha_hosts: 
       #- mip-bdcs-vm22.mip.storage.hpecorp.net    # Shadow
       #- mip-bdcs-vm31.mip.storage.hpecorp.net    # Arbiter
-    k8s_hosts:
-      - mip-bdcs-vm33.mip.storage.hpecorp.net    # K8s Master 1
-      - hpecp-splunk.mip.storage.hpecorp.net     # K8s Ingress 1
-      - mip-bdcs-vm35.mip.storage.hpecorp.net    # K8s Ingress 2
-      - mip-bdcs-vm36.mip.storage.hpecorp.net    # K8s CP Worker 1
-      - mip-bdcs-vm37.mip.storage.hpecorp.net    # K8s CP Worker 2
-      - mip-bdcs-vm38.mip.storage.hpecorp.net    # K8s Worker 1
-      - mip-bdcs-vm39.mip.storage.hpecorp.net    # K8s Worker 2
   install:
     install_type: non-agent-based-install
     install_as_root: true
-    # Installer and version info for ECP 5.3  
+    ###############################################
+    # Installer and Prechecks file info for ECP 5.3
+    ###############################################  
     bin_url: "http://16.143.20.46:8080/rock/golden/5.3-GA/3031/hpe-cp-rhel-release-5.3-3031.bin"
     installer_file: "hpe-cp-rhel-release-5.3-3031.bin"
-    # Engineering pre-release Installer file staged on Tower server
-    # bin_url: "file://mip-bdcs-vm40.mip.storage.hpecorp.net/tmp/ecp/hpe-cp-rhel-release-5.3-151.bin"  
-    # version: hpe-cp-rhel-release-5.3-151
-    # Installer and version info for ECP 5.2  
-    # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
-    # version: hpe-cp-rhel-release-5.2-3020
-    # Installer and version info for ECP 5.1  
-    #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
-    #version: hpe-cp-rhel-release-5.1-3011
     prechecks_file: "hpe-cp-rhel-prechecks-5.3.bin"
+    #-----------------------------------------
+    # Installer and Prechecks file for ECP 5.2  
+    #-----------------------------------------
+    # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
+    # installer_file: "hpe-cp-rhel-release-5.2-3020.bin"
+    # prechecks_file: "hpe-cp-rhel-prechecks-5.2.bin"
+    #-----------------------------------------
+    # Installer and Prechecks file for ECP 5.1  
+    #-----------------------------------------
+    # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
+    # installer_file: hpe-cp-rhel-release-5.1-3011
+    # prechecks_file: "hpe-cp-rhel-prechecks-5.2.bin"
     control_plane_disks:
       node_disks:
         - /dev/sdb
@@ -77,21 +73,19 @@ platform:
       int_gw_ip: 172.20.0.1
       int_nw_mask: 16
       # TO-DO: Clean up certs. These are on the tower server 16.143.22.165
-      ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
-      ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
-      # Setting for epicctl API calls - usually http regardless of using certs (move variable to platform sometime)
-      api_scheme: http
+      # ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
+      # ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
     gateways:
       gateway_set_hostname: mip-bdcs-vm32.mip.storage.hpecorp.net
       # TO-DO: clean up certs
       # These are the cert filenames in the platform after install
-      ssl_cert_file: cert.pem
-      ssl_key_file: key.pem
+      # ssl_cert_file: cert.pem
+      # ssl_key_file: key.pem
       port_mapping_start: 10000
       port_mapping_end: 11000
     # Set the hosts IDs below to 3 and 4 if one gateway is configured, 4 and 5 if two gateways are configured
-    shadow_host_id: 4
-    arbiter_host_id: 5
+    shadow_host_id: 3
+    arbiter_host_id: 4
     no_tenant_isolation: false
   proxy: http://web-proxy.corp.hpecorp.net:8080 
   rest_protocol: http
@@ -100,25 +94,26 @@ platform:
 
 ecp_airgap:
   container_repo_url: 16.143.22.165:8080/hpecp
-  #container_repo_username:
-  #container_repo_password:
-  #container_repo_secure_flag:
-  #container_repo_cert:
-  #yum_repo_gpg_key:
-  #yum_rpm_gpg_key:
-  #yum_repo_url: http://16.143.20.46:8080/scratch/qa/repos/kubernetes/   # Unsupported - bad RPM
+  # container_repo_username:
+  # container_repo_password:
+  # container_repo_secure_flag:
+  # container_repo_cert:
+  # yum_repo_gpg_key:
+  # yum_rpm_gpg_key:
+  # yum_repo_url: http://16.143.20.46:8080/scratch/qa/repos/kubernetes/   # Unsupported - bad RPM
   yum_repo_url: http://bd-repos1.mip.storage.hpecorp.net/kubernetes/
   
 ecp_credentials:
-  # Default installation accounts
+  # Default credentials for site admin account
   site_admin_id: admin
+  # This will be used by epicctl to set the default password for the site admin account during installation
   site_admin_password: admin123
   ssh:
-#    access_type: ssh_key_access
+    # access_type: ssh_key_access
     access_type: password_access
-#    keypair_file: /home/stack/.ssh/prod_ecp_rsa
-#    keypair_name: prod_ecp_rsa
-#    key_passphrase: bubAIdT^k2l}
+    # keypair_file: /home/stack/.ssh/prod_ecp_rsa
+    # keypair_name: prod_ecp_rsa
+    # key_passphrase: bubAIdT^k2l}
     password: admin123
     username: root
     usergroup: root
@@ -132,7 +127,6 @@ ecp_epic:
       no_tenant_storage: false
       hdfs_disks:
         - /dev/sdc
-
 
 ecp_k8s:
   # NOTE: FQDNs are used for istio, cert-manager, openebs, and wordpress playbooks

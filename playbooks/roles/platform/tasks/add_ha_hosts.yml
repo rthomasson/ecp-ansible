@@ -2,12 +2,25 @@
 - name: Prepare input file for epicctl.
   template:
     src: add_ha_hosts.j2
-    dest: "/tmp/{{ platform.name }}_ha_hosts.yml"
+    dest: "/tmp/{{ platform.name }}_add_ha_hosts.yml"
     mode: 0777
+
+# Validate vars for HA hosts to add
+- fail:
+    msg: "Error: In order to configure ECP for HA, you must provide two hosts; one for the Shadow Controller and one for the Arbiter"
+  when: 
+    (ecp_epic.ha_nodes is undefined) or
+    (ecp_epic.ha_nodes.no_tenant_storage is undefined) or
+    (ecp_epic.ha_nodes.hosts is undefined) or
+    (ecp_epic.ha_nodes.hosts is defined and (ecp_epic.ha_nodes.hosts is not iterable or ecp_epic.ha_nodes.hosts|length < 2))  
+      
+- name: Create a fact with the list of HA node hosts to be added    
+  set_fact:
+    hosts_to_add:  "{{ ecp_epic.ha_nodes.hosts }}"
 
 - debug:
     msg: 
-    - "*** Installing HA Workers for HPE CP Control Plane ***"
+    - "*** Installing HA Nodes for ECP Control Plane ***"
     - "Input file content: "
     - "{{ lookup('template', 'add_ha_hosts.j2') }}"
 
@@ -17,11 +30,9 @@
   failed_when: res_ver.rc != 0
 
 - name: Run epicctl command to install epic workers for HA
-  command: "epicctl op -f /tmp/{{ platform.name }}_ha_hosts.yml -n {{ platform.name }}"
+  command: "epicctl op -f /tmp/{{ platform.name }}_add_ha_hosts.yml -n {{ platform.name }}"
   register: res
   failed_when: res.rc != 0
-
-# Set hcp_host_id variable values in Ansible inventory
 
 - debug:
     msg: "{{ res.stdout }}"

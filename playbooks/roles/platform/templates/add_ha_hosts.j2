@@ -1,16 +1,16 @@
-{# Configure platform installation YAML file for epicctl #}
-{% for ew in platform.hosts.ha_hosts %}
+{# Configure HA Node installation YAML file for epicctl #}
+{% for ew in hosts_to_add %}
 ---
 op: WorkerConfig
 parameters:
   config:
-    node_disks: {{platform.install.ha_node_disks.node_disks|join(',') }}
-{% if platform.install.ha_node_disks.no_tenant_storage is defined and not platform.install.ha_node_disks.no_tenant_storage %}
-    hdfs_disks: {{ platform.install.ha_node_disks.hdfs_disks|join(',') }}
-    no_tenant_storage: false
-{% else %}
+    node_disks: {{ecp_epic.ha_nodes.disks.node_disks|join(',') }}
+{% if ecp_epic.ha_nodes.disks.no_tenant_storage is undefined or ecp_epic.ha_nodes.disks.no_tenant_storage %}
     hdfs_disks:
     no_tenant_storage: true
+{% else %}
+    hdfs_disks: {{ ecp_epic.ha_nodes.disks.hdfs_disks|join(',') }}
+    no_tenant_storage: false
 {% endif %}
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}

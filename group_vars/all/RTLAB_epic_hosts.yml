@@ -22,16 +22,28 @@ ecp_credentials:
     usergroup: root
 
 ecp_epic:
-    worker_nodes:
-      disks:
-        node:
-          - /dev/sdb
-        hdfs:
-          - /dev/sdc
-      hosts:
-        - mip-bdcs-vm39.mip.storage.hpecorp.net    # EPIC Worker 1
-      no_tenant_storage: false
-
+  # ha_nodes:
+  #   disks:
+  #     node_disks:
+  #       - /dev/sdb
+  #       - /dev/sdc
+  #     hdfs_disks:
+  #       - /dev/sdc
+  #   hosts:
+  #     - mip-bdcs-vm22.mip.storage.hpecorp.net    # 16.143.22.145 Shadow
+  #     - mip-bdcs-vm31.mip.storage.hpecorp.net    # 16.143.22.156 Arbiter
+  #   no_tenant_storage: true
+  worker_nodes:
+    disks:
+      node_disks:
+        - /dev/sdb
+        # - /dev/sdc
+      hdfs_disks:
+        - /dev/sdc
+    hosts:
+      - mip-bdcs-vm39.mip.storage.hpecorp.net    # 16.143.22.164 MLOps EPIC Worker
+      # - mip-bdcs-vm31.mip.storage.hpecorp.net    # 16.143.22.156 Arbiter
+    no_tenant_storage: true
   ###############################################
   # ONLY USED TO DELETE EPIC HOSTS FROM PLATFORM #
   # The list can be either IPs or FQDNs         #

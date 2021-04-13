@@ -26,12 +26,8 @@ platform:
   # Setting for API calls - usually http regardless 
   api_scheme: http
   controller: mip-bdcs-vm31.mip.storage.hpecorp.net
-  hosts:
-    gateways:
-      - hpecp-lab-gw.mip.storage.hpecorp.net    # Gateway 1
-    ha_hosts: 
-      #- mip-bdcs-vm22.mip.storage.hpecorp.net    # Shadow
-      #- mip-bdcs-vm31.mip.storage.hpecorp.net    # Arbiter
+  gateways:
+    - hpecp-lab-gw.mip.storage.hpecorp.net    # Gateway 1
   install:
     install_type: non-agent-based-install
     install_as_root: true
@@ -76,7 +72,7 @@ platform:
       # ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
       # ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
     gateways:
-      gateway_set_hostname: mip-bdcs-vm32.mip.storage.hpecorp.net
+      gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
       # TO-DO: clean up certs
       # These are the cert filenames in the platform after install
       # ssl_cert_file: cert.pem
@@ -119,14 +115,38 @@ ecp_credentials:
     usergroup: root
 
 ecp_epic:
-  configuration:
-    # Disk configuration for EPIC workers
-    worker_node_disks:
+  # ha_nodes:
+  #   disks:
+  #     node_disks:
+  #       - /dev/sdb
+  #       - /dev/sdc
+  #     hdfs_disks:
+  #       - /dev/sdc
+  #   hosts:
+  #     - mip-bdcs-vm22.mip.storage.hpecorp.net    # 16.143.22.145 Shadow
+  #     - mip-bdcs-vm31.mip.storage.hpecorp.net    # 16.143.22.156 Arbiter
+  #   no_tenant_storage: true
+  worker_nodes:
+    disks:
       node_disks:
         - /dev/sdb
-      no_tenant_storage: false
+        # - /dev/sdc
       hdfs_disks:
         - /dev/sdc
+    hosts:
+      - mip-bdcs-vm39.mip.storage.hpecorp.net    # 16.143.22.164 MLOps EPIC Worker
+      # - mip-bdcs-vm31.mip.storage.hpecorp.net    # 16.143.22.156 Arbiter
+     no_tenant_storage: true
+  ###############################################
+  # ONLY USED TO DELETE EPIC HOSTS FROM PLATFORM #
+  # The list can be either IPs or FQDNs         #
+  ###############################################
+  hosts_to_delete:
+    list:
+      - mip-bdcs-vm35.mip.storage.hpecorp.net   
+      - mip-bdcs-vm37.mip.storage.hpecorp.net    
+      # - mip-bdcs-vm39.mip.storage.hpecorp.net
+    # status: ready      
 
 ecp_notification:
   # snmp:

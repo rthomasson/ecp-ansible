@@ -1,76 +1,75 @@
 ---
-  - name: Create a fact with the session info from the API call  
-    set_fact:
-      input_file: "/tmp/{{platform.name }}_add_k8s_hosts.yml"
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    input_file: "/tmp/{{platform.name }}_add_k8s_hosts.yml"
 
-  # Validate vars for minimmal K8s hosts to add
-  - fail:
-      msg: "Error: You must specify at least one K8s Master Node and one K8s Worker Node to create a K8s cluster"
-    when: 
-      (ecp_k8s.master_nodes is undefined) or
-      (ecp_k8s.master_nodes.no_tenant_storage is undefined) or
-      (ecp_k8s.master_nodes.hosts is undefined) or
-      (ecp_k8s.master_nodes.hosts is defined and (ecp_k8s.master_nodes.hosts is not iterable or ecp_k8s.master_nodes.hosts|length < 1)) or 
-      (ecp_k8s.worker_nodes is undefined) or
-      (ecp_k8s.worker_nodes.no_tenant_storage is undefined)  or
-      (ecp_k8s.worker_nodes.hosts is undefined) or
-      (ecp_k8s.worker_nodes.hosts is defined and (ecp_k8s.worker_nodes.hosts is not iterable or ecp_k8s.worker_nodes.hosts|length < 1))
+# Validate vars for minimmal K8s hosts to add
+- fail:
+    msg: "Error: You must specify at least one K8s Master Node and one K8s Worker Node to create a K8s cluster"
+  when: 
+    (ecp_k8s.master_nodes is undefined) or
+    (ecp_k8s.master_nodes.no_tenant_storage is undefined) or
+    (ecp_k8s.master_nodes.hosts is undefined) or
+    (ecp_k8s.master_nodes.hosts is defined and (ecp_k8s.master_nodes.hosts is not iterable or ecp_k8s.master_nodes.hosts|length < 1)) or 
+    (ecp_k8s.worker_nodes is undefined) or
+    (ecp_k8s.worker_nodes.no_tenant_storage is undefined)  or
+    (ecp_k8s.worker_nodes.hosts is undefined) or
+    (ecp_k8s.worker_nodes.hosts is defined and (ecp_k8s.worker_nodes.hosts is not iterable or ecp_k8s.worker_nodes.hosts|length < 1))
       
-  - name: Create a fact with the list of K8s master node and worker node hosts to be added    
-    set_fact:
-      hosts_to_add:  "{{ ecp_k8s.master_nodes.hosts + ecp_k8s.worker_nodes.hosts }}"
+- name: Create a fact with the list of K8s master node and worker node hosts to be added    
+  set_fact:
+    hosts_to_add:  "{{ ecp_k8s.master_nodes.hosts + ecp_k8s.worker_nodes.hosts }}"
 
-  # Validate vars for K8s Ingress nodes hosts to add
-  - fail:
-      msg: "Error: If you specify Ingress nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
-    when: 
-      (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.hosts is undefined) or
-      (ecp_k8s.ingress_nodes.hosts is defined and (ecp_k8s.ingress_nodes.hosts is not iterable or ecp_k8s.ingress_nodes.hosts|length < 1)) or
-      (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.disks.ephemeral_disks is undefined) or
-      (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.disks.ephemeral_disks is defined and (ecp_k8s.ingress_nodes.disks.ephemeral_disks is not iterable or ecp_k8s.ingress_nodes.disks.ephemeral_disks|length < 1)) or
-      (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.no_tenant_storage is undefined)
+# Validate vars for K8s Ingress nodes hosts to add
+- fail:
+    msg: "Error: If you specify Ingress nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
+  when: 
+    (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.hosts is undefined) or
+    (ecp_k8s.ingress_nodes.hosts is defined and (ecp_k8s.ingress_nodes.hosts is not iterable or ecp_k8s.ingress_nodes.hosts|length < 1)) or
+    (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.disks.ephemeral_disks is undefined) or
+    (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.disks.ephemeral_disks is defined and (ecp_k8s.ingress_nodes.disks.ephemeral_disks is not iterable or ecp_k8s.ingress_nodes.disks.ephemeral_disks|length < 1)) or
+    (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.no_tenant_storage is undefined)
 
-  - name: Create a fact with the list of K8s Ingress node hosts to be added    
-    set_fact:
-      hosts_to_add:  "{{ hosts_to_add + ecp_k8s.ingress_nodes.hosts }}"
-    when:
-      - ecp_k8s.ingress_nodes.hosts is defined and ecp_k8s.ingress_nodes.hosts is iterable
+- name: Create a fact with the list of K8s Ingress node hosts to be added    
+  set_fact:
+    hosts_to_add:  "{{ hosts_to_add + ecp_k8s.ingress_nodes.hosts }}"
+  when:
+    - ecp_k8s.ingress_nodes.hosts is defined and ecp_k8s.ingress_nodes.hosts is iterable
 
-  # Validate vars for K8s CP Worker nodes hosts to add
-  - fail:
-      msg: "Error: If you specify CP Worker nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
-    when: 
-      (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.hosts is undefined) or
-      (ecp_k8s.cp_nodes.hosts is defined and (ecp_k8s.cp_nodes.hosts is not iterable or ecp_k8s.cp_nodes.hosts|length < 1)) or
-      (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.disks.ephemeral_disks is undefined) or
-      (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.disks.ephemeral_disks is defined and (ecp_k8s.cp_nodes.disks.ephemeral_disks is not iterable or ecp_k8s.cp_nodes.disks.ephemeral_disks|length < 1)) or
-      (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.no_tenant_storage is undefined)
+# Validate vars for K8s CP Worker nodes hosts to add
+- fail:
+    msg: "Error: If you specify CP Worker nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
+  when: 
+    (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.hosts is undefined) or
+    (ecp_k8s.cp_nodes.hosts is defined and (ecp_k8s.cp_nodes.hosts is not iterable or ecp_k8s.cp_nodes.hosts|length < 1)) or
+    (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.disks.ephemeral_disks is undefined) or
+    (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.disks.ephemeral_disks is defined and (ecp_k8s.cp_nodes.disks.ephemeral_disks is not iterable or ecp_k8s.cp_nodes.disks.ephemeral_disks|length < 1)) or
+    (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.no_tenant_storage is undefined)
       
-  - name: Create a fact with the list of K8s CP Worker node hosts to be added    
-    set_fact:
-      hosts_to_add:  "{{ hosts_to_add + ecp_k8s.cp_nodes.hosts }}"
-    when:
-      - ecp_k8s.cp_nodes.hosts is defined and ecp_k8s.cp_nodes.hosts is iterable
+- name: Create a fact with the list of K8s CP Worker node hosts to be added    
+  set_fact:
+    hosts_to_add:  "{{ hosts_to_add + ecp_k8s.cp_nodes.hosts }}"
+  when:
+    - ecp_k8s.cp_nodes.hosts is defined and ecp_k8s.cp_nodes.hosts is iterable
 
-  - debug:
-      msg:
-      - "*** hosts_to_add contents ***"
-      - "{{ hosts_to_add }}"
+- debug:
+    msg:
+    - "*** hosts_to_add contents ***"
+    - "{{ hosts_to_add }}"
 
-  - name: Prepare input file for epicctl (skipping any in repair_pool)
-    template:
-      src: add_k8s_hosts.j2
-      dest: "{{ input_file }}"
-      mode: 0777
+- name: Prepare input file for epicctl (skipping any in repair_pool)
+  template:
+    src: add_k8s_hosts.j2
+    dest: "{{ input_file }}"
+    mode: 0777
   
-  - debug:
-      msg:
-      - "*** Adding K8s Hosts ***"
-      - "*** Input file content: "
-      - "{{ lookup('template', 'add_k8s_hosts.j2') | to_nice_yaml }}"
+- debug:
+    msg:
+    - "*** Adding K8s Hosts ***"
+    - "*** Input file content: "
+    - "{{ lookup('template', 'add_k8s_hosts.j2') | to_nice_yaml }}"
 
-  - name: Setting up and configuring k8s hosts.
-    shell: epicctl op -f {{ input_file }} -n {{ platform.name }} --defaultpassword "{{ ecp_credentials.site_admin_password }}"
-    register: res
-    failed_when: res.rc != 0
-
+- name: Setting up and configuring k8s hosts.
+  shell: epicctl op -f {{ input_file }} -n {{ platform.name }} --defaultpassword "{{ ecp_credentials.site_admin_password }}"
+  register: res
+  failed_when: res.rc != 0
