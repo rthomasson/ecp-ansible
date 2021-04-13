@@ -33,7 +33,7 @@
 
 - name: Create a fact with parsed list of EPIC workers from the API call  
   set_fact:
-    epic_workers: "{{ workers_res.json | json_query('_embedded.workers[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
+    epic_workers: "{{ workers_res.json | json_query('_embedded.workers[*].{ansible_host: ip, host_id: _links.self.href, hostname: hostname, status: status_info}') }}"
     cacheable: True  
 
 - debug:
