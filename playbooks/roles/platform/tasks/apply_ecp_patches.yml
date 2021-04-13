@@ -1,4 +1,9 @@
 ---
+# This task patches ECP 5.1 components as configured for Wells Fargo
+# This task assumes that the ECP installation was a non-agent based installation.
+# NOTES:
+#   1. It DOES NOT use any variables. It interacts with ECP files directly
+#   2. This playbook should be run on both the parimary controller and the shadow controller (if configured)  
 - name: Get existing file properties for HA fix
   stat:
     path: /usr/lib/python2.7/site-packages/bluedata/ha/__init__.py

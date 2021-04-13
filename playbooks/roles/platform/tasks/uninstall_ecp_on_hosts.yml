@@ -114,7 +114,8 @@
   command: "/bin/rm -f {{ file_path }}"
 
 - name: Reboot the host
-  command: "reboot "
+  reboot: 
+    reboot_timeout: 600
 
 
 

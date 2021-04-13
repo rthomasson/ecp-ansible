@@ -5,58 +5,54 @@
 # Uncomment the following two lines to install the ECP control plane and add gateways
 #install_platform: yes
 #add_gateways: yes
-
 # This lab is not configured for HA, so don't run the HA playbooks
 add_ha_hosts: no
 configure_ha: no
-
 # This lab uses the default gateway port assignments
 configure_gateway_ports: no
-
 # This lab is NOT configured for airgap
 configure_airgap: no
-
 # This lab is not setup for handling notifications
 configure_notification: no
 add_host_tags: no
-
 # This lab does not need the ECP 5.1 patches
 apply_ecp_patches: no
 apply_ntp_fix_primary: no
 apply_ntp_fix_shadow: no
 
-# Controller, gateways, and ha_workers can be either IP or FQDN
-# k8s_workers must be FQDN due to multiple Ansible hostvars[] references
-# TODO: Research how to do IP->FQDN lookup in Ansible inventory (for add_k8s_hosts.j2)
 platform:
   name: RTLAB
   type: onprem
-  controller: mip-bdcs-vm31.mip.storage.hpecorp.net
   # Setting for API calls - usually http regardless 
   api_scheme: http
+  controller: mip-bdcs-vm31.mip.storage.hpecorp.net
   hosts:
     gateways:
       - hpecp-lab-gw.mip.storage.hpecorp.net    # Gateway 1
     ha_hosts: 
       #- mip-bdcs-vm22.mip.storage.hpecorp.net    # Shadow
       #- mip-bdcs-vm31.mip.storage.hpecorp.net    # Arbiter
-
   install:
     install_type: non-agent-based-install
     install_as_root: true
-    # Installer and version info for ECP 5.3  
-    bin_url: "https://bdk8s.s3.us-east-2.amazonaws.com/5.3/3030/hpe-cp-rhel-release-5.3-3030.bin"
-    installer_file: "hpe-cp-rhel-release-5.3-3030.bin"
-    # Engineering pre-release Installer file staged on Tower server
-    # bin_url: "file://mip-bdcs-vm40.mip.storage.hpecorp.net/tmp/ecp/hpe-cp-rhel-release-5.3-151.bin"  
-    # version: hpe-cp-rhel-release-5.3-151
-    # Installer and version info for ECP 5.2  
-    # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
-    # version: hpe-cp-rhel-release-5.2-3020
-    # Installer and version info for ECP 5.1  
-    #bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
-    #version: hpe-cp-rhel-release-5.1-3011
+    ###############################################
+    # Installer and Prechecks file info for ECP 5.3
+    ###############################################  
+    bin_url: "http://16.143.20.46:8080/rock/golden/5.3-GA/3031/hpe-cp-rhel-release-5.3-3031.bin"
+    installer_file: "hpe-cp-rhel-release-5.3-3031.bin"
     prechecks_file: "hpe-cp-rhel-prechecks-5.3.bin"
+    #-----------------------------------------
+    # Installer and Prechecks file for ECP 5.2  
+    #-----------------------------------------
+    # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.2/hpe-cp-rhel-release-5.2-3020.bin"  
+    # installer_file: "hpe-cp-rhel-release-5.2-3020.bin"
+    # prechecks_file: "hpe-cp-rhel-prechecks-5.2.bin"
+    #-----------------------------------------
+    # Installer and Prechecks file for ECP 5.1  
+    #-----------------------------------------
+    # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
+    # installer_file: hpe-cp-rhel-release-5.1-3011
+    # prechecks_file: "hpe-cp-rhel-prechecks-5.2.bin"
     control_plane_disks:
       node_disks:
         - /dev/sdb
@@ -79,7 +75,6 @@ platform:
       # TO-DO: Clean up certs. These are on the tower server 16.143.22.165
       # ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
       # ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
-
     gateways:
       gateway_set_hostname: mip-bdcs-vm32.mip.storage.hpecorp.net
       # TO-DO: clean up certs
@@ -88,12 +83,12 @@ platform:
       # ssl_key_file: key.pem
       port_mapping_start: 10000
       port_mapping_end: 11000
-
     # Set the hosts IDs below to 3 and 4 if one gateway is configured, 4 and 5 if two gateways are configured
     shadow_host_id: 3
     arbiter_host_id: 4
     no_tenant_isolation: false
   proxy: http://web-proxy.corp.hpecorp.net:8080 
+  rest_protocol: http
   validate_certs: no
   tools_dir: "/root/tools"         # place to store the kits like kubectl
 

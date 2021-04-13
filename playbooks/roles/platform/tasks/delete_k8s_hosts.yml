@@ -5,16 +5,16 @@
 
 # Validate vars for nodes to delete
 - fail:
-    msg: "Error: Specify only host_list OR host_status"
+    msg: "Error: Specify either a list of hosts to delete OR a status to use but not both"
   when: 
-    - platform.hosts.k8s_hosts_to_delete.list is defined
-    - platform.hosts.k8s_hosts_to_delete.status is defined
+    - ecp_k8s.hosts_to_delete.list is defined  
+    - ecp_k8s.hosts_to_delete.status is defined
 
 - fail:
-    msg: "Error: Must specify either host_list OR host_status"
+    msg: "Error: You must provide either a list of hosts to delete or a host status that will be used to delete all hosts in that status"
   when: 
-    - platform.hosts.k8s_hosts_to_delete.list is undefined
-    - platform.hosts.k8s_hosts_to_delete.status is undefined
+    (ecp_k8s.hosts_to_delete.list is undefined or ecp_k8s.hosts_to_delete.list is not iterable) or
+    (ecp_k8s.hosts_to_delete.status is undefined)
 
 - name: Obtain session token
   uri:
@@ -60,7 +60,6 @@
     k8s_ids_to_delete: []
     k8s_ips_to_restore: []
     cacheable: True
-
 
 - name: Create list of hosts to delete based on enumerated list of k8s hosts
   set_fact:
