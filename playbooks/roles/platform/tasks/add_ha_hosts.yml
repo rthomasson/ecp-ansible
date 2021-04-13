@@ -1,10 +1,4 @@
 ---
-- name: Prepare input file for epicctl.
-  template:
-    src: add_ha_hosts.j2
-    dest: "/tmp/{{ platform.name }}_add_ha_hosts.yml"
-    mode: 0777
-
 # Validate vars for HA hosts to add
 - fail:
     msg: "Error: In order to configure ECP for HA, you must provide two hosts; one for the Shadow Controller and one for the Arbiter"
@@ -23,6 +17,12 @@
     - "*** Installing HA Nodes for ECP Control Plane ***"
     - "Input file content: "
     - "{{ lookup('template', 'add_ha_hosts.j2') }}"
+
+- name: Prepare input file for epicctl.
+  template:
+    src: add_ha_hosts.j2
+    dest: "/tmp/{{ platform.name }}_add_ha_hosts.yml"
+    mode: 0777
 
 - name: Get version of epicctl
   command: "epicctl -v"

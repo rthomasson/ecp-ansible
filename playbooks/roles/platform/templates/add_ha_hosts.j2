@@ -1,11 +1,11 @@
 {# Configure HA Node installation YAML file for epicctl #}
-{% for ew in hosts_to_add %}
+{% for host in hosts_to_add if host not in groups.repair_pool or force_repair is defined and force_repair %}
 ---
 op: WorkerConfig
 parameters:
   config:
     node_disks: {{ecp_epic.ha_nodes.disks.node_disks|join(',') }}
-{% if ecp_epic.ha_nodes.disks.no_tenant_storage is undefined or ecp_epic.ha_nodes.disks.no_tenant_storage %}
+{% if ecp_epic.ha_nodes.disks.no_tenant_storage %}
     hdfs_disks:
     no_tenant_storage: true
 {% else %}
@@ -15,10 +15,10 @@ parameters:
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
   host:
-{% if ew | ipv4 %}
-    internal_ip: {{ ew }} 
+{% if host | ipv4 %}
+    internal_ip: {{ host }} 
 {% else %}
-    internal_ip: {{ hostvars[ew].ansible_host }}
+    internal_ip: {{ hostvars[host].ansible_host }}
 {% endif %}
   ssh: 
     username: {{ ecp_credentials.ssh.username }}
