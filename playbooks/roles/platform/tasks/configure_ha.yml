@@ -1,5 +1,13 @@
 ---
 # This playbook configures ECP for HA using the designated hosts specified if the ecp_epic.ha_nodes variable
+# Validate vars for configuring ECP HA
+- fail:
+    msg: "Error: In order to configure ECP for HA, you must provide two hosts; one for the Shadow Controller and one for the Arbiter"
+  when: 
+    (ecp_epic.ha_nodes is undefined) or
+    (ecp_epic.ha_nodes.hosts is undefined) or
+    (ecp_epic.ha_nodes.hosts is defined and (ecp_epic.ha_nodes.hosts is not iterable or ecp_epic.ha_nodes.hosts|length < 2))  
+
 - name: Obtain session token
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
@@ -40,10 +48,30 @@
     var: epic_workers
     verbosity: 4
 
+- name: Designate the Shadow Controller Host ID (ECP uses an internal ID to identify workers) using the specified host information in the ecp_epic.ha_nodes.shadow_host variable
+  set_fact:
+    shadow_id: "{{ item | json_query('host_id') }}"
+  when: (item | json_query('ansible_host') == ecp_epic.ha_nodes.shadow_host) or 
+        (item | json_query('hostname') in ecp_epic.ha_nodes.shadow_host)
+  loop: "{{ epic_workers }}"
+
+- name: Designate the Arbiter Controller Host ID (ECP uses an internal ID to identify workers) using the specified host information in the ecp_epic.ha_nodes.arbiter_host variable
+  set_fact:
+    arbiter_id: "{{ item | json_query('host_id') }}"
+  when: (item | json_query('ansible_host') == ecp_epic.ha_nodes.arbiter_host) or 
+        (item | json_query('hostname') in ecp_epic.ha_nodes.arbiter_host)
+  loop: "{{ epic_workers }}"
+
 - name: Set a fact with the path/filename for the lockdown reason
   set_fact:
     lockdown_reason: '{ "reason": "Configure HA" }'
     cacheable: true  
+
+- debug:
+    msg:
+    - "The Shadow Controller host ID is: {{ shadow_id }}"
+    - "The Arbiter host ID is: {{ arbiter_id }}"
+    verbosity: 4
 
 - name: Put the site in lockdown
   uri:

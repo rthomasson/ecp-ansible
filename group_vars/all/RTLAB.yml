@@ -123,9 +123,11 @@ ecp_epic:
       hdfs_disks:
         - /dev/sdc
     hosts:
-      - mip-bdcs-vm37.mip.storage.hpecorp.net    # 16.143.22.162 Shadow
-      - mip-bdcs-vm38.mip.storage.hpecorp.net    # 16.143.22.163 Arbiter
+      - mip-bdcs-vm33.mip.storage.hpecorp.net    # 16.143.22.158 Shadow
+      - mip-bdcs-vm35.mip.storage.hpecorp.net    # 16.143.22.160 Arbiter
     no_tenant_storage: true
+    shadow_host: mip-bdcs-vm33.mip.storage.hpecorp.net   # 16.143.22.158 Shadow
+    arbiter_host: mip-bdcs-vm35.mip.storage.hpecorp.net  # 16.143.22.160 Arbiter
   worker_nodes:
     disks:
       node_disks:
