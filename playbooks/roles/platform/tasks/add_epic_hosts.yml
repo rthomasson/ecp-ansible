@@ -16,7 +16,7 @@
     msg: 
     - "*** Installing EPIC Workers for ECP ***"
     - "Input file content: "
-    - "{{ lookup('template', '_add_epic_hosts.j2') }}"
+    - "{{ lookup('template', 'add_epic_hosts.j2') }}"
 
 - name: Prepare input file for epicctl.
   template:
