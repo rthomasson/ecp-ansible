@@ -44,10 +44,6 @@
     epic_workers: "{{ workers_res.json | json_query('_embedded.workers[*].{ansible_host: ip, host_id: _links.self.href, hostname: hostname, status: status_info}') }}"
     cacheable: True  
 
-- debug:
-    var: epic_workers
-    verbosity: 4
-
 - name: Designate the Shadow Controller Host ID (ECP uses an internal ID to identify workers) using the specified host information in the ecp_epic.ha_nodes.shadow_host variable
   set_fact:
     shadow_id: "{{ item | json_query('host_id') }}"
@@ -65,13 +61,11 @@
 - name: Set a fact with the path/filename for the lockdown reason
   set_fact:
     lockdown_reason: '{ "reason": "Configure HA" }'
-    cacheable: true  
 
 - debug:
     msg:
     - "The Shadow Controller host ID is: {{ shadow_id }}"
     - "The Arbiter host ID is: {{ arbiter_id }}"
-    verbosity: 4
 
 - name: Put the site in lockdown
   uri:
