@@ -11,6 +11,11 @@
     status_code: 201
   register: session_res
 
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
+    cacheable: True  
+
 - debug:
     msg: "Session: {{ session_res.location  | urlsplit('path') }}"
 
