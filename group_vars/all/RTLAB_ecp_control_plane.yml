@@ -115,17 +115,17 @@ ecp_credentials:
     usergroup: root
 
 ecp_epic:
-  # ha_nodes:
-  #   disks:
-  #     node_disks:
-  #       - /dev/sdb
-  #       - /dev/sdc
-  #     hdfs_disks:
-  #       - /dev/sdc
-  #   hosts:
-  #     - mip-bdcs-vm22.mip.storage.hpecorp.net    # 16.143.22.145 Shadow
-  #     - mip-bdcs-vm31.mip.storage.hpecorp.net    # 16.143.22.156 Arbiter
-  #   no_tenant_storage: true
+  ha_nodes:
+    disks:
+      node_disks:
+        - /dev/sdb
+        # - /dev/sdc
+      hdfs_disks:
+        - /dev/sdc
+    hosts:
+      - mip-bdcs-vm37.mip.storage.hpecorp.net    # 16.143.22.162 Shadow
+      - mip-bdcs-vm38.mip.storage.hpecorp.net    # 16.143.22.163 Arbiter
+    no_tenant_storage: true
   worker_nodes:
     disks:
       node_disks:
