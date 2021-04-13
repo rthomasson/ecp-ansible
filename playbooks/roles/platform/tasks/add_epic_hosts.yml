@@ -5,6 +5,10 @@
     dest: "/tmp/{{ platform.name }}_add_epic_hosts.yml"
     mode: 0777
 
+- debug:
+    var: ecp_epic
+    verbosity: 3
+     
 # Validate vars for HA hosts to add
 - fail:
     msg: "Error: In order to configure EPIC Worker nodes, you must provide the disk configuration, hostname(s) and the no_tenant_storage flag information for the hosts"
