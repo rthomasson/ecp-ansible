@@ -1,4 +1,5 @@
 ---
+# This playbook configures ECP for HA using the designated hosts specified if the ecp_epic.ha_nodes variable
 - name: Obtain session token
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
@@ -6,12 +7,33 @@
     method: POST
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    body: { "name": "{{ ecp_credentials.site_admin_id }}", "password": "{{ ecp_credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
 
 - debug:
     msg: "Session: {{ session_res.location  | urlsplit('path') }}"
+
+- name: Get the current set of EPIC workers 
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/workers"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+      accept: "application/json"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 200
+  register: k8shost_res
+
+- name: Create a fact with parsed list of k8s hosts from the API call  
+  set_fact:
+    epic_hosts: "{{ epic_hosts_res.json | json_query('_embedded.workers[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
+    cacheable: True  
+
+- debug:
+    var: epic_hosts
+    verbosity: 4
 
 - name: Set a fact with the path/filename for the lockdown reason
   set_fact:
