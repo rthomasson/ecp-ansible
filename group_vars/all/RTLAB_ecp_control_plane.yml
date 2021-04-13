@@ -3,7 +3,7 @@
 # Variables to override the playbookd defaults and specify which tasks will run in install_ecp_control_plane.yml playbook
 #========================================================================================================================
 # Uncomment the following two lines to install the ECP control plane and add gateways
-#install_platform: yes
+#install_controller: yes
 #add_gateways: yes
 # This lab is not configured for HA, so don't run the HA playbooks
 add_ha_hosts: no
@@ -79,9 +79,9 @@ platform:
       # ssl_key_file: key.pem
       port_mapping_start: 10000
       port_mapping_end: 11000
-    # Set the hosts IDs below to 3 and 4 if one gateway is configured, 4 and 5 if two gateways are configured
-    shadow_host_id: 3
-    arbiter_host_id: 4
+    # Set the hosts IDs below to designate which EPIC hosts to use for HA. Typically, this will be 3 and 4 if one gateway is configured or 4 and 5 if two gateways are configured
+    shadow_host_id: 4
+    arbiter_host_id: 5
     no_tenant_isolation: false
   proxy: http://web-proxy.corp.hpecorp.net:8080 
   rest_protocol: http
@@ -136,7 +136,7 @@ ecp_epic:
     hosts:
       - mip-bdcs-vm39.mip.storage.hpecorp.net    # 16.143.22.164 MLOps EPIC Worker
       # - mip-bdcs-vm31.mip.storage.hpecorp.net    # 16.143.22.156 Arbiter
-     no_tenant_storage: true
+    no_tenant_storage: true
   ###############################################
   # ONLY USED TO DELETE EPIC HOSTS FROM PLATFORM #
   # The list can be either IPs or FQDNs         #

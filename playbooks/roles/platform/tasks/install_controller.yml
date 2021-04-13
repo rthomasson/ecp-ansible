@@ -7,7 +7,7 @@
 
 - debug:
     msg: 
-    - "*** Installing HPE ECP Control Plane - Controller ***"
+    - "*** Installing ECP Control Plane - Controller ***"
     - "Input file content: "
     - "{{ lookup('template', 'install_platform_controller.j2') }}"
 
