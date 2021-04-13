@@ -7,10 +7,10 @@ parameters:
     install_type: {{ platform.install.install_type }}
     install_as_root: {{ platform.install.install_as_root }}
   host:
-{% if platform.controller | ipv4 %}
-    host_ip: {{ platform.controller }}
+{% if platform.controller.host | ipv4 %}
+    host_ip: {{ platform.controller.host }}
 {% else %}
-    host_ip: {{ hostvars[platform.controller].ansible_host }}
+    host_ip: {{ hostvars[platform.controller.host].ansible_host }}
 {% endif %}
   ssh:
     username: {{ ecp_credentials.ssh.username }}
@@ -33,20 +33,20 @@ parameters:
 {% if platform.proxy is defined %}
     proxy_url: {{ platform.proxy }}
 {% endif %}
-{% if platform.install.controller.ssl_cert_file is defined %}
-    ssl_cert_file: {{ platform.install.controller.ssl_cert_file }}
+{% if platform.controller.config.ssl_cert_file is defined %}
+    ssl_cert_file: {{ platform.controller.config.ssl_cert_file }}
 {% endif %}
-{% if platform.install.controller.ssl_cert_key_file is defined %}
-    ssl_cert_key_file: {{ platform.install.controller.ssl_cert_key_file }}
+{% if platform.controller.config.ssl_cert_key_file is defined %}
+    ssl_cert_key_file: {{ platform.controller.config.ssl_cert_key_file }}
 {% endif %}
     url_bin_path: {{ platform.install.bin_url }}
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
   host:
-{% if platform.controller | ipv4 %}
-    host_ip: {{ platform.controller }}
+{% if platform.controller.host | ipv4 %}
+    host_ip: {{ platform.controller.host }}
 {% else %}
-    host_ip: {{ hostvars[platform.controller].ansible_host }}
+    host_ip: {{ hostvars[platform.controller.host].ansible_host }}
 {% endif %}
   ssh:
     username: {{ ecp_credentials.ssh.username }}
@@ -66,28 +66,28 @@ platform: {{ platform.type }}
 op: ControllerConfig
 parameters:
   config:
-    bd_domain: {{ platform.install.controller.bd_domain }}
-    bd_prefix: {{ platform.install.controller.bd_prefix }}
-    node_disks: {{ platform.install.control_plane_disks.node_disks|join(',') }}
-{% if platform.install.control_plane_disks.no_tenant_storage is defined and not platform.install.control_plane_disks.no_tenant_storage %}
-    hdfs_disks: {{ platform.install.control_plane_disks.hdfs_disks|join(',') }}
-    no_tenant_storage: false
-{% else %}
+    bd_domain: {{ platform.controller.config.bd_domain }}
+    bd_prefix: {{ platform.controller.config.bd_prefix }}
+    node_disks: {{ platform.controller.disks.node_disks|join(',') }}
+{% if platform.controller.no_tenant_storage %}
     hdfs_disks:  
     no_tenant_storage: true
+{% else %}
+    hdfs_disks: {{ platform.controller.disks.hdfs_disks|join(',') }}
+    no_tenant_storage: false
 {% endif %}
     no_tenant_isolation: {{ platform.install.no_tenant_isolation }}
-    int_start_ip: {{ platform.install.controller.int_start_ip }}
-    int_end_ip: {{ platform.install.controller.int_end_ip }}
-    int_gw_ip: {{ platform.install.controller.int_gw_ip }}
-    int_nw_mask: {{ platform.install.controller.int_nw_mask }}
+    int_start_ip: {{ platform.controller.config.int_start_ip }}
+    int_end_ip: {{ platform.controller.config.int_end_ip }}
+    int_gw_ip: {{ platform.controller.config.int_gw_ip }}
+    int_nw_mask: {{ platform.controller.config.int_nw_mask }}
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
   host:
-{% if platform.controller | ipv4 %}
-    host_ip: {{ platform.controller }}
+{% if platform.controller.host | ipv4 %}
+    host_ip: {{ platform.controller.host }}
 {% else %}
-    host_ip: {{ hostvars[platform.controller].ansible_host }}
+    host_ip: {{ hostvars[platform.controller.host].ansible_host }}
 {% endif %}
   ssh:
     username: {{ ecp_credentials.ssh.username }}

@@ -1,8 +1,15 @@
 ---
+# This playbook installs the ECP platform gateway(s)
+- fail:
+    msg: "Error: In order to install ECP gateways, you must specify the host(s) to use and optionally the port configuration to use instead of the defaults
+  when: 
+    (platform.gateways.hosts is undefined)
+
+
 - name: Prepare input file for epicctl.
   template:
     src: add_gateways.j2
-    dest: "/tmp/{{ platform.name }}_platform_gateways.yml"
+    dest: "/tmp/{{ platform.name }}_add_platform_gateways.yml"
     mode: 0777
 
 - debug:
@@ -12,11 +19,9 @@
     - "{{ lookup('template', 'add_gateways.j2') }}"
 
 - name: Run epicctl command to install gateways
-  command: "epicctl op -f /tmp/{{ platform.name }}_platform_gateways.yml -n {{ platform.name }}"
+  command: "epicctl op -f /tmp/{{ platform.name }}_add_platform_gateways.yml -n {{ platform.name }}"
   register: res
   failed_when: res.rc != 0
-
-# Set hcp_host_id variable values in Ansible inventory
 
 - debug:
     msg: "{{ res.stdout }}"

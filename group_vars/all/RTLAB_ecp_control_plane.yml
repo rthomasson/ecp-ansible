@@ -2,20 +2,22 @@
 #========================================================================================================================
 # Variables to override the playbookd defaults and specify which tasks will run in install_ecp_control_plane.yml playbook
 #========================================================================================================================
-# Uncomment the following two lines to install the ECP control plane and add gateways
-#install_controller: yes
-#add_gateways: yes
-# This lab is not configured for HA, so don't run the HA playbooks
+# The following two lines override the settings for the installation of the ECP controller and gateways
+#install_controller: no
+#add_gateways: no
+# The following two lines override the settings for adding EPIC workers for HA and configuring ECP for HA
 add_ha_hosts: no
 configure_ha: no
-# This lab uses the default gateway port assignments
+# Set the following variable to yes if you want to configure gateway port assignments
 configure_gateway_ports: no
-# This lab is NOT configured for airgap
+# Set the following variable to yes if you want to configure ECP for airgap
 configure_airgap: no
-# This lab is not setup for handling notifications
+# Set the following variable to yes if you want to configure ECP notifications
 configure_notification: no
+# Set the following variable to yes if you want to configure ECP host tags
 add_host_tags: no
-# This lab does not need the ECP 5.1 patches
+# Set the following three variables to yes if you want to patch ECP 5.1 
+# NOTE: this is only needed with ECP 5.1
 apply_ecp_patches: no
 apply_ntp_fix_primary: no
 apply_ntp_fix_shadow: no
@@ -25,9 +27,35 @@ platform:
   type: onprem
   # Setting for API calls - usually http regardless 
   api_scheme: http
-  controller: mip-bdcs-vm31.mip.storage.hpecorp.net
+  controller: 
+    config:
+      bd_domain: hpelab
+      bd_prefix: ecp
+      int_start_ip: 172.20.0.2
+      int_end_ip: 172.20.255.254
+      int_gw_ip: 172.20.0.1
+      int_nw_mask: 16
+      # TO-DO: Clean up certs. These are on the tower server 16.143.22.165
+      # ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
+      # ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
+    disks:      
+      node_disks:
+        - /dev/sdb
+      hdfs_disks:
+        - /dev/sdc
+    no_tenant_storage: false
+    host: mip-bdcs-vm31.mip.storage.hpecorp.net
   gateways:
-    - hpecp-lab-gw.mip.storage.hpecorp.net    # Gateway 1
+    config:
+      gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
+      # TO-DO: clean up certs
+      # These are the cert filenames in the platform after install
+      # ssl_cert_file: cert.pem
+      # ssl_key_file: key.pem
+      port_mapping_start: 10000
+      port_mapping_end: 11000
+    hosts:
+      - hpecp-lab-gw.mip.storage.hpecorp.net    # Gateway 1
   install:
     install_type: non-agent-based-install
     install_as_root: true
@@ -49,39 +77,6 @@ platform:
     # bin_url: "https://bluedata-releases.s3.amazonaws.com/5.1/hpe-cp-rhel-release-5.1-3011.bin"
     # installer_file: hpe-cp-rhel-release-5.1-3011
     # prechecks_file: "hpe-cp-rhel-prechecks-5.2.bin"
-    control_plane_disks:
-      node_disks:
-        - /dev/sdb
-      no_tenant_storage: false
-      hdfs_disks:
-        - /dev/sdc
-    ha_node_disks:
-      node_disks:
-        - /dev/sdb
-      no_tenant_storage: false
-      hdfs_disks:
-        - /dev/sdc
-    controller:
-      bd_domain: hpelab
-      bd_prefix: ecp
-      int_start_ip: 172.20.0.2
-      int_end_ip: 172.20.255.254
-      int_gw_ip: 172.20.0.1
-      int_nw_mask: 16
-      # TO-DO: Clean up certs. These are on the tower server 16.143.22.165
-      # ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
-      # ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
-    gateways:
-      gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
-      # TO-DO: clean up certs
-      # These are the cert filenames in the platform after install
-      # ssl_cert_file: cert.pem
-      # ssl_key_file: key.pem
-      port_mapping_start: 10000
-      port_mapping_end: 11000
-    # Set the hosts IDs below to designate which EPIC hosts to use for HA. Typically, this will be 3 and 4 if one gateway is configured or 4 and 5 if two gateways are configured
-    shadow_host_id: 4
-    arbiter_host_id: 5
     no_tenant_isolation: false
   proxy: http://web-proxy.corp.hpecorp.net:8080 
   rest_protocol: http
@@ -123,10 +118,10 @@ ecp_epic:
       hdfs_disks:
         - /dev/sdc
     hosts:
-      - mip-bdcs-vm33.mip.storage.hpecorp.net    # 16.143.22.158 Shadow
+      - mip-bdcs-vm37.mip.storage.hpecorp.net    # 16.143.22.158 Shadow
       - mip-bdcs-vm35.mip.storage.hpecorp.net    # 16.143.22.160 Arbiter
     no_tenant_storage: true
-    shadow_host: mip-bdcs-vm33.mip.storage.hpecorp.net   # 16.143.22.158 Shadow
+    shadow_host: mip-bdcs-vm37.mip.storage.hpecorp.net   # 16.143.22.158 Shadow
     arbiter_host: mip-bdcs-vm35.mip.storage.hpecorp.net  # 16.143.22.160 Arbiter
   worker_nodes:
     disks:
