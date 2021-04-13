@@ -5,7 +5,7 @@ op: WorkerConfig
 parameters:
   config:
     node_disks: {{ecp_epic.ha_nodes.disks.node_disks|join(',') }}
-{% if ecp_epic.ha_nodes.disks.no_tenant_storage %}
+{% if ecp_epic.ha_nodes.no_tenant_storage %}
     hdfs_disks:
     no_tenant_storage: true
 {% else %}
