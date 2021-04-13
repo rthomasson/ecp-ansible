@@ -58,14 +58,20 @@
         (item | json_query('hostname') in ecp_epic.ha_nodes.arbiter_host)
   loop: "{{ epic_workers }}"
 
-- name: Set a fact with the path/filename for the lockdown reason
-  set_fact:
-    lockdown_reason: '{ "reason": "Configure HA" }'
+- fail:
+    msg: "Error: In order to configure ECP for HA, you must specify valid hosts for both the Shadow Controller and the Arbiter"
+  when: 
+    (shadow_id is undefined) or
+    (arbiter_id is undefined) 
 
 - debug:
     msg:
     - "The Shadow Controller host ID is: {{ shadow_id }}"
     - "The Arbiter host ID is: {{ arbiter_id }}"
+
+- name: Set a fact with the path/filename for the lockdown reason
+  set_fact:
+    lockdown_reason: '{ "reason": "Configure HA" }'
 
 - name: Put the site in lockdown
   uri:
