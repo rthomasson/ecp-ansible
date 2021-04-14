@@ -7,8 +7,8 @@
     (ecp_epic.ha_nodes is undefined) or
     (ecp_epic.ha_nodes.hosts is undefined) or
     (ecp_epic.ha_nodes.hosts is defined and (ecp_epic.ha_nodes.hosts is not iterable or ecp_epic.ha_nodes.hosts|length < 2)) or
-    (ecp_epic.ha_nodes.shadow_host is undefined or ecp_epic.ha_nodes.shadow_host is not in ecp_epic.ha_nodes.hosts) or
-    (ecp_epic.ha_nodes.arbiter_host is undefined or ecp_epic.ha_nodes.arbiter_host is not in ecp_epic.ha_nodes.hosts)
+    (ecp_epic.ha_nodes.shadow_host is undefined or ecp_epic.ha_nodes.shadow_host not in ecp_epic.ha_nodes.hosts) or
+    (ecp_epic.ha_nodes.arbiter_host is undefined or ecp_epic.ha_nodes.arbiter_host not in ecp_epic.ha_nodes.hosts)
 
 - name: Obtain session token
   uri:
