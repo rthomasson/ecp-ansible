@@ -8,9 +8,14 @@
     (platform.controller.disks is undefined) or
     (platform.install is undefined)  
 
+- debug:
+    msg: 
+    - "*** Installing ECP Controller ***"
+    - "Controller Host: {{ platform.controller.host }}"
+
 - name: Obtain session token
   uri:
-    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    url: "{{ platform.rest_protocol }}://{{ platform.controller.host }}:8080/api/v1/login"
     return_content: yes
     method: POST
     validate_certs: "{{ platform.validate_certs }}"
@@ -18,12 +23,6 @@
     body: { "name": "{{ ecp_credentials.site_admin_id }}", "password": "{{ ecp_credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
-
-- debug:
-    msg: 
-    - "*** Installing ECP Controller ***"
-    - "Controller Host: {{ platform.controller.host }}"
-
 
 - name: Prepare input file for epicctl.
   template:
