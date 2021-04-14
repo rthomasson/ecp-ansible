@@ -94,25 +94,6 @@
     status_code: 201,403
   register: lockdown_res
 
-- name: Exit site lockdown
-  uri:
-    url: "{{ lockdown_res.location }}"
-    return_content: yes
-    headers:
-      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
-    method: DELETE
-    validate_certs: "{{ platform.validate_certs }}"
-    status_code: 204
-  register: clear_lockdown_res
-  when: lockdown_res.status == 201
-  until: clear_lockdown_res.status == 204
-  retries: 2 # 30 secs
-  delay: 15 # wait 15 secs
-
-- debug:
-    msg: "Exit lockdown API call result: {{ clear_lockdown_res.content }}"
-  when: lockdown_res.status == 201
-
 - name: Log out of session if lockdown active
   uri:
     url: "{{ session_res.location }}"
