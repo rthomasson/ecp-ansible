@@ -81,7 +81,7 @@
   set_fact:
     lockdown_reason: '{ "reason": "Configure HA" }'
 
-- name: Put the site in lockdown
+- name: Attempt to put the site in lockdown
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller.host }}:8080/api/v1/lock"
     return_content: yes
@@ -91,11 +91,46 @@
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
     body: "{{ lockdown_reason }}"
-    status_code: 201, 403  # a 401 code means there is already a lock
+    status_code: 201,403
   register: lockdown_res
 
+- name: Exit site lockdown
+  uri:
+    url: "{{ lockdown_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: clear_lockdown_res
+  when: lockdown_res.status == 201
+  until: clear_lockdown_res.status == 204
+  retries: 2 # 30 secs
+  delay: 15 # wait 15 secs
+
 - debug:
-    msg: "Enter lockdown API call result: {{ lockdown_res.content }}"
+    msg: "Exit lockdown API call result: {{ clear_lockdown_res.content }}"
+  when: lockdown_res.status == 201
+
+- name: Log out of session if lockdown active
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  when: lockdown_res.status == 403
+  register: delsession_res
+
+- fail:
+    msg:
+    - "********************************"
+    - "Error: Site already in lockdown!"
+    - "********************************"
+  when: lockdown_res.status == 403
 
 - name: Set a fact with the file contents for the HA config json
   set_fact:
