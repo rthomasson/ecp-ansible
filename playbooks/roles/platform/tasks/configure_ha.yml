@@ -152,11 +152,11 @@
     status_code: 204
   register: clear_lockdown_res
   until: clear_lockdown_res.status == 204
-  retries: 60 # 60 -> 1 hour                60 secs * 15 = 15 minutes
+  retries: 5 # 5 -> 5 minutes                60 secs * 5 = 5 minutes
   delay: 60 # wait 1 minute
 
 - debug:
-    msg: "Exit lockdown API call result: {{ clear_lockdown_res.content }}"
+    msg: "Exit lockdown API call result: {{ clear_lockdown_res.status }}"
 
 - name: Log out of session
   uri:
@@ -169,3 +169,9 @@
     status_code: 204
   register: delsession_res
 
+- debug:
+    msg:
+    - "**********************"
+    - "HA is already enabled!"
+    - "**********************"
+  when: config_ha_res.status == 403
