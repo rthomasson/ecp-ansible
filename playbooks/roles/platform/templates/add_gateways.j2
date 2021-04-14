@@ -1,17 +1,17 @@
 {# Configure gateway installation YAML file for epicctl #}
-{% for gw in platform.gateways %}
+{% for host in platform.gateways.hosts %}
 ---
 op: GatewayConfig
 parameters:
   config:
-    gateway_set_hostname: {{ platform.install.gateways.gateway_set_hostname }}
+    gateway_set_hostname: {{ platform.gateways.config.gateway_set_hostname }}
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
   host:
-{% if gw | ipv4 %}   
-    internal_ip: {{ gw }}
+{% if host | ipv4 %}   
+    internal_ip: {{ host }}
 {% else %}
-    internal_ip: {{ hostvars[gw].ansible_host }}
+    internal_ip: {{ hostvars[host].ansible_host }}
 {% endif %}
   ssh:
     username: {{ ecp_credentials.ssh.username }}
