@@ -135,7 +135,7 @@
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
     body: "{{ ha_file_contents }}"
-    status_code: 204
+    status_code: 204, 403  # 403 indicates HA is already enabled 
   register: config_ha_res
 
 - debug:
@@ -168,3 +168,4 @@
     validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
   register: delsession_res
+
