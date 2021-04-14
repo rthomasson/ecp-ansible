@@ -2,7 +2,10 @@
 # This playbook configures ECP for HA using the designated hosts specified if the ecp_epic.ha_nodes variable
 # Validate vars for configuring ECP HA
 - fail:
-    msg: "Error: In order to configure ECP for HA, you must provide two hosts; one for the Shadow Controller and one for the Arbiter"
+    msg: 
+    - "***************************************************************************************************************************"
+    - "Error: In order to configure ECP for HA, you must specify two hosts; one for the Shadow Controller and one for the Arbiter."
+    - "Also, the shadow_host value and the arbiter_host value must both be in the ha_nodes.hosts list."
   when: 
     (ecp_epic.ha_nodes is undefined) or
     (ecp_epic.ha_nodes.hosts is undefined) or
