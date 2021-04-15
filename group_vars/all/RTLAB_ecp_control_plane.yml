@@ -1,32 +1,31 @@
 ---
-#========================================================================================================================
-# Variables to override the playbookd defaults and specify which tasks will run in install_ecp_control_plane.yml playbook
-#========================================================================================================================
-# The following two lines override the settings for the installation of the ECP controller and gateways
+#==================================================================================================================================
+# Variables to override the playbook defaults and specify which tasks will run in the install_ecp_control_plane.yml playbook
+# NOTE: By default, the following (5) tasks are run: install_controller, add_gateways, add_ha_hosts, configure_ha and add_host_tags
+# You can override this behavior by uncommenting the appropriate line(s) to select which task(s) should not run
+#==================================================================================================================================
 #install_controller: no
 #add_gateways: no
-# The following two lines override the settings for adding EPIC workers for HA and configuring ECP for HA
-add_ha_hosts: no
-configure_ha: no
-# Set the following variable to yes if you want to configure gateway port assignments
-configure_gateway_ports: no
-# Set the following variable to yes if you want to configure ECP for airgap
-configure_airgap: no
-# Set the following variable to yes if you want to configure ECP notifications
-configure_notification: no
-# Set the following variable to yes if you want to configure ECP host tags
-add_host_tags: no
-# Set the following three variables to yes if you want to patch ECP 5.1 
-# NOTE: this is only needed with ECP 5.1
-apply_ecp_patches: no
-apply_ntp_fix_primary: no
-apply_ntp_fix_shadow: no
+#add_ha_hosts: no
+#configure_ha: no
+#add_host_tags: no
+
+#==================================================================================================================================
+# These variables govern the execution of optional tasks. These tasks are not run by default in install_ecp_control_plane playbook
+# You can override this behavior by uncommenting the appropriate line(s) to select which task(s) should run
+#==================================================================================================================================
+#configure_gateway_ports: yes
+#configure_airgap: yes
+#configure_notification: yes
+# NOTE: these tasks are only needed with ECP 5.1
+#apply_ecp_patches: yes
+#apply_ntp_fix_primary: yes
+#apply_ntp_fix_shadow: yes
 
 platform:
   name: RTLAB
   type: onprem
-  # Setting for API calls - usually http regardless 
-  api_scheme: http
+  api_scheme: http    # Setting for API calls - usually http regardless
   controller: 
     config:
       bd_domain: hpelab
@@ -35,7 +34,6 @@ platform:
       int_end_ip: 172.20.255.254
       int_gw_ip: 172.20.0.1
       int_nw_mask: 16
-      # TO-DO: Clean up certs. These are on the tower server 16.143.22.165
       # ssl_cert_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/cert.pem
       # ssl_cert_key_file: /var/lib/awx/mip-bdcs-vm19.mip.storage.hpecorp.net/key.pem
     disks:      
@@ -48,8 +46,6 @@ platform:
   gateways:
     config:
       gateway_set_hostname: hpecp-lab-gw.mip.storage.hpecorp.net
-      # TO-DO: clean up certs
-      # These are the cert filenames in the platform after install
       # ssl_cert_file: cert.pem
       # ssl_key_file: key.pem
       port_mapping_start: 10000
@@ -95,10 +91,8 @@ ecp_airgap:
   yum_repo_url: http://bd-repos1.mip.storage.hpecorp.net/kubernetes/
   
 ecp_credentials:
-  # Default credentials for site admin account
-  site_admin_id: admin
-  # This will be used by epicctl to set the default password for the site admin account during installation
-  site_admin_password: admin123
+  site_admin_id: admin 
+  site_admin_password: admin123  # Used by epicctl to set the default password for the site admin account during installation
   ssh:
     # access_type: ssh_key_access
     access_type: password_access
@@ -145,7 +139,7 @@ ecp_epic:
       # - mip-bdcs-vm39.mip.storage.hpecorp.net
     # status: ready      
 
-ecp_notification:
+# ecp_notification:
   # snmp:
       # server: "10.9.7.232"
       # community: "public"

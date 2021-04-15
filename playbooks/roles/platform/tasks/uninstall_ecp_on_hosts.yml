@@ -4,7 +4,7 @@
 # It uses only one platform variable - platform.install.version as it mostly concerned with file manipulation and does not interact with ECP directly  
 # NOTE: Prior to running this playbook, the installer bin file needs to be placed in the /tmp/ecp folder on the Tower server. 
 
-- name: Find the location(s) of any matching ECP precheck bin files if they exist
+- name: Find the location(s) of any matching ECP Installer bin files if they exist
   ansible.builtin.find:
     paths: /
     recurse: yes
