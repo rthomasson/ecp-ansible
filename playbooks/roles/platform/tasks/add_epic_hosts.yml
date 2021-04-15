@@ -1,7 +1,7 @@
 ---
 # This playbook adds EPIC Worker hosts to ECP using epicctl.
 
-# Validate variables for HA hosts to add
+# Validate variables for EPIC worker hosts to add
 - fail:
     msg: 
     - "*************************************************************************************************************************************************************"
