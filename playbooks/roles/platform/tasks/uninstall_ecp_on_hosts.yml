@@ -1,8 +1,9 @@
 ---
 # This task uninstalls ECP components on the designated hosts by running the installer with the --erase --force options on each host and then removing the installer.
 # This task assumes that the ECP installation was a non-agent based installation.
-# It uses only one platform variable - platform.install.version as it mostly concerned with file manipulation and does not interact with ECP directly  
-# NOTE: Prior to running this playbook, the installer bin file needs to be placed in the /tmp/ecp folder on the Tower server. 
+# It uses only one platform variable - platform.install.version as this playbook does not make ECP REST API calls or use epicctl  
+# NOTE: Prior to running this playbook, the installer bin file needs to be placed in the /tmp/ecp folder on the Tower server. This is needed in case the playbook has
+#       has to copy the installer to a machine that needs to be installed.
 
 - name: Find the location(s) of any matching ECP Installer bin files if they exist
   ansible.builtin.find:
