@@ -19,7 +19,7 @@
     
 - name: Report the path of the first matching prechecks file instance found on the host
   debug:
-    msg: " The path to the first instance of the installer file is: {{ result.files[0].path }}"
+    msg: " The path to the first instance of the prechecks file is: {{ result.files[0].path }}"
   when: 
     - result.files[0] is defined
     - result.matched >= 0
