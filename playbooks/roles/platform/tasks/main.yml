@@ -12,19 +12,20 @@
     when: add_gateways is defined and add_gateways
   - include_tasks: configure_gateway_ports.yml
     when: configure_gateway_ports is defined and configure_gateway_ports
-
   - include_tasks: add_ha_hosts.yml
     when: add_ha_hosts is defined and add_ha_hosts
   - include_tasks: configure_ha.yml
     when: configure_ha is defined and configure_ha
-
   - include_tasks: add_host_tags.yml
     when: add_host_tags is defined and add_host_tags
   - include_tasks: configure_airgap.yml
     when: configure_airgap is defined and configure_airgap
   - include_tasks: configure_notification.yml
     when: configure_notification is defined and configure_notification
+  - include_tasks: configure_auth.yml
+    when: configure_auth is defined and configure_auth
 
+#### These tasks are for ECP 5.1 ONLY ####  
   - include_tasks: apply_ecp_patches.yml
     when: apply_ecp_patches is defined and apply_ecp_patches
   - include_tasks: apply_ntp_fix_primary.yml
@@ -32,16 +33,11 @@
   - include_tasks: apply_ntp_fix_shadow.yml
     when: apply_ntp_fix_shadow is defined and apply_ntp_fix_shadow
 
-  - include_tasks: configure_auth.yml
-    when: configure_auth is defined and configure_auth
-
-##################################################################################
-# These tasks install/configure ECP EPIC features using epicctl and REST API calls
-##################################################################################
+################################################################################
+# These tasks install/configure ECP EPIC hosts using epicctl and REST API calls
+################################################################################
   - include_tasks: add_epic_hosts.yml
     when: add_epic_hosts is defined and add_epic_hosts
-
-
 
 #################################################################################
 # These tasks install/configure ECP K8s features using epicctl and REST API calls
