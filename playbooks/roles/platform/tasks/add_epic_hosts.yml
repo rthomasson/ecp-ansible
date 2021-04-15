@@ -1,7 +1,12 @@
 ---
-# Validate vars for HA hosts to add
+# This playbook adds EPIC Worker hosts to ECP using epicctl.
+
+# Validate variables for HA hosts to add
 - fail:
-    msg: "Error: In order to configure EPIC Worker nodes, you must provide the disk configuration, hostname(s) and the no_tenant_storage flag information for the hosts"
+    msg: 
+    - "*************************************************************************************************************************************************************"
+    - "Error: In order to configure EPIC Worker nodes, you must provide the disk configuration, hostname(s) and the no_tenant_storage flag information for the hosts"
+    - "*************************************************************************************************************************************************************"
   when: 
     (ecp_epic.worker_nodes is undefined) or
     (ecp_epic.worker_nodes.no_tenant_storage is undefined) or
