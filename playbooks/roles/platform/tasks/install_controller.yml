@@ -21,7 +21,7 @@
 
 - debug:
     msg: 
-    - "*** Installing ECP Control Plane - Controller ***"
+    - "*** Installing ECP Controller ***"
     - "Input file content: "
     - "{{ lookup('template', 'install_platform_controller.j2') }}"
 
