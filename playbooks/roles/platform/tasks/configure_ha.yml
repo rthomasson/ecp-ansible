@@ -5,7 +5,7 @@
     msg: 
     - "***************************************************************************"
     - "Error: In order to configure ECP for HA, you must specify two hosts;"
-    - "   (1) Shadow Controller
+    - "   (1) Shadow Controller"
     - "   (1) Arbiter"
     - "Also, the values for both ecp_epic.ha_nodes.shadow_host and "
     - "ecp_epic.ha_nodes.arbiter_host must be in the ecp_epic.ha_nodes.hosts list."
