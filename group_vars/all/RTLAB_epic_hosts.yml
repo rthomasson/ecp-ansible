@@ -26,12 +26,11 @@ ecp_epic:
     disks:
       node_disks:
         - /dev/sdb
-        # - /dev/sdc
-      hdfs_disks:
         - /dev/sdc
+      hdfs_disks:
+        # - /dev/sdc
     hosts:
-      - mip-bdcs-vm39.mip.storage.hpecorp.net    # 16.143.22.164 MLOps EPIC Worker
-      # - mip-bdcs-vm31.mip.storage.hpecorp.net    # 16.143.22.156 Arbiter
+      - mip-bdcs-vm33.mip.storage.hpecorp.net    # 16.143.22.158 EPIC Worker1
     no_tenant_storage: true
   ###############################################
   # ONLY USED TO DELETE EPIC HOSTS FROM PLATFORM #
