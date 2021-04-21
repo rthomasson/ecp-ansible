@@ -66,9 +66,10 @@
     epic_ids_to_delete: "{{ epic_ids_to_delete + [item | json_query('host_id')] }}"
     epic_ips_to_restore: "{{ epic_ips_to_restore + [item | json_query('hostname')] }}"
     cacheable: True
-  when: ecp_epic.hosts_to_delete.list is defined and
-        (item | json_query('ansible_host') in ecp_epic.hosts_to_delete.list or 
-        item | json_query('hostname') in ecp_epic.hosts_to_delete.list)
+  when: 
+    - ecp_epic.hosts_to_delete.list is defined
+    - ecp_epic.hosts_to_delete is iterable
+    - (item | json_query('ansible_host') in ecp_epic.hosts_to_delete.list or item | json_query('hostname') in ecp_epic.hosts_to_delete.list)
   loop: "{{ epic_hosts_list }}"
 
 - name: Create list of hosts to delete based on EPIC host status
@@ -76,8 +77,9 @@
     epic_ids_to_delete: "{{ epic_ids_to_delete + [item | json_query('host_id')] }}"
     epic_ips_to_restore: "{{ epic_ips_to_restore + [item | json_query('hostname')] }}"
     cacheable: True
-  when: ecp_epic.hosts_to_delete.status is defined and
-        item | json_query('status') == ecp_epic.hosts_to_delete.status
+  when:
+    - ecp_epic.hosts_to_delete.status is defined
+    - item | json_query('status') == ecp_epic.hosts_to_delete.status
   loop: "{{ epic_hosts_list }}"
 
 # Use add_epic_hosts.j2 to create a YAML file for re-adding the hosts that were just deleted if the operation needs to be rolled back
