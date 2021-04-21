@@ -47,7 +47,7 @@
 
 - name: Create a fact with the list of the current set of EPIC hosts  
   set_fact:
-    epic_hosts_list: "{{ epic_hosts_res.json | json_query('_embedded.workers[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status, tags: tags}') }}"
+    epic_hosts_list: "{{ epic_hosts_res.json | json_query('_embedded.workers[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, state: state, purpose: purpose, tags: tags}') }}"
 
 # At this point, epic_hosts_list contains all the EPIC hosts in the platform
 # now create the list of host ids to delete and the list of host IPs to restore if the operation needs to be rolled back
