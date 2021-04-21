@@ -9,7 +9,7 @@
 
 # Validate vars for K8s computer master node hosts to add
 - fail:
-    msg: "Error: If you specify K8s computer cluster master nodes then the disk configuration, host names and tenant_storage flag must be provided"
+    msg: "Error: If you specify K8s compute cluster master nodes then the disk configuration, host names and tenant_storage flag must be provided"
   when: 
     (ecp_k8s.master_nodes is defined and ecp_k8s.master_nodes.hosts is undefined) or
     (ecp_k8s.master_nodes.hosts is defined and (ecp_k8s.master_nodes.hosts is not iterable or ecp_k8s.master_nodes.hosts|length < 1)) or
@@ -24,7 +24,7 @@
 
 # Validate vars for K8s computer worker node hosts to add
 - fail:
-    msg: "Error: If you specify K8s computer cluster worker nodes then the disk configuration, host names and tenant_storage flag must be provided"
+    msg: "Error: If you specify K8s compute cluster worker nodes then the disk configuration, host names and tenant_storage flag must be provided"
   when: 
     (ecp_k8s.worker_nodes is defined and ecp_k8s.worker_nodes.hosts is undefined) or
     (ecp_k8s.worker_nodes.hosts is defined and (ecp_k8s.worker_nodes.hosts is not iterable or ecp_k8s.worker_nodes.hosts|length < 1)) or
@@ -40,7 +40,7 @@
   
 # Validate vars for K8s Ingress nodes hosts to add
 - fail:
-    msg: "Error: If you specify Ingress nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
+    msg: "Error: If you specify K8s compute cluster ingress nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
   when: 
     (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.hosts is undefined) or
     (ecp_k8s.ingress_nodes.hosts is defined and (ecp_k8s.ingress_nodes.hosts is not iterable or ecp_k8s.ingress_nodes.hosts|length < 1)) or
@@ -56,7 +56,7 @@
 
 # Validate vars for K8s CP Worker nodes hosts to add
 - fail:
-    msg: "Error: If you specify CP Worker nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
+    msg: "Error: If you specify K8s compute cluster CP Worker nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
   when: 
     (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.hosts is undefined) or
     (ecp_k8s.cp_nodes.hosts is defined and (ecp_k8s.cp_nodes.hosts is not iterable or ecp_k8s.cp_nodes.hosts|length < 1)) or
