@@ -70,18 +70,39 @@
   when:
     - ecp_k8s.cp_nodes.hosts is defined and ecp_k8s.cp_nodes.hosts is iterable
 
-# Validate vars for minimmal K8s data fabric hosts to add
+# Validate vars for K8s data fabric master node hosts to add
 - fail:
-    msg: "Error: You must specify at least (3) K8s Data Fabric Master Nodes and (5) K8s Worker Node in order to create a K8s data fabric cluster"
+    msg: "Error: If you specify K8s data fabric master nodes then the disk configuration, host names and tenant_storage flag must be provided"
   when: 
-    (ecp_k8s.df_master_nodes.hosts is defined and (ecp_k8s.df_master_nodes.hosts is not iterable or ecp_k8s.df_master_nodes.hosts|length < 3)) or
-    (ecp_k8s.df_worker_nodes.hosts is defined and (ecp_k8s.df_worker_nodes.hosts is not iterable or ecp_k8s.df_worker_nodes.hosts|length < 5))
-
-- name: Create a fact with the list of K8s data fabric master node and worker node hosts to be added    
+    (ecp_k8s.df_master_nodes is defined and ecp_k8s.df_master_nodes.hosts is undefined) or
+    (ecp_k8s.df_master_nodes.hosts is defined and (ecp_k8s.df_master_nodes.hosts is not iterable or ecp_k8s.df_master_nodes.hosts|length < 1)) or
+    (ecp_k8s.df_master_nodes is defined and ecp_k8s.df_master_nodes.disks.ephemeral_disks is undefined) or
+    (ecp_k8s.df_master_nodes is defined and ecp_k8s.df_master_nodes.disks.ephemeral_disks is defined and (ecp_k8s.df_master_nodes.disks.ephemeral_disks is not iterable or ecp_k8s.df_master_nodes.disks.ephemeral_disks|length < 1)) or
+    (ecp_k8s.df_master_nodes is defined and ecp_k8s.df_master_nodes.disks.persistent_disks is undefined) or
+    (ecp_k8s.df_master_nodes is defined and ecp_k8s.df_master_nodes.disks.persistent_disks is defined and (ecp_k8s.df_master_nodes.disks.persistent_disks is not iterable or ecp_k8s.df_master_nodes.disks.persistent_disks|length < 1)) or
+    (ecp_k8s.df_master_nodes is defined and ecp_k8s.df_master_nodes.no_tenant_storage is undefined)
+      
+- name: Add the K8s data fabric master node hosts to the list to be added    
   set_fact:
-    hosts_to_add:  "{{ hosts_to_add + ecp_k8s.df_master_nodes.hosts + ecp_k8s.df_worker_nodes.hosts }}"
-  when:   
-   - ecp_k8s.df_master_node.hosts is defined and ecp_k8s.df_master_nodes.hosts is iterable
+    hosts_to_add:  "{{ hosts_to_add + ecp_k8s.df_master_nodes.hosts }}"
+  when: ecp_k8s.df_master_nodes.hosts is defined and ecp_k8s.df_master_nodes.hosts is iterable 
+
+# Validate vars for K8s data fabric worker node hosts to add
+- fail:
+    msg: "Error: If you specify K8s data fabric worker nodes then the disk configuration, host names and tenant_storage flag must be provided"
+  when: 
+    (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.hosts is undefined) or
+    (ecp_k8s.df_worker_nodes.hosts is defined and (ecp_k8s.df_master_nodes.hosts is not iterable or ecp_k8s.df_worker_nodes.hosts|length < 1)) or
+    (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.disks.ephemeral_disks is undefined) or
+    (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.disks.ephemeral_disks is defined and (ecp_k8s.df_worker_nodes.disks.ephemeral_disks is not iterable or ecp_k8s.df_worker_nodes.disks.ephemeral_disks|length < 1)) or
+    (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.disks.persistent_disks is undefined) or
+    (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.disks.persistent_disks is defined and (ecp_k8s.df_worker_nodes.disks.persistent_disks is not iterable or ecp_k8s.df_worker_nodes.disks.persistent_disks|length < 1)) or
+    (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.no_tenant_storage is undefined)
+      
+- name: Create a fact with the list of K8s data fabric worker node hosts to be added    
+  set_fact:
+    hosts_to_add:  "{{ hosts_to_add + ecp_k8s.df_worker_nodes.hosts }}"
+  when: ecp_k8s.df_worker_nodes.hosts is defined and ecp_k8s.df_worker_nodes.hosts is iterable 
 
 - debug:
     msg:
