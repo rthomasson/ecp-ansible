@@ -6,6 +6,7 @@ platform:
   api_scheme: http
   install:
     install_type: non-agent-based-install
+  rest_protocol: http
 
 ecp_credentials:
   # Default installation accounts
