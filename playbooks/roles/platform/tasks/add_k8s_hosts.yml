@@ -36,11 +36,20 @@
     (ecp_k8s.worker_nodes is defined and ecp_k8s.worker_nodes.disks.ephemeral_disks is defined and (ecp_k8s.worker_nodes.disks.ephemeral_disks is not iterable or ecp_k8s.worker_nodes.disks.ephemeral_disks|length < 1)) or
     (ecp_k8s.worker_nodes is defined and ecp_k8s.worker_nodes.no_tenant_storage is undefined)
       
-- name: Create a fact with the list of K8s master node hosts to be added    
+- name: If there are no master nodes specified, create the list of K8s hosts to add using the commpute worker node hosts    
+  set_fact:
+    hosts_to_add:  "{{ ecp_k8s.worker_nodes.hosts }}"
+  when: 
+    - (ecp_k8s.master_nodes.hosts is undefined or ecp_k8s.master_nodes.hosts is not iterable)
+    - ecp_k8s.worker_nodes.hosts is defined and ecp_k8s.worker_nodes.hosts is iterable 
+
+- name: If there are master nodes specified, add the list of K8s compute worker node hosts to the list   
   set_fact:
     hosts_to_add:  "{{ hosts_to_add + ecp_k8s.worker_nodes.hosts }}"
-  when: ecp_k8s.worker_nodes.hosts is defined and ecp_k8s.worker_nodes.hosts is iterable 
-
+  when: 
+    - ecp_k8s.master_nodes.hosts is defined and ecp_k8s.master_nodes.hosts is iterable 
+    - ecp_k8s.worker_nodes.hosts is defined and ecp_k8s.worker_nodes.hosts is iterable 
+  
 # Validate vars for K8s Ingress nodes hosts to add
 - fail:
     msg: "Error: If you specify Ingress nodes, then the disk configuration, hosts and tenant_storage flag must be provided"
