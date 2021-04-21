@@ -47,13 +47,11 @@
 
 - name: Create a fact for the list of EPIC hosts  
   set_fact:
-    epic_hosts_list: "{{ epic_hosts_list|default([])
-    cacheable: True
+    epic_hosts_list: "{{ epic_hosts_list|default([]) }}"
 
 - name: Create a fact for the list of EPIC hosts from the API call  
   set_fact:
     epic_hosts_list: "{{ epic_hosts_list + (epic_hosts_res.json | json_query('_embedded.workers[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status, tags: tags}')) }}"
-    cacheable: True
 
 - debug:
     var: epic_hosts_list
