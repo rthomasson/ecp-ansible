@@ -38,6 +38,8 @@
 ################################################################################
   - include_tasks: add_epic_hosts.yml
     when: add_epic_hosts is defined and add_epic_hosts
+  - include_tasks: delete_epic_hosts.yml
+    when: delete_epic_hosts is defined and delete_epic_hosts
 
 #################################################################################
 # These tasks install/configure ECP K8s features using epicctl and REST API calls
