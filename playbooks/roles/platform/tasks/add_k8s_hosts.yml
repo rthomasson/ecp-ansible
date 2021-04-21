@@ -52,6 +52,19 @@
   when:
     - ecp_k8s.cp_nodes.hosts is defined and ecp_k8s.cp_nodes.hosts is iterable
 
+# Validate vars for minimmal K8s data fabric hosts to add
+- fail:
+    msg: "Error: You must specify at least (3) K8s Data Fabric Master Nodes and (5) K8s Worker Node in order to create a K8s data fabric cluster"
+  when: 
+    (ecp_k8s.df_master_nodes.hosts is defined and (ecp_k8s.df_master_nodes.hosts is not iterable or ecp_k8s.df_master_nodes.hosts|length < 3)) or
+    (ecp_k8s.df_worker_nodes.hosts is defined and (ecp_k8s.df_worker_nodes.hosts is not iterable or ecp_k8s.df_worker_nodes.hosts|length < 5))
+
+- name: Create a fact with the list of K8s data fabric master node and worker node hosts to be added    
+  set_fact:
+    hosts_to_add:  "{{ hosts_to_add + ecp_k8s.df_master_nodes.hosts + ecp_k8s.df_worker_nodes.hosts }}"
+  when:   
+   - ecp_k8s.df_master_node.hosts is defined and ecp_k8s.df_master_nodes.hosts is iterable
+
 - debug:
     msg:
     - "*** hosts_to_add contents ***"

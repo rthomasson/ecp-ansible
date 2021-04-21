@@ -129,10 +129,13 @@ ecp_epic:
       # - mip-bdcs-vm31.mip.storage.hpecorp.net    # 16.143.22.156 Arbiter
     no_tenant_storage: true
 
-  ###############################################
-  # ONLY USED TO DELETE EPIC HOSTS FROM PLATFORM #
-  # The list can be either IPs or FQDNs         #
-  ###############################################
+  #################################################################################################
+  # The ecp_epic.hosts_to_delete variable is ONLY used to delete EPIC hosts from the ECP platform #
+  # This list can be either IPs or FQDNs                                                          #
+  #         - OR -                                                                                #
+  # the hosts to delete can be specified using a status.                                          #
+  # NOTE: ALL EPIC hosts with that status will be DELETED from the platform.                      #
+  #################################################################################################
   hosts_to_delete:
     list:
       - mip-bdcs-vm35.mip.storage.hpecorp.net   
@@ -192,10 +195,13 @@ ecp_k8s:
       - mip-bdcs-vm38.mip.storage.hpecorp.net         # 16.143.22.163
       # - mip-bdcs-vm39.mip.storage.hpecorp.net         # 16.143.22.164
     no_tenant_storage: false
-  ###############################################
-  # ONLY USED TO DELETE K8S HOSTS FROM PLATFORM #
-  # The list can be either IPs or FQDNs         #
-  ###############################################
+  ###############################################################################################
+  # The ecp_k8s.hosts_to_delete variable is ONLY used to delete K8S hosts from the ECP platform #
+  # This list can be either IPs or FQDNs                                                        #
+  #         - OR -                                                                              #
+  # the hosts to delete can be specified using a status.                                        #
+  # NOTE: ALL hosts with that status will be DELETED from the platform.                         #
+  ###############################################################################################
   hosts_to_delete:
     list:
       - mip-bdcs-vm35.mip.storage.hpecorp.net   
