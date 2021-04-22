@@ -1,0 +1,8 @@
+---
+  - name: Disable platform HA
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          disable_ha: yes

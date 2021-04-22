@@ -1,0 +1,84 @@
+---
+#
+# This playbook deletes the EPIC hosts (Shadow and Arbiter) used for HA from the platform
+# It uses platform, ecp_credentials and ecp_epic variables 
+
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: { "name": "{{ ecp_credentials.site_admin_id }}", "password": "{{ ecp_credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
+    cacheable: True  
+
+# Get the current set of EPIC worker hosts 
+- name: Get the current set of EPIC worker hosts 
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/workers"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+      accept: "application/json"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 200
+  register: epic_hosts_res
+
+- name: Create a fact with the list of the current set of EPIC hosts  
+  set_fact:
+    epic_hosts_list: "{{ epic_hosts_res.json | json_query('_embedded.workers[*].{ansible_host: ip, host_id: _links.self.href, hostname: hostname, state: state, purpose: purpose, tags: tags}') }}"
+
+# At this point, epic_hosts_list contains all the EPIC hosts in the platform
+# now create the list of host ids to delete and the list of host IPs to restore if the operation needs to be rolled back
+- name: Create empty list
+  set_fact:
+    epic_ids_to_delete: []
+    epic_hosts_to_restore: []
+    cacheable: True
+
+- name: Create the list of hosts to delete. If HA is configured, this list will contain (2) hosts - the Shadow Controller and the Arbiter.
+  set_fact:
+    epic_ids_to_delete: "{{ epic_ids_to_delete + [item | json_query('host_id')] }}"
+    epic_hosts_to_restore: "{{ epic_hosts_to_restore + [item | json_query('hostname')] }}"
+    cacheable: True
+  when: 
+    - ((item | json_query('purpose') == 'shadow') or (item | json_query('purpose') == 'arbiter'))
+  loop: "{{ epic_hosts_list }}"
+
+- debug:
+    msg:
+    - "*** Deleting EPIC Hosts used for HA ***"
+    - "*** List of EPIC hosts to delete: "
+    - "{{ epic_ids_to_delete }}"
+
+- name: Delete EPIC hosts from platform
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080{{ item }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}"
+      Content-Type: "application/json"
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: cluster_res
+  loop: "{{ epic_ids_to_delete }}"
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: session_res
