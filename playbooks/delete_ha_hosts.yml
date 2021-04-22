@@ -1,0 +1,9 @@
+---
+  - name: Delete EPIC HA hosts
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          delete_ha_hosts: yes
+          

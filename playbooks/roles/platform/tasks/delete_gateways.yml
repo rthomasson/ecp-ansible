@@ -1,20 +1,21 @@
 ---
 #
-# This playbook deletes EPIC hosts from the platform
-# It uses platform and ecp_credentials variables 
+# This playbook deletes the designated ECP Gateway hosts from the platform
+# It uses platform, ecp_credentials and ecp_epic variables 
 
 # Validate vars for nodes to delete
 - fail:
-    msg: "Error: Specify either a list of hosts to delete OR a status to use but not both"
+    msg: "Error: Specify either a list of ECP gateway hosts to delete OR a status to use but not both"
   when: 
     - ecp_epic.hosts_to_delete.list is defined  
     - ecp_epic.hosts_to_delete.status is defined
 
 - fail:
-    msg: "Error: You must provide either a list of EPIC hosts to delete or a host status that will be used to delete all EPIC hosts in that status"
+    msg: "Error: You must provide either a list of ECP gateway hosts to delete or a host status that will be used to delete all ECP Gateway hosts in that status"
   when: 
     - (ecp_epic.hosts_to_delete.list is undefined or ecp_epic.hosts_to_delete.list is not iterable)
     - (ecp_epic.hosts_to_delete.status is undefined)
+
 
 - name: Obtain session token
   uri:
@@ -54,49 +55,22 @@
 - name: Create empty list
   set_fact:
     epic_ids_to_delete: []
-    epic_hosts_to_restore: []
     cacheable: True
 
-- name: Create list of hosts to delete based on enumerated list of EPIC hosts
+- name: Create the list of hosts to delete. If HA is configured, this list will contain (2) hosts - the Shadow Controller and the Arbiter.
   set_fact:
     epic_ids_to_delete: "{{ epic_ids_to_delete + [item | json_query('host_id')] }}"
-    epic_hosts_to_restore: "{{ epic_hosts_to_restore + [item | json_query('hostname')] }}"
     cacheable: True
-  when: 
-    - ecp_epic.hosts_to_delete.list is defined
-    - ecp_epic.hosts_to_delete is iterable
-    - ((item | json_query('ansible_host') in ecp_epic.hosts_to_delete.list) or (item | json_query('hostname') in ecp_epic.hosts_to_delete.list))
+  when: (item | json_query('purpose') == 'proxy')
   loop: "{{ epic_hosts_list }}"
-
-- name: Create list of hosts to delete based on EPIC host status
-  set_fact:
-    epic_ids_to_delete: "{{ epic_ids_to_delete + [item | json_query('host_id')] }}"
-    epic_hosts_to_restore: "{{ epic_ips_to_restore + [item | json_query('hostname')] }}"
-    cacheable: True
-  when:
-    - ecp_epic.hosts_to_delete.status is defined
-    - item | json_query('status') == ecp_epic.hosts_to_delete.status
-  loop: "{{ epic_hosts_list }}"
-
-# Create a YAML file for re-adding the hosts that were just deleted if the operation needs to be rolled back
-- name: Create a fact with the session info from the API call  
-  set_fact:
-    input_file: "/tmp/{{ platform.name }}_re-add_deleted_epic_hosts.yml"
-    cacheable: True
-
-- name: Prepare input file for API REST call in case we need to recover and put the hosts back in the platform
-  template:
-    src: re-add_epic_hosts.j2
-    dest: "{{ input_file }}"
-    mode: 0777
 
 - debug:
     msg:
-    - "*** Deleting EPIC Hosts ***"
-    - "*** List of EPIC hosts to delete: "
+    - "*** Deleting ECP Gateway Hosts ***"
+    - "*** List of hosts to delete: "
     - "{{ epic_ids_to_delete }}"
 
-- name: Delete EPIC hosts from platform
+- name: Delete ECP Gateway hosts from platform
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080{{ item }}"
     return_content: yes

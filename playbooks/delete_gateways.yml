@@ -1,0 +1,9 @@
+---
+  - name: Delete ECP Gateway hosts
+    hosts: localhost
+    gather_facts: false
+    roles:
+      - role: platform
+        vars:
+          delete_gateways: yes
+          
