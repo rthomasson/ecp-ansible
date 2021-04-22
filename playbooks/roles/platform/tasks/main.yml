@@ -17,7 +17,7 @@
   ######################################
   # Tasks for configuring/disabling HA
   ######################################
-    - include_tasks: add_ha_hosts.yml
+  - include_tasks: add_ha_hosts.yml
     when: add_ha_hosts is defined and add_ha_hosts
   - include_tasks: delete_ha_hosts.yml
     when: delete_ha_hosts is defined and delete_ha_hosts
