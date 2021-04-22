@@ -69,6 +69,12 @@
     - "*** Deleting ECP Gateway Hosts ***"
     - "*** List of hosts to delete: "
     - "{{ epic_ids_to_delete }}"
+  when: epic_ids_to_delete is iterable and epic_ids_to_delete|length > 0 
+
+- debug:
+    msg:
+    - "*** Nothing to do. No ECP Gateway Hosts exist. ***"
+  when: epic_ids_to_delete is not iterable or epic_ids_to_delete|length < 1 
 
 - name: Delete ECP Gateway hosts from platform
   uri:
@@ -82,6 +88,7 @@
     status_code: 204
   register: cluster_res
   loop: "{{ epic_ids_to_delete }}"
+
 
 - name: Log out of session
   uri:
