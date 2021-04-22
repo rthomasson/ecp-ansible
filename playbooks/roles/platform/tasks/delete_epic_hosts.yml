@@ -54,13 +54,13 @@
 - name: Create empty list
   set_fact:
     epic_ids_to_delete: []
-    epic_ips_to_restore: []
+    epic_hosts_to_restore: []
     cacheable: True
 
 - name: Create list of hosts to delete based on enumerated list of EPIC hosts
   set_fact:
     epic_ids_to_delete: "{{ epic_ids_to_delete + [item | json_query('host_id')] }}"
-    epic_ips_to_restore: "{{ epic_ips_to_restore + [item | json_query('ansible_host')] }}"
+    epic_hosts_to_restore: "{{ epic_hosts_to_restore + [item | json_query('hostname')] }}"
     cacheable: True
   when: 
     - ecp_epic.hosts_to_delete.list is defined
@@ -71,17 +71,16 @@
 - name: Create list of hosts to delete based on EPIC host status
   set_fact:
     epic_ids_to_delete: "{{ epic_ids_to_delete + [item | json_query('host_id')] }}"
-    epic_ips_to_restore: "{{ epic_ips_to_restore + [item | json_query('ansible_host')] }}"
+    epic_hosts_to_restore: "{{ epic_ips_to_restore + [item | json_query('hostname')] }}"
     cacheable: True
   when:
     - ecp_epic.hosts_to_delete.status is defined
     - item | json_query('status') == ecp_epic.hosts_to_delete.status
   loop: "{{ epic_hosts_list }}"
 
-# Use add_epic_hosts.j2 to create a YAML file for re-adding the hosts that were just deleted if the operation needs to be rolled back
+# Create a YAML file for re-adding the hosts that were just deleted if the operation needs to be rolled back
 - name: Create a fact with the session info from the API call  
   set_fact:
-#    epic_hosts_list: "{{ epic_ips_to_restore }}"    # Override variable add_k8s_hosts.j2 will be looking for
     input_file: "/tmp/{{ platform.name }}_re-add_deleted_epic_hosts.yml"
     cacheable: True
 
