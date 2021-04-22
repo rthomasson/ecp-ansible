@@ -60,18 +60,18 @@
 - name: Create list of hosts to delete based on enumerated list of EPIC hosts
   set_fact:
     epic_ids_to_delete: "{{ epic_ids_to_delete + [item | json_query('host_id')] }}"
-    epic_ips_to_restore: "{{ epic_ips_to_restore + [item | json_query('hostname')] }}"
+    epic_ips_to_restore: "{{ epic_ips_to_restore + [item | json_query('ansible_host')] }}"
     cacheable: True
   when: 
     - ecp_epic.hosts_to_delete.list is defined
     - ecp_epic.hosts_to_delete is iterable
-    - (item | json_query('ansible_host') in ecp_epic.hosts_to_delete.list or item | json_query('hostname') in ecp_epic.hosts_to_delete.list)
+    - ((item | json_query('ansible_host') in ecp_epic.hosts_to_delete.list) or (item | json_query('hostname') in ecp_epic.hosts_to_delete.list))
   loop: "{{ epic_hosts_list }}"
 
 - name: Create list of hosts to delete based on EPIC host status
   set_fact:
     epic_ids_to_delete: "{{ epic_ids_to_delete + [item | json_query('host_id')] }}"
-    epic_ips_to_restore: "{{ epic_ips_to_restore + [item | json_query('hostname')] }}"
+    epic_ips_to_restore: "{{ epic_ips_to_restore + [item | json_query('ansible_host')] }}"
     cacheable: True
   when:
     - ecp_epic.hosts_to_delete.status is defined
