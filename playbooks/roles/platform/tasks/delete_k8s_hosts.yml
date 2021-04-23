@@ -68,7 +68,7 @@
     k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
     k8s_ips_to_restore: "{{ k8s_ips_to_restore + [item | json_query('hostname')] }}"
     cacheable: True
-  when: platform.hosts.k8s_hosts_to_delete.list is defined and
+  when: ecp_k8s.hosts_to_delete.list is defined and
         (item | json_query('ansible_host') in ecp_k8s.hosts_to_delete.list or 
         item | json_query('hostname') in ecp_k8s.hosts_to_delete.list)
   loop: "{{ k8s_hosts_list }}"
@@ -78,7 +78,7 @@
     k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
     k8s_ips_to_restore: "{{ k8s_ips_to_restore + [item | json_query('hostname')] }}"
     cacheable: True
-  when: platform.hosts.k8s_hosts_to_delete.status is defined and
+  when: ecp_k8s.hosts_to_delete.status is defined and
         item | json_query('status') == ecp_k8s.hosts_to_delete.status
   loop: "{{ k8s_hosts_list }}"
 
