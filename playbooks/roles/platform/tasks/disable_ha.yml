@@ -120,10 +120,10 @@
     body_format: json
     body: "{{ ha_file_contents }}"
     status_code: 204, 403  # 403 indicates HA is already enabled 
-  register: config_ha_res
+  register: disable_ha_res
 
 - debug:
-    msg: "Configure HA API call result: {{ config_ha_res.content }}"
+    msg: "Disable HA API call result: {{ disable_ha_res.content }}"
 
 - name: Exit site lockdown
   uri:
@@ -158,4 +158,4 @@
     - "**************************"
     - "  HA was not enabled!"
     - "**************************"
-  when: config_ha_res.status == 403
+  when: disable_ha_res.status == 403
