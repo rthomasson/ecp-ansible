@@ -122,7 +122,7 @@
     - "*** Input file content: "
     - "{{ lookup('template', 'add_k8s_hosts.j2') | to_nice_yaml }}"
 
-# - name: Setting up and configuring k8s hosts.
-#   shell: epicctl op -f {{ input_file }} -n {{ platform.name }} --defaultpassword "{{ ecp_credentials.site_admin_password }}"
-#   register: res
-#   failed_when: res.rc != 0
+ - name: Setting up and configuring k8s hosts.
+   shell: epicctl op -f {{ input_file }} -n {{ platform.name }} --defaultpassword "{{ ecp_credentials.site_admin_password }}"
+   register: res
+   failed_when: res.rc != 0
