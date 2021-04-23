@@ -12,29 +12,30 @@ parameters:
 {% else %}
     persistent_disks:
 {% endif %}
-{% elif ecp_k8s.cluster.ingress_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.ingress_nodes %}
-    ephemeral_disks: {{ecp_k8s.configuration.ingress_node_disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.configuration.ingress_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.ingress_node_disks.no_tenant_storage %}
-    persistent_disks: {{ ecp_k8s.configuration.ingress_node_disks.persistent_disks|join(',') }}
-{% else %}
+{% elif ecp_k8s.ingress_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.ingress_nodes.hosts %}
+    ephemeral_disks: {{ecp_k8s.ingress_nodes.disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.ingress_nodes.no_tenant_storage is defined and ecp_k8s.ingress_nodes.no_tenant_storage %}
     persistent_disks:
-{% endif %}
-{% elif ecp_k8s.cluster.cp_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.cp_nodes %}
-    ephemeral_disks: {{ecp_k8s.configuration.cp_node_disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.configuration.cp_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.cp_node_disks.no_tenant_storage %}
-    persistent_disks: {{ ecp_k8s.configuration.cp_node_disks.persistent_disks|join(',') }}
 {% else %}
+    persistent_disks: {{ ecp_k8s.ingress_nodes.disks.persistent_disks|join(',') }}
+{% endif %}
+{% elif ecp_k8s.cp_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cp_nodes.hosts %}
+    ephemeral_disks: {{ecp_k8s.cp_nodes.disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.cp_nodes.no_tenant_storage is defined and ecp_k8s.cp_nodes.no_tenant_storage %}
     persistent_disks:
+{% else %}
+    persistent_disks: {{ ecp_k8s.cp_nodes.disks.persistent_disks|join(',') }}
 {% endif %}
-{% else %}
-    ephemeral_disks: {{ecp_k8s.configuration.worker_node_disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.configuration.worker_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.worker_node_disks.no_tenant_storage %}
-    persistent_disks: {{ ecp_k8s.configuration.worker_node_disks.persistent_disks|join(',') }}
-{% else %}
+{% elif ecp_k8s.worker_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.worker_nodes.hosts %}
+    ephemeral_disks: {{ecp_k8s.worker_nodes.disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.worker_nodes.no_tenant_storage is defined and ecp_k8s.worker_nodes.no_tenant_storage %}
     persistent_disks:
+{% else %}
+    persistent_disks: {{ ecp_k8s.worker_nodes.disks.persistent_disks|join(',') }}
+{% else %}
 {% endif %}
 {% endif %}
-    api_scheme: {{ platform.install.controller.api_scheme }}
+    api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
 {% set have_tags = false %}
 {% if hostvars[kw].tag_dc is defined or hostvars[kw].tag_rack is defined or hostvars[kw].tag_ru is defined or hostvars[kw].tag_zone is defined %}
@@ -57,7 +58,7 @@ parameters:
       - name: ru_tag
         value: {{ hostvars[kw].tag_ru }}
 {% endif %}
-{% if ecp_k8s.cluster.ingress_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.ingress_nodes %}
+{% if ecp_k8s.ingress_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.ingress_nodes.hosts %}
 {% if have_tags == false %}
     tags:
 {% set have_tags = true %}
@@ -65,7 +66,7 @@ parameters:
       - name: istio-ingressgateway
         value: true
 {% endif %}
-{% if ecp_k8s.cluster.cp_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.cp_nodes %}
+{% if ecp_k8s.cp_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cp_nodes.hosts %}
 {% if have_tags == false %}
     tags:
 {% set have_tags = true %}
