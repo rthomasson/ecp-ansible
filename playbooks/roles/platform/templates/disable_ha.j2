@@ -1,0 +1,6 @@
+{# Configure JSON file for disable HA REST API call #}
+{
+  "cluster_dns_name": "",
+  "shadow":"{{ ha_host_ids[0] }}",
+  "arbiter":"{{ ha_host_ids[1] }}"
+}

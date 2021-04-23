@@ -1,0 +1,161 @@
+---
+# This playbook disables the HA configuration for ECP by calling the appropriate REST API
+
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller.host }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: { "name": "{{ ecp_credentials.site_admin_id }}", "password": "{{ ecp_credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
+    cacheable: True  
+
+- debug:
+    msg: "Session: {{ session_res.location  | urlsplit('path') }}"
+
+# Get the current set of EPIC worker hosts 
+- name: Get the current set of EPIC worker hosts 
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/workers"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+      accept: "application/json"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 200
+  register: epic_hosts_res
+
+- name: Create a fact with the list of the current set of EPIC hosts  
+  set_fact:
+    epic_hosts_list: "{{ epic_hosts_res.json | json_query('_embedded.workers[*].{ansible_host: ip, host_id: _links.self.href, hostname: hostname, state: state, purpose: purpose, tags: tags}') }}"
+
+# At this point, epic_hosts_list contains all the EPIC hosts in the platform
+# now create the list of host ids to delete and the list of host IPs to restore if the operation needs to be rolled back
+- name: Create empty list
+  set_fact:
+    ha_host_ids: []
+    cacheable: True
+
+- name: Create a list of the HA hosts. If HA is configured, this list will contain (2) hosts - the Shadow Controller and the Arbiter.
+  set_fact:
+    ha_host_ids: "{{ ha_host_ids + [item | json_query('host_id')] }}"
+    cacheable: True
+  when: 
+    - ((item | json_query('purpose') == 'shadow') or (item | json_query('purpose') == 'arbiter'))
+  loop: "{{ epic_hosts_list }}"
+
+- fail:
+    msg: "Nothing to do. HA is not currently configured."
+  when: ha_host_ids|length <> 2 
+
+- debug:
+    msg:
+    - "*** Current Hosts used for HA ***"
+    - "{{ ha_host_ids }}"
+
+- name: Set a fact with the path/filename for the lockdown reason
+  set_fact:
+    lockdown_reason: '{ "reason": "Disable HA" }'
+
+- name: Attempt to put the site in lockdown
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller.host }}:8080/api/v1/lock"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location | urlsplit('path') }}"  
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: "{{ lockdown_reason }}"
+    status_code: 201,403 # 403 is returned if ECP is already in lockdown
+  register: lockdown_res
+
+- name: Log out of session if lockdown active
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  when: lockdown_res.status == 403
+  register: delsession_res
+
+- fail:
+    msg:
+    - "********************************"
+    - "Error: Site already in lockdown!"
+    - "********************************"
+  when: lockdown_res.status == 403
+
+- name: Set a fact with the file contents for the HA config json
+  set_fact:
+    ha_file_contents: "{{ lookup('template', 'disable_ha.j2') }}"
+    cacheable: true
+
+- debug:
+    msg: 
+    - "*** Disabling HA ***"
+    - "Input file contents:"
+    - "{{ ha_file_contents }}"
+
+- name: Make REST API call to disable HA
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller.host }}:8080/api/v1/install?disable_ha"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location | urlsplit('path') }}"
+      accept: "application/json"
+    method: PUT
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: "{{ ha_file_contents }}"
+    status_code: 204, 403  # 403 indicates HA is already enabled 
+  register: config_ha_res
+
+- debug:
+    msg: "Configure HA API call result: {{ config_ha_res.content }}"
+
+- name: Exit site lockdown
+  uri:
+    url: "{{ lockdown_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: clear_lockdown_res
+  until: clear_lockdown_res.status == 204
+  retries: 30 # 30 attempts
+  delay: 60  # wait 60 seconds (1 minute) between attempts; 30 minutes total 
+
+- debug:
+    msg: "Exit lockdown API call result: {{ clear_lockdown_res.status }}"
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: delsession_res
+
+- debug:
+    msg:
+    - "**************************"
+    - "  HA was not enabled!"
+    - "**************************"
+  when: config_ha_res.status == 403
