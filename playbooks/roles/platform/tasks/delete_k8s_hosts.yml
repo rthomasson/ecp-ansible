@@ -13,8 +13,8 @@
 - fail:
     msg: "Error: You must provide either a list of hosts to delete or a host status that will be used to delete all hosts in that status"
   when: 
-    (ecp_k8s.hosts_to_delete.list is undefined or ecp_k8s.hosts_to_delete.list is not iterable) or
-    (ecp_k8s.hosts_to_delete.status is undefined)
+    - (ecp_k8s.hosts_to_delete.list is undefined or ecp_k8s.hosts_to_delete.list is not iterable) 
+    - (ecp_k8s.hosts_to_delete.status is undefined)
 
 - name: Obtain session token
   uri:
