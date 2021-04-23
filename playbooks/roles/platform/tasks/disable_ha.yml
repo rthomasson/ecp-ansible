@@ -54,7 +54,7 @@
 
 - fail:
     msg: "Nothing to do. HA is not currently configured."
-  when: ha_host_ids|length <> 2 
+  when: ha_host_ids|length != 2 
 
 - debug:
     msg:
