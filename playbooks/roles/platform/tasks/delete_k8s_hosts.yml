@@ -87,17 +87,14 @@
   set_fact:
     input_file: "/tmp/{{ platform.name }}_re-add_deleted_k8s_hosts.yml"
     cacheable: True
-
-# - name: Set var
-#   vars:
-#     platform:
-#       k8s_workers: "{{ k8s_ips_to_restore }}" 
+  when: k8s_ids_to_delete|length > 0  
 
 - name: Prepare input file for API REST call in case we need to recover and put the hosts back in the platform
   template:
     src: re-add_k8s_hosts.j2
     dest: "{{ input_file }}"
     mode: 0777
+  when: k8s_ids_to_delete|length > 0  
 
 - name: Delete K8s hosts from platform
   uri:
@@ -111,6 +108,7 @@
     status_code: 204
   register: cluster_res
   loop: "{{ k8s_ids_to_delete }}"
+  when: k8s_ids_to_delete|length > 0  
 
 #  - name: Poll the status of cluster creation by making get call to /api/v2/k8scluster/k8scluster_id
 #    command: epicctl api get -u {{ jsonResp }} -n "OnPremSetup" -p {{ platform.type }} -o /tmp/get-response.json
@@ -136,3 +134,8 @@
     validate_certs: "{{ platform.validate_certs }}"
     status_code: 204
   register: session_res
+
+- debug:
+    msg:
+    - "************* Nothing to do. No matching K8s hosts found. ************"
+  when: k8s_ids_to_delete|length == 0  
