@@ -6,6 +6,9 @@ platform:
   api_scheme: http
   install:
     install_type: non-agent-based-install
+  proxy: http://web-proxy.corp.hpecorp.net:8080 
+  rest_protocol: http
+  validate_certs: no
 
 ecp_credentials:
   # Default installation accounts
