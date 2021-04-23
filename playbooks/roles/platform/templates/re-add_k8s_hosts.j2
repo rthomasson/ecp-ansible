@@ -32,8 +32,8 @@ parameters:
     persistent_disks:
 {% else %}
     persistent_disks: {{ ecp_k8s.worker_nodes.disks.persistent_disks|join(',') }}
-{% else %}
 {% endif %}
+{% else %}
 {% endif %}
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
