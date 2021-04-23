@@ -106,7 +106,8 @@
 
 - debug:
     msg:
-    - "*** hosts_to_add contents ***"
+    - "*** Preparing to add K8s Hosts to ECP ***"
+    - "Hosts being added:"
     - "{{ hosts_to_add }}"
 
 - name: Prepare input file for epicctl (skipping any in repair_pool)
