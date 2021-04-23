@@ -111,8 +111,13 @@
     msg: "Running the command: /bin/rm -f {{ file_path }}"
 
 # Use /bin/rm in case rm is aliased to rm -i
+# - name: Remove the installer file
+#   command: "/bin/rm -f {{ file_path }}"
+
 - name: Remove the installer file
-  command: "/bin/rm -f {{ file_path }}"
+  file:
+    path: "{{ file_path }}"
+    state: absent
 
 - name: Reboot the host
   reboot: 
