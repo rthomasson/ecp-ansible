@@ -153,8 +153,8 @@
     status_code: 204
   register: clear_lockdown_res
   until: clear_lockdown_res.status == 204
-  retries: 20 # 5 -> 5 minutes                60 secs * 20 = 20 minutes
-  delay: 60 # wait 1 minute
+  retries: 30 # 30 attempts
+  delay: 60  # wait 60 seconds (1 minute) between attempts; 30 minutes total 
 
 - debug:
     msg: "Exit lockdown API call result: {{ clear_lockdown_res.status }}"
