@@ -10,7 +10,7 @@
           # ansible_user: stack
           install_controller: yes
           add_gateways: yes
-          add_ha_workers: yes
+          add_ha_hosts: yes
           configure_ha: yes
           add_host_tags: yes
 
