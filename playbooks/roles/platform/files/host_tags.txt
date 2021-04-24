@@ -1,6 +1,4 @@
-{ "label": { "name": "dc_tag", "description": "Datacenter"} }
 { "label": { "name": "zone_tag", "description": "Availability Zone"} }
-{ "label": { "name": "rack_tag", "description": "Rack"} }
 { "label": { "name": "ru_tag", "description": "Rack Unit Position"} }
 { "label": { "name": "istio-ingressgateway", "description": "Istio Ingress Gateway"} }
 { "label": { "name": "istio-controlplane", "description": "Istio Control Plane"} }

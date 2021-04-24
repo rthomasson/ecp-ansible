@@ -57,7 +57,7 @@ parameters:
 {% set have_tags = true %}
 {% endif %}
 {% if hostvars[host].tag_dc is defined %}
-      - name: dc_tag
+      - name: Datacenter
         value: {{ hostvars[host].tag_dc }}
       - name: topology.kubernetes.io/region
         value: {{ hostvars[host].tag_dc }}
@@ -69,7 +69,7 @@ parameters:
         value: {{ hostvars[host].tag_zone }}
 {% endif %}
 {% if hostvars[host].tag_rack is defined %}
-      - name: rack_tag
+      - name: Rack
         value: {{ hostvars[host].tag_rack }}
 {% endif %}
 {% if hostvars[host].tag_ru is defined %}
