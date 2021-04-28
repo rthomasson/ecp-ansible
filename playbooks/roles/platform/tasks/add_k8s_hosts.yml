@@ -116,7 +116,7 @@
   set_fact:
     hosts_to_add: "{{ hosts_to_add + item }}"
   loop: "{{ groups['all'] }}"
-  when: (item in hosts_or_ips_to_add or hostvars[item].ansible_host in hosts_or_ips_to_add)
+  when: item in hosts_or_ips_to_add or hostvars[item].ansible_host in hosts_or_ips_to_add
 
 - debug:
     msg:
