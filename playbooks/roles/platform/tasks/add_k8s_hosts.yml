@@ -114,7 +114,7 @@
 
 - name: Create a list with just the host names of the K8s hosts to be added    
   set_fact:
-    hosts_to_add: "{% if (item in hosts_or_ips_to_add or hostvars[item].ansible_host in hosts_or_ips_to_adds)%}hosts_to_add + item{% else %}hosts_to_add{% endif %}"
+    hosts_to_add: "{% if (item in hosts_or_ips_to_add or hostvars[item].ansible_host in hosts_or_ips_to_adds)%}{{ hosts_to_add + item }}{% else %}{{ hosts_to_add }}{% endif %}"
   loop: "{{ groups['all'] }}"
 
 - debug:
