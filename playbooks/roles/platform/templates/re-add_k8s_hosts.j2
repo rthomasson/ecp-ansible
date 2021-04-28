@@ -1,4 +1,4 @@
-{% for kw in k8s_ips_to_restore if kw not in groups.repair_pool or force_repair is defined and force_repair %}
+{% for kw in k8s_hosts_to_restore if kw not in groups.repair_pool or force_repair is defined and force_repair %}
 ---
 op: K8sHostConfig
 platform: {{ platform.type }}
