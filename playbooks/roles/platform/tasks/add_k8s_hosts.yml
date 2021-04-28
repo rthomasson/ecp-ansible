@@ -124,20 +124,6 @@
     - "Hosts being added:"
     - "{{ hosts_to_add }}"
 
-# NOTE: Host tag labels for the K8s hosts being added are derived from Ansible inventory host inventory variables:
-  
-- name: Prepare input file for epicctl (skipping any in repair_pool)
-  template:
-    src: add_k8s_hosts.j2
-    dest: "{{ input_file }}"
-    mode: 0777
-  
-- debug:
-    msg:
-    - "*** Adding K8s Hosts ***"
-    - "*** Input file content: "
-    - "{{ lookup('template', 'add_k8s_hosts.j2') | to_nice_yaml }}"
-
 - name: Obtain session token
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
@@ -184,6 +170,19 @@
 
 - debug:
     msg: "End Get Tags Session: {{ session_res.location  | urlsplit('path') }}"
+
+# NOTE: Host tag labels for the K8s hosts being added are derived from Ansible inventory host inventory variables:
+- name: Prepare input file for epicctl (skipping any in repair_pool)
+  template:
+    src: add_k8s_hosts.j2
+    dest: "{{ input_file }}"
+    mode: 0777
+  
+- debug:
+    msg:
+    - "*** Adding K8s Hosts ***"
+    - "*** Input file content: "
+    - "{{ lookup('template', 'add_k8s_hosts.j2') | to_nice_yaml }}"
 
 # - name: Setting up and configuring k8s hosts.
 #   shell: "epicctl op -f {{ input_file }} -n {{ platform.name }} --defaultpassword {{ ecp_credentials.site_admin_password }}"
