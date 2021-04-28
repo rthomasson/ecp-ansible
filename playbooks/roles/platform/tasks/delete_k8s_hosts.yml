@@ -32,7 +32,7 @@
     session_id: "{{ session_res.location  | urlsplit('path') }}"
     cacheable: True  
 
-# Get the current set of k8shosts 
+# Get the current set of k8s hosts 
 - name: Get the current set of k8shosts 
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/worker/k8shost"
@@ -61,7 +61,7 @@
 - name: Create list of hosts to delete based on enumerated list of k8s hosts
   set_fact:
     k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
-    k8s_hosts_to_restore: "{{ k8s_hosts_to_restore + [item | json_query('hostname')] }}"
+    k8s_hosts_to_restore: "{{ k8s_hosts_to_restore + [item | json_query('{ansible_host: ansible_host, host_id: host_id, hostname: hostname}')] }}"
     cacheable: True
   when: ecp_k8s.hosts_to_delete.list is defined and
         (item | json_query('ansible_host') in ecp_k8s.hosts_to_delete.list or 
@@ -71,7 +71,7 @@
 - name: Create list of hosts to delete based on k8s host status
   set_fact:
     k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
-    k8s_hosts_to_restore: "{{ k8s_hosts_to_restore + [item | json_query('hostname')] }}"
+    k8s_hosts_to_restore: "{{ k8s_hosts_to_restore + [item | json_query('{ansible_host: ansible_host, host_id: host_id, hostname: hostname, status: status, ephemeral_disks: ephemeral_disks, peristent_disks: persistent_disks}')] }}"
     cacheable: True
   when: ecp_k8s.hosts_to_delete.status is defined and
         item | json_query('status') == ecp_k8s.hosts_to_delete.status
@@ -89,7 +89,8 @@
     src: re-add_k8s_hosts.j2
     dest: "{{ input_file }}"
     mode: 0777
-  when: k8s_ids_to_delete|length > 0  
+  when: 
+    - k8s_ids_to_delete|length > 0  
 
 - name: Delete K8s hosts from platform
   uri:

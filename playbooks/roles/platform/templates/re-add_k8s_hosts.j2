@@ -1,25 +1,27 @@
-{% for kw in k8s_hosts_to_restore if kw not in groups.repair_pool or force_repair is defined and force_repair %}
+{% for host in k8s_hosts_to_restore if kw not in groups.repair_pool or force_repair is defined and force_repair %}
+{% set host_name = host | json_query('hostname') %}
+{% set host_ip = host | json_query('ansible_host') %}
 ---
 op: K8sHostConfig
 platform: {{ platform.type }}
 parameters:
   verbose: true
   config:
-{% if ecp_k8s.cluster.master_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cluster.master_nodes %}
-    ephemeral_disks: {{ecp_k8s.configuration.master_node_disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.configuration.master_node_disks.no_tenant_storage is defined and not ecp_k8s.configuration.master_node_disks.no_tenant_storage %}
-    persistent_disks: {{ ecp_k8s.configuration.master_node_disks.persistent_disks|join(',') }}
-{% else %}
+{% if host_ip in ecp_k8s.master_nodes.hosts %}
+    ephemeral_disks: {{ecp_k8s.master_nodes.disks.ephemeral_disks|join(',') }}
+{% if ecp_k8s.master_nodes.disks.no_tenant_storage %}
     persistent_disks:
+{% else %}
+    persistent_disks: {{ ecp_k8s.master_nodes.disks.persistent_disks|join(',') }}
 {% endif %}
-{% elif ecp_k8s.ingress_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.ingress_nodes.hosts %}
+{% elif host_ip in ecp_k8s.ingress_nodes.hosts %}
     ephemeral_disks: {{ecp_k8s.ingress_nodes.disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.ingress_nodes.no_tenant_storage is defined and ecp_k8s.ingress_nodes.no_tenant_storage %}
+{% if ecp_k8s.ingress_nodes.no_tenant_storage %}
     persistent_disks:
 {% else %}
     persistent_disks: {{ ecp_k8s.ingress_nodes.disks.persistent_disks|join(',') }}
 {% endif %}
-{% elif ecp_k8s.cp_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cp_nodes.hosts %}
+{% elif host_ip in ecp_k8s.cp_nodes.hosts %}
     ephemeral_disks: {{ecp_k8s.cp_nodes.disks.ephemeral_disks|join(',') }}
 {% if ecp_k8s.cp_nodes.no_tenant_storage is defined and ecp_k8s.cp_nodes.no_tenant_storage %}
     persistent_disks:
