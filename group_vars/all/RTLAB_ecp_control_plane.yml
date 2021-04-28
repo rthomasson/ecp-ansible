@@ -117,17 +117,6 @@ ecp_epic:
     no_tenant_storage: true
     shadow_host: mip-bdcs-vm33.mip.storage.hpecorp.net   # 16.143.22.158 Shadow
     arbiter_host: mip-bdcs-vm35.mip.storage.hpecorp.net  # 16.143.22.160 Arbiter
-  worker_nodes:
-    disks:
-      node_disks:
-        - /dev/sdb
-        # - /dev/sdc
-      hdfs_disks:
-        - /dev/sdc
-    hosts:
-      - mip-bdcs-vm39.mip.storage.hpecorp.net    # 16.143.22.164 MLOps EPIC Worker
-      # - mip-bdcs-vm31.mip.storage.hpecorp.net    # 16.143.22.156 Arbiter
-    no_tenant_storage: true
   ###############################################
   # ONLY USED TO DELETE EPIC HOSTS FROM PLATFORM #
   # The list can be either IPs or FQDNs         #

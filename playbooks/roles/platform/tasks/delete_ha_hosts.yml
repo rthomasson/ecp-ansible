@@ -36,14 +36,14 @@
   set_fact:
     epic_hosts_list: "{{ epic_hosts_res.json | json_query('_embedded.workers[*].{ansible_host: ip, host_id: _links.self.href, hostname: hostname, state: state, purpose: purpose, tags: tags}') }}"
 
-# At this point, epic_hosts_list contains all the EPIC hosts in the platform
-# now create the list of host ids to delete and the list of host IPs to restore if the operation needs to be rolled back
 - name: Create empty list
   set_fact:
     epic_ids_to_delete: []
     epic_hosts_to_restore: []
     cacheable: True
 
+# At this point, epic_hosts_list contains all the EPIC hosts in the platform
+# now create the list of host ids to delete and the list of host IPs to restore if the operation needs to be rolled back
 - name: Create the list of hosts to delete. If HA is configured, this list will contain (2) hosts - the Shadow Controller and the Arbiter.
   set_fact:
     epic_ids_to_delete: "{{ epic_ids_to_delete + [item | json_query('host_id')] }}"

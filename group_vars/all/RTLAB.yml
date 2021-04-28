@@ -276,9 +276,9 @@ ecp_k8s:
       verify_peer: true
     external_groups: cn=Common_Name,ou=Organizational_Unit,dc=Domain_Component
 
-    ########################################################
-    # Variables for Adding/Removing nodes from K8s cluster #
-    ########################################################
+    ################################################################
+    # Variables for deleting K8s cluster and adding/removing nodes #
+    ################################################################
     target_cluster_name: test
     nodes_to_add:
       - 16.143.22.160                   # K8s Ingress 2
