@@ -2,7 +2,6 @@
 {% set host_name = host | json_query('hostname') %}
 {% set host_ip = host | json_query('ansible_host') %}
 {% set host_tags = host | json_query('tags') %}
-{% set have_tags = false %}
 {% set ephemeral_disks = host | json_query('ephemeral_disks') %}
 {% set persistent_disks = host | json_query('persistent_disks') %}
 ---
