@@ -14,11 +14,11 @@
         "node": "{{ item | json_query('host_id') }}",
 {% if (item | json_query('hostname') in ecp_k8s.master_nodes.hosts) or (item | json_query('ansible_host') in ecp_k8s.master_nodes.hosts) %} 
         "role": "master"
-{% elif (item | json_query('hostname')) in ecp_k8s.ingress_nodes.hosts or (item | json_query('ansbile_host') in ecp_k8s.ingress_nodes.hosts %}
+{% elif (item | json_query('hostname')) in ecp_k8s.ingress_nodes.hosts or (item | json_query('ansbile_host') in ecp_k8s.ingress_nodes.hosts) %}
         "role": "worker"
-{% elif (item | json_query('hostname')) in ecp_k8s.cp_nodes.hosts or (item | json_query('ansible_host')) in ecp_k8s.cp_nodes.hosts %}
+{% elif (item | json_query('hostname')) in ecp_k8s.cp_nodes.hosts or (item | json_query('ansible_host')) in ecp_k8s.cp_nodes.hosts) %}
         "role": "worker"
-{% elif (item | json_query('hostname')) in ecp_k8s.worker_nodes.hosts or (item | json_query('ansible_host')) in ecp_k8s.worker_nodes.hosts %}
+{% elif (item | json_query('hostname')) in ecp_k8s.worker_nodes.hosts or (item | json_query('ansible_host')) in ecp_k8s.worker_nodes.hosts) %}
         "role": "worker"
 {% else %}      
 {% endif %}
