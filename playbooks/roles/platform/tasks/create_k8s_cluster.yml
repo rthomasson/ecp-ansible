@@ -156,6 +156,6 @@
     status_code: 204
   register: delsession_res
 
-- debug:
-    msg: "Create K8s Cluster result: {{ cluster_res.content }} -- Create K8s Cluster finished."
+# - debug:
+#     msg: "Create K8s Cluster result: {{ cluster_res.content }} -- Create K8s Cluster finished."
 
