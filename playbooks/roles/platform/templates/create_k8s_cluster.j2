@@ -1,7 +1,7 @@
 {
   "label": {
-    "name": "{{ ecp_k8s.cluster.name }}",
-    "description": "{{ ecp_k8s.cluster.description }}"
+    "description": "{{ ecp_k8s.cluster.description }}",
+    "name": "{{ ecp_k8s.cluster.name }}"
   },
   "k8s_version": "{{ ecp_k8s.cluster.k8s_version }}",
   "pod_network_range": "{{ ecp_k8s.cluster.pod_network_range }}",
@@ -12,9 +12,9 @@
 {% for item in k8s_nodes_list %}
      {
         "node": "{{ item | json_query('host_id') }}",
-{% if item.hostname in ecp_k8s.master_nodes.hosts %} 
+{% if (item | json_query('hostname')) in ecp_k8s.master_nodes.hosts %} 
         "role": "master"
-{% elif item.hostname in ecp_k8s.ingress_nodes.hosts or item.hostname in ecp_k8s.cp_nodes.hosts or item.hostname in ecp_k8s.worker_nodes.hosts %} 
+{% elif (item | json_query('hostname')) in ecp_k8s.ingress_nodes.hosts or (item | json_query('hostname')) in ecp_k8s.cp_nodes.hosts or (item | json_query('hostname')) in ecp_k8s.worker_nodes.hosts %} 
         "role": "worker"
 {% else %}      
 {% endif %}
