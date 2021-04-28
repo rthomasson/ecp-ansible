@@ -9,7 +9,7 @@
   "pod_dns_domain": "{{ ecp_k8s.cluster.pod_dns_domain }}",
   "addons": [],
   "k8shosts_config": [
-{% for item in k8s_node_list %}
+{% for item in k8s_nodes_list %}
 {% if (item.hostname in ecp_k8s.master_nodes.hosts) or (item.ansible_host in ecp_k8s.master_nodes.hosts) %} 
     {
       "node": "{{ item | json_query('host_id') }}",
