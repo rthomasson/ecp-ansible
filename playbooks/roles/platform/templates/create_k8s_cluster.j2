@@ -9,44 +9,30 @@
   "pod_dns_domain": "{{ ecp_k8s.cluster.pod_dns_domain }}",
   "addons": [],
   "k8shosts_config": [
-{% if ecp_k8s.cluster.master_nodes is undefined %}
-{% set ecp_k8s.cluster.master_nodes = groups['k8s_master_nodes'] %}
-{% endif %}
-{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in ecp_k8s.cluster.master_nodes %}
+{% for item in k8s_node_list %}
+{% if (item in ecp_k8s.master_nodes.hosts) or (hostvars[item].ansible_host in ecp_k8s.master_nodes.hosts) %} 
     {
       "node": "{{ item | json_query('host_id') }}",
       "role": "master",
     },
-{% endfor %}
-{% if ecp_k8s.cluster.ingress_nodes is undefined %}
-{% set ecp_k8s.cluster.ingress_nodes = groups['k8s_ingress_nodes'] %}
 {% endif %}
-{% if ecp_k8s.cluster.ingress_nodes %}
-    {% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in ecp_k8s.cluster.ingress_nodes %}
+{% if (item in ecp_k8s.ingress_nodes.hosts) or (hostvars[item].ansible_host in ecp_k8s.ingress_nodes.hosts) %} 
        {
          "node": "{{ item | json_query('host_id') }}",
          "role": "worker",
        },
-    {% endfor %}
 {% endif %}
-{% if ecp_k8s.cluster.cp_nodes is undefined %}
-{% set ecp_k8s.cluster.cp_nodes = groups['k8s_cp_nodes'] %}
-{% endif %}
-{% if ecp_k8s.cluster.cp_nodes %}
-   {% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in ecp_k8s.cluster.cp_nodes %}
+{% if (item in ecp_k8s.cp_nodes.hosts) or (hostvars[item].ansible_host in ecp_k8s.cp_nodes.hosts) %} 
        {
          "node": "{{ item | json_query('host_id') }}",
          "role": "worker",
        },
-   {% endfor %}
 {% endif %}
-{% if ecp_k8s.cluster.worker_nodes is undefined %}
-{% set ecp_k8s.cluster.worker_nodes = groups['k8s_worker_nodes'] %}
-{% endif %}
-{% for item in k8shosts_list if item | json_query('status') == 'ready' and item | json_query('ansible_host') in ecp_k8s.cluster.worker_nodes %}
+{% if (item in ecp_k8s.worker_nodes.hosts) or (hostvars[item].ansible_host in ecp_k8s.worker_nodes.hosts) %} 
     {
       "node": "{{ item | json_query('host_id') }}",
       "role": "worker",
+{% endif %}
 {% if loop.last %}
     }
 {% else %}    
