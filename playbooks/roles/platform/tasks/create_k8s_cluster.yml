@@ -139,9 +139,8 @@
 #    retries: 30
 #    delay: 60
 #    until:  '"ready" == getResp'
-
- - debug:
-     msg: "polling task finished"
+# - debug:
+#     msg: "polling task finished"
 
 - name: Log out of session
   uri:
