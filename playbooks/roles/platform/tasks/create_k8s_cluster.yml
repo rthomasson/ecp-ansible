@@ -108,11 +108,15 @@
     ((item | json_query('status') == 'ready') and (item | json_query('hostname') is in k8s_nodes))
   loop: "{{ k8shosts_list }}"
 
+- name: Create a fact with the JSON required for the REST API call  
+  set_fact:
+    cluster_JSON: "{{ lookup('template','create_k8s_cluster.j2') | from_yaml }}"
+
 - debug:
     msg:
-    - "*** Preparing to create K8s cluster in ECP ***"
-    - "Nodes to be included:"
-    - "{{ lookup('template', 'create_k8s_cluster.j2') }}"
+    - "*** Creating K8s Cluster ***"
+    - "Input file Content: "
+    - "{{ cluster_JSON | to_nice_yaml }}"
 
 - name: Create K8s Cluster
   uri:
@@ -125,7 +129,7 @@
     method: POST
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: "{{ lookup('template','create_k8s_cluster.j2') }}"
+    body: "{{ cluster_JSON }}"
     status_code: 201
   register: cluster_res
 
