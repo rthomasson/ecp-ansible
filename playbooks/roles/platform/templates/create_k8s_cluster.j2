@@ -10,25 +10,25 @@
   "addons": [],
   "k8shosts_config": [
 {% for item in k8s_node_list %}
-{% if (item in ecp_k8s.master_nodes.hosts) or (hostvars[item].ansible_host in ecp_k8s.master_nodes.hosts) %} 
+{% if ((item.hostname in ecp_k8s.master_nodes.hosts) or (item.ansible_host in ecp_k8s.master_nodes.hosts) %} 
     {
       "node": "{{ item | json_query('host_id') }}",
       "role": "master",
     },
 {% endif %}
-{% if (item in ecp_k8s.ingress_nodes.hosts) or (hostvars[item].ansible_host in ecp_k8s.ingress_nodes.hosts) %} 
+{% if (item.hostname in ecp_k8s.ingress_nodes.hosts) or (item.ansible_host in ecp_k8s.ingress_nodes.hosts) %} 
        {
          "node": "{{ item | json_query('host_id') }}",
          "role": "worker",
        },
 {% endif %}
-{% if (item in ecp_k8s.cp_nodes.hosts) or (hostvars[item].ansible_host in ecp_k8s.cp_nodes.hosts) %} 
+{% if (item.hostname in ecp_k8s.cp_nodes.hosts) or (item.ansible_host in ecp_k8s.cp_nodes.hosts) %} 
        {
          "node": "{{ item | json_query('host_id') }}",
          "role": "worker",
        },
 {% endif %}
-{% if (item in ecp_k8s.worker_nodes.hosts) or (hostvars[item].ansible_host in ecp_k8s.worker_nodes.hosts) %} 
+{% if (item.hostname in ecp_k8s.worker_nodes.hosts) or (item.ansible_host in ecp_k8s.worker_nodes.hosts) %} 
     {
       "node": "{{ item | json_query('host_id') }}",
       "role": "worker",
