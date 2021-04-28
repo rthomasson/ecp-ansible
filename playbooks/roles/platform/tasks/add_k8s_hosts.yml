@@ -155,7 +155,7 @@
 
 - name: Create a fact with a parsed list of the current k8s hosts from the API call  
   set_fact:
-    ecp_tags_list: "{{ ecp_tags_res.json | json_query('_embedded.tags[*].{name: label.name}') }}"
+    ecp_tags_list: "{{ ecp_tags_res.json | json_query('_embedded.tags[*].name: label.name') }}"
 
 - name: Log out of session
   uri:
