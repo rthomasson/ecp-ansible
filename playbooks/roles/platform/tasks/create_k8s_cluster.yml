@@ -1,4 +1,10 @@
 ---
+# This playbook creates a K8s cluster in ECP.
+# It uses platform, ecp_credentials and ecp_k8s variables 
+
+- name: Create a fact for the lists of K8s hosts to add  
+  set_fact:
+    k8s_nodes: "{{ k8s_nodes|default([]) }}"
 
 # Validate vars for a K8s compute cluster Master and Worker nodes. At a minimum, a K8s compute cluster must include one master node and one worker.
 - fail:
