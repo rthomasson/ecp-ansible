@@ -20,10 +20,10 @@ parameters:
     install_type: {{ platform.install.install_type }}
 {% if host_tags is defined and host_tags is iterable %}
     tags:
-{% for tag_entry in host_tags %}
+  {% for tag_entry in host_tags %}
       - id: {{ tag_entry.tag_id }}
         value: {{ tag_entry.tag_value }}
-{% endfor %}
+  {% endfor %}
 {% endif %}
   host:
     internal_ip: {{ host_ip }}
