@@ -1,46 +1,25 @@
 {% for host in k8s_hosts_to_restore if kw not in groups.repair_pool or force_repair is defined and force_repair %}
 {% set host_name = host | json_query('hostname') %}
 {% set host_ip = host | json_query('ansible_host') %}
+{% set host_tags = host | json_query('tags') %}
+{% set have_tags = false %}
+{% set ephemeral_disks = host | json_query('ephemeral_disks') %}
+{% set persistent_disks = host | json_query('persistent_disks') %}
 ---
 op: K8sHostConfig
 platform: {{ platform.type }}
 parameters:
   verbose: true
   config:
-{% if host_ip in ecp_k8s.master_nodes.hosts %}
-    ephemeral_disks: {{ecp_k8s.master_nodes.disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.master_nodes.disks.no_tenant_storage %}
+    ephemeral_disks: {{ ephemeral_disks | join(',') }}
+{% if persistent_disks is defined and persistent_disks is iterable %}
+    persistent_disks: {{ persistent_disks | join(',') }}
+{% else %}
     persistent_disks:
-{% else %}
-    persistent_disks: {{ ecp_k8s.master_nodes.disks.persistent_disks|join(',') }}
-{% endif %}
-{% elif host_ip in ecp_k8s.ingress_nodes.hosts %}
-    ephemeral_disks: {{ecp_k8s.ingress_nodes.disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.ingress_nodes.no_tenant_storage %}
-    persistent_disks:
-{% else %}
-    persistent_disks: {{ ecp_k8s.ingress_nodes.disks.persistent_disks|join(',') }}
-{% endif %}
-{% elif host_ip in ecp_k8s.cp_nodes.hosts %}
-    ephemeral_disks: {{ecp_k8s.cp_nodes.disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.cp_nodes.no_tenant_storage is defined and ecp_k8s.cp_nodes.no_tenant_storage %}
-    persistent_disks:
-{% else %}
-    persistent_disks: {{ ecp_k8s.cp_nodes.disks.persistent_disks|join(',') }}
-{% endif %}
-{% elif ecp_k8s.worker_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.worker_nodes.hosts %}
-    ephemeral_disks: {{ecp_k8s.worker_nodes.disks.ephemeral_disks|join(',') }}
-{% if ecp_k8s.worker_nodes.no_tenant_storage is defined and ecp_k8s.worker_nodes.no_tenant_storage %}
-    persistent_disks:
-{% else %}
-    persistent_disks: {{ ecp_k8s.worker_nodes.disks.persistent_disks|join(',') }}
-{% endif %}
-{% else %}
 {% endif %}
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
-{% set have_tags = false %}
-{% if hostvars[kw].tag_dc is defined or hostvars[kw].tag_rack is defined or hostvars[kw].tag_ru is defined or hostvars[kw].tag_zone is defined %}
+{% if host_tags is defined and host_tags is iterable %}
     tags:
 {% set have_tags = true %}
 {% endif %}
