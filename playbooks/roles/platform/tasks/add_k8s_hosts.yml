@@ -124,6 +124,8 @@
     - "Hosts being added:"
     - "{{ hosts_to_add }}"
 
+# NOTE: Host tag labels for the K8s hosts being added are derived from Ansible inventory host inventory variables:
+  
 - name: Prepare input file for epicctl (skipping any in repair_pool)
   template:
     src: add_k8s_hosts.j2
@@ -135,6 +137,53 @@
     - "*** Adding K8s Hosts ***"
     - "*** Input file content: "
     - "{{ lookup('template', 'add_k8s_hosts.j2') | to_nice_yaml }}"
+
+- name: Obtain session token
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
+    return_content: yes
+    method: POST
+    validate_certs: "{{ platform.validate_certs }}"
+    body_format: json
+    body: { "name": "{{ ecp_credentials.site_admin_id }}", "password": "{{ ecp_credentials.site_admin_password }}" }
+    status_code: 201
+  register: session_res
+
+- name: Create a fact with the session info from the API call  
+  set_fact:
+    session_id: "{{ session_res.location  | urlsplit('path') }}"
+    cacheable: True  
+
+# Get the current set of host tags defined in ECP. A host tag must be defined in ECP before it can be used with a K8s host 
+- name: Get the current set of host tags defined in ECP 
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/tag"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}" 
+      accept: "application/json"
+    method: GET
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 200
+  register: ecp_tags_res
+
+- name: Create a fact with a parsed list of the current k8s hosts from the API call  
+  set_fact:
+    ecp_tags_list: "{{ ecp_tags_res.json | json_query('_embedded.tags[*].{name: label.name}') }}"
+
+- name: Log out of session
+  uri:
+    url: "{{ session_res.location }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_res.location  | urlsplit('path') }}"  
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: delsession_res
+
+- debug:
+    msg: "End Get Tags Session: {{ session_res.location  | urlsplit('path') }}"
 
 # - name: Setting up and configuring k8s hosts.
 #   shell: "epicctl op -f {{ input_file }} -n {{ platform.name }} --defaultpassword {{ ecp_credentials.site_admin_password }}"

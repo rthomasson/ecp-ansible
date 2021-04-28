@@ -1,6 +1,7 @@
 {# Configure K8s Host installation YAML file for epicctl #}
 {% for host in hosts_to_add if host not in groups.repair_pool or force_repair is defined and force_repair %}
 {% set host_ip = hostvars[host].ansible_host %}
+{% set have_tags = false %}
 ---
 op: K8sHostConfig
 platform: {{ platform.type }}
@@ -52,30 +53,29 @@ parameters:
 {% endif %}
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
-{% set have_tags = false %}
 {% if hostvars[host].tag_dc is defined or hostvars[host].tag_rack is defined or hostvars[host].tag_ru is defined or hostvars[host].tag_zone is defined %}
     tags:
 {% set have_tags = true %}
 {% endif %}
-{% if hostvars[host].tag_dc is defined %}
+{% if hostvars[host].Datacenter is defined %}
       - name: Datacenter
-        value: {{ hostvars[host].tag_dc }}
+        value: {{ hostvars[host].Datacenter }}
       - name: topology.kubernetes.io/region
-        value: {{ hostvars[host].tag_dc }}
+        value: {{ hostvars[host].Datacenter }}
 {% endif %}
-{% if hostvars[host].tag_zone is defined %}
-      - name: zone_tag
-        value: {{ hostvars[host].tag_zone }}
+{% if hostvars[host].Zone is defined %}
+      - name: Zone
+        value: {{ hostvars[host].Zone }}
       - name: topology.kubernetes.io/zone
-        value: {{ hostvars[host].tag_zone }}
+        value: {{ hostvars[host].Zone }}
 {% endif %}
-{% if hostvars[host].tag_rack is defined %}
+{% if hostvars[host].Rack is defined %}
       - name: Rack
-        value: {{ hostvars[host].tag_rack }}
+        value: {{ hostvars[host].Rack }}
 {% endif %}
-{% if hostvars[host].tag_ru is defined %}
-      - name: ru_tag
-        value: {{ hostvars[host].tag_ru }}
+{% if hostvars[host].RU is defined %}
+      - name: RU
+        value: {{ hostvars[host].RU }}
 {% endif %}
 {% if ecp_k8s.cluster.ingress_nodes is defined and hostvars[host].ansible_host in ecp_k8s.cluster.ingress_nodes %}
 {% if have_tags == false %}
