@@ -112,7 +112,7 @@
     msg:
     - "*** Preparing to create K8s cluster in ECP ***"
     - "Nodes to be included:"
-    - "{{ lookup('template', 'create_k8s_cluster.j2') }}"
+    - "{{ lookup('template', 'create_k8s_cluster.j2') | to_nice_json}}"
 
 # - name: Create K8s Cluster
 #   uri:
