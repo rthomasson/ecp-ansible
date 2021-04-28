@@ -1,4 +1,71 @@
 ---
+
+# Validate vars for a K8s compute cluster Master and Worker nodes. At a minimum, a K8s compute cluster must include one master node and one worker.
+- fail:
+    msg: "Error: At a minimum, a K8s compute cluster must include at least one Master node and one Worker node."
+  when: 
+    (ecp_k8s.master_nodes is defined and ecp_k8s.master_nodes.hosts is undefined) or
+    (ecp_k8s.master_nodes.hosts is defined and (ecp_k8s.master_nodes.hosts is not iterable or ecp_k8s.master_nodes.hosts|length < 1)) or
+    (ecp_k8s.worker_nodes is defined and ecp_k8s.worker_nodes.hosts is undefined) or
+    (ecp_k8s.worker_nodes.hosts is defined and (ecp_k8s.worker_nodes.hosts is not iterable or ecp_k8s.worker_nodes.hosts|length < 1))
+
+- name: Create a fact with the list of K8s master node hosts to be added    
+  set_fact:
+    k8s_nodes:  "{{ k8s_nodes + ecp_k8s.master_nodes.hosts + ecp_k8s.worker_nodes.hosts }}"
+  when: 
+    - ecp_k8s.master_nodes.hosts is defined and ecp_k8s.master_nodes.hosts is iterable 
+    - ecp_k8s.worker_nodes.hosts is defined and ecp_k8s.worker_nodes.hosts is iterable 
+
+# Validate vars for K8s compute cluster Ingress nodes
+- fail:
+    msg: "Error: If you specify ingress nodes for a K8s compute cluster, then the host information (IP addresses or hostnames) for those nodes must be provided"
+  when: 
+    (ecp_k8s.ingress_nodes is defined and ecp_k8s.ingress_nodes.hosts is undefined) or
+    (ecp_k8s.ingress_nodes.hosts is defined and (ecp_k8s.ingress_nodes.hosts is not iterable or ecp_k8s.ingress_nodes.hosts|length < 1))
+
+- name: Create a fact with the list of K8s Ingress node hosts to be added    
+  set_fact:
+    k8s_nodes:  "{{ k8s_nodes + ecp_k8s.ingress_nodes.hosts }}"
+  when:
+    - ecp_k8s.ingress_nodes.hosts is defined and ecp_k8s.ingress_nodes.hosts is iterable
+
+# Validate vars for K8s compute cluster CP Worker nodes
+- fail:
+    msg: "Error: If you specify CP Worker nodes for a K8s compute cluster, then the host information (IP addresses or hostnames) for those nodes must be provided"
+  when: 
+    (ecp_k8s.cp_nodes is defined and ecp_k8s.cp_nodes.hosts is undefined) or
+    (ecp_k8s.cp_nodes.hosts is defined and (ecp_k8s.cp_nodes.hosts is not iterable or ecp_k8s.cp_nodes.hosts|length < 1))
+      
+- name: Create a fact with the list of K8s CP Worker node hosts to be added    
+  set_fact:
+    k8s_nodes:  "{{ k8s_nodes + ecp_k8s.cp_nodes.hosts }}"
+  when:
+    - ecp_k8s.cp_nodes.hosts is defined and ecp_k8s.cp_nodes.hosts is iterable
+
+# Validate vars for K8s data fabric Master and Worker nodes. At a minimum, a K8s datafabric cluster must include (3) Master nodes and (5) Worker nodes. 
+- fail:
+    msg: "Error: At a minimum, a K8s data fabric cluster must include (3) Master nodes and (5) Worker nodes."
+  when: 
+    (ecp_k8s.df_master_nodes is defined and ecp_k8s.df_master_nodes.hosts is undefined) or
+    (ecp_k8s.df_master_nodes.hosts is defined and (ecp_k8s.df_master_nodes.hosts is not iterable or ecp_k8s.df_master_nodes.hosts|length < 3)) or
+    (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.hosts is undefined) or
+    (ecp_k8s.df_worker_nodes.hosts is defined and (ecp_k8s.df_master_nodes.hosts is not iterable or ecp_k8s.df_worker_nodes.hosts|length < 5))
+      
+- name: Add the K8s data fabric master node hosts to the list to be added    
+  set_fact:
+    k8s_nodes:  "{{ k8s_nodes + ecp_k8s.df_master_nodes.hosts + ecp_k8s.df_worker_nodes }}"
+  when: 
+    - ecp_k8s.df_master_nodes.hosts is defined and ecp_k8s.df_master_nodes.hosts is iterable 
+    - ecp_k8s.df_master_nodes.hosts|length > 2
+    - ecp_k8s.df_worker_nodes.hosts is defined and ecp_k8s.df_worker_nodes.hosts is iterable
+    - ecp_k8s.df_worker_nodes.hosts|length > 4
+
+- debug:
+    msg:
+    - "*** Preparing to create K8s cluster in ECP ***"
+    - "Nodes to be included:"
+    - "{{ k8s_nodes }}"
+
 - name: Obtain session token
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
@@ -15,7 +82,7 @@
     session_id: "{{ session_res.location  | urlsplit('path') }}"
     cacheable: True  
 
-# Get the current set of k8shosts 
+# Get the current set of k8shosts. A host must be defined in ECP as a K8s hosts in order for it be used in a K8s cluster 
 - name: Get the current set of k8shosts 
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/worker/k8shost"
@@ -28,25 +95,20 @@
     status_code: 200
   register: k8shost_res
 
-- name: Create a fact with parsed list of k8s hosts from the API call  
+- name: Create a fact with a parsed list of the current k8s hosts from the API call  
   set_fact:
     k8shosts_list: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
     cacheable: True  
 
-- debug:
-    msg: "***Creating K8s Cluster***"
-- debug:
-    msg: "Cluster Master Node: {{ item }}"
-  loop: "{{ ecp_k8s.cluster.master_nodes }}"
+- name: Create a fact with the list of nodes to include in the K8s cluster being created  
+  set_fact:
+    k8s_node_list: "{{ k8s_node_list + [item | json_query('hostname')] }}"
+    cacheable: True  
+  when: 
+    - (item | json_query('status') == 'ready')
+    - ((item | json_query('ansible_host') is in k8s_nodes) or (item | json_query('hostname') is in k8s_nodes))
+  loop: "{{ k8shosts_list }}"
 
-- debug:
-    msg: "Cluster Ingress Node: {{ item }}"
-  loop: "{{ ecp_k8s.cluster.ingress_nodes }}"
-
-- debug:
-    msg: "Cluster Worker Node: {{ item }}"
-  loop: "{{ ecp_k8s.cluster.worker_nodes }}"
-      
 - name: Create K8s Cluster
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8scluster"
