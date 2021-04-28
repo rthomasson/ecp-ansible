@@ -21,7 +21,7 @@ parameters:
 {% if host_tags is defined and host_tags is iterable %}
     tags:
 {% for tag_entry in host_tags %}
-      - id: {{tag_entry.tag_id
+      - id: {{ tag_entry.tag_id }}
         value: {{ tag_entry.tag_value }}
 {% endfor %}
 {% endif %}
