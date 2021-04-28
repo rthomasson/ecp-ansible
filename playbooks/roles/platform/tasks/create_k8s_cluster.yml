@@ -15,7 +15,7 @@
     (ecp_k8s.worker_nodes is defined and ecp_k8s.worker_nodes.hosts is undefined) or
     (ecp_k8s.worker_nodes.hosts is defined and (ecp_k8s.worker_nodes.hosts is not iterable or ecp_k8s.worker_nodes.hosts|length < 1))
 
-- name: Create a fact with the list of K8s master node hosts to be added    
+- name: Create a fact with the list of K8s compute cluster Master node and Worker node hosts to be added    
   set_fact:
     k8s_nodes:  "{{ k8s_nodes + ecp_k8s.master_nodes.hosts + ecp_k8s.worker_nodes.hosts }}"
   when: 
@@ -66,12 +66,6 @@
     - ecp_k8s.df_worker_nodes.hosts is defined and ecp_k8s.df_worker_nodes.hosts is iterable
     - ecp_k8s.df_worker_nodes.hosts|length > 4
 
-- debug:
-    msg:
-    - "*** Preparing to create K8s cluster in ECP ***"
-    - "Nodes to be included:"
-    - "{{ k8s_nodes }}"
-
 - name: Obtain session token
   uri:
     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v1/login"
@@ -79,7 +73,7 @@
     method: POST
     validate_certs: "{{ platform.validate_certs }}"
     body_format: json
-    body: { "name": "{{ credentials.site_admin_id }}", "password": "{{ credentials.site_admin_password }}" }
+    body: { "name": "{{ ecp_credentials.site_admin_id }}", "password": "{{ ecp_credentials.site_admin_password }}" }
     status_code: 201
   register: session_res
 
@@ -115,20 +109,26 @@
     - ((item | json_query('ansible_host') is in k8s_nodes) or (item | json_query('hostname') is in k8s_nodes))
   loop: "{{ k8shosts_list }}"
 
-- name: Create K8s Cluster
-  uri:
-    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8scluster"
-    return_content: yes
-    headers:
-      X-BDS-SESSION: "{{ session_id }}" 
-      accept: "*/*"
-      Content-Type: "application/json"
-    method: POST
-    validate_certs: "{{ platform.validate_certs }}"
-    body_format: json
-    body: "{{ lookup('template','create_k8s_cluster.j2') }}"
-    status_code: 201
-  register: cluster_res
+- debug:
+    msg:
+    - "*** Preparing to create K8s cluster in ECP ***"
+    - "Nodes to be included:"
+    - "{{ lookup('template', 'add_k8s_hosts.j2') | to_nice_json }}"
+
+# - name: Create K8s Cluster
+#   uri:
+#     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080/api/v2/k8scluster"
+#     return_content: yes
+#     headers:
+#       X-BDS-SESSION: "{{ session_id }}" 
+#       accept: "*/*"
+#       Content-Type: "application/json"
+#     method: POST
+#     validate_certs: "{{ platform.validate_certs }}"
+#     body_format: json
+#     body: "{{ lookup('template','create_k8s_cluster.j2') }}"
+#     status_code: 201
+#   register: cluster_res
 
 #  - name: Poll the status of cluster creation by making get call to /api/v2/k8scluster/k8scluster_id
 #    command: epicctl api get -u {{ jsonResp }} -n "OnPremSetup" -p {{ common.platform }} -o /tmp/get-response.json
