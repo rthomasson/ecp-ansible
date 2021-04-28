@@ -112,7 +112,7 @@
     -  "      IP: {{ hostvars[item].ansible_host }}"
   loop: "{{ groups['all'] }}"
 
-- name: Create a list with just the host names of the K8s hosts to be added    
+- name: Create a list with just the host names of the K8s hosts to be added using the Ansible inventory for all host groups   
   set_fact:
     hosts_to_add: "{{ hosts_to_add + [ item ] }}"
   loop: "{{ groups['all'] }}"
