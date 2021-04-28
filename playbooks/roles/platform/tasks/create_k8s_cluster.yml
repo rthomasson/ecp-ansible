@@ -59,7 +59,7 @@
       
 - name: Add the K8s data fabric master node hosts to the list to be added    
   set_fact:
-    k8s_nodes:  "{{ k8s_nodes + ecp_k8s.df_master_nodes.hosts + ecp_k8s.df_worker_nodes }}"
+    k8s_nodes:  "{{ k8s_nodes + ecp_k8s.df_master_nodes.hosts + ecp_k8s.df_worker_nodes.hosts }}"
   when: 
     - ecp_k8s.df_master_nodes.hosts is defined and ecp_k8s.df_master_nodes.hosts is iterable 
     - ecp_k8s.df_master_nodes.hosts|length > 2
