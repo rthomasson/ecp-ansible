@@ -21,48 +21,13 @@ parameters:
     install_type: {{ platform.install.install_type }}
 {% if host_tags is defined and host_tags is iterable %}
     tags:
-{% set have_tags = true %}
-{% endif %}
-{% if hostvars[kw].tag_dc is defined %}
-      - name: dc_tag
-        value: {{ hostvars[kw].tag_dc }}
-{% endif %}
-{% if hostvars[kw].tag_zone is defined %}
-      - name: zone_tag
-        value: {{ hostvars[kw].tag_zone }}
-{% endif %}
-{% if hostvars[kw].tag_rack is defined %}
-      - name: rack_tag
-        value: {{ hostvars[kw].tag_rack }}
-{% endif %}
-{% if hostvars[kw].tag_ru is defined %}
-      - name: ru_tag
-        value: {{ hostvars[kw].tag_ru }}
-{% endif %}
-{% if ecp_k8s.ingress_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.ingress_nodes.hosts %}
-{% if have_tags == false %}
-    tags:
-{% set have_tags = true %}
-{% endif %}
-      - name: istio-ingressgateway
-        value: true
-{% endif %}
-{% if ecp_k8s.cp_nodes is defined and hostvars[kw].ansible_host in ecp_k8s.cp_nodes.hosts %}
-{% if have_tags == false %}
-    tags:
-{% set have_tags = true %}
-{% endif %}
-      - name: istio-controlplane
-        value: true
-      - name: openebs-controlplane
-        value: true
+{% for tag_entry in host_tags %}
+      - id: {{tag_entry.tag_id
+        value: {{ tag_entry.tag_value }}
+{% endfor %}
 {% endif %}
   host:
-{% if kw | ipv4 %}
-    internal_ip: {{ kw }}
-{% else %}
-    internal_ip: {{ hostvars[kw].ansible_host }}
-{% endif %}
+    internal_ip: {{ host_ip }}
   ssh:
     username: {{ ecp_credentials.ssh.username }}
     access_type: {{ ecp_credentials.ssh.access_type }}
