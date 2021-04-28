@@ -144,18 +144,17 @@ ecp_epic:
     # status: ready      
 
 ecp_k8s:
-  # NOTE: FQDNs are used for istio, cert-manager, openebs, and wordpress playbooks
   master_nodes:
     disks:
       ephemeral_disks:
         - /dev/sdb
-        # - /dev/sdc
-      persistent_disks:
         - /dev/sdc
+      persistent_disks:
+        # - /dev/sdc
     hosts:
-      - mip-bdcs-vm33.mip.storage.hpecorp.net     # 16.143.22.158  K8s Master 1
-    no_tenant_storage: false
-
+      #- hpecp-splunk.mip.storage.hpecorp.net      # 16.143.22.159  K8s Compute Master1
+      - 16.143.22.159                             # hpecp-splunk.mip.storage.hpecorp.net  K8s Compute Master1
+    no_tenant_storage: true
   # ingress_nodes:
   #   disks:
   #     ephemeral_disks:
@@ -167,7 +166,6 @@ ecp_k8s:
   #     - hpecp-splunk.mip.storage.hpecorp.net      # 16.143.22.159  K8s Ingress 1
   #     - mip-bdcs-vm35.mip.storage.hpecorp.net     # 16.143.22.160  K8s Ingress 2
   #   no_tenant_storage: true
-
   # cp_nodes:
   #   disks:
   #     ephemeral_disks:
@@ -179,28 +177,24 @@ ecp_k8s:
   #     - hpecp-splunk-master.mip.storage.hpecorp.net   # 16.143.22.161  K8s CP Worker 1
   #     - mip-bdcs-vm37.mip.storage.hpecorp.net         # 16.143.22.162  K8s CP Worker 2
   #   no_tenant_storage: true
-
   worker_nodes:
     disks:
       ephemeral_disks:
         - /dev/sdb
-        # - /dev/sdc
-      persistent_disks:
         - /dev/sdc
+      persistent_disks:
+        # - /dev/sdc
     hosts:
-      # - hpecp-splunk.mip.storage.hpecorp.net          # 16.143.22.159  K8s Ingress 1
-      # - mip-bdcs-vm35.mip.storage.hpecorp.net         # 16.143.22.160  K8s Ingress 2
-      # - hpecp-splunk-master.mip.storage.hpecorp.net   # 16.143.22.161  K8s CP Worker 1
-      # - mip-bdcs-vm37.mip.storage.hpecorp.net         # 16.143.22.162  K8s CP Worker 2
-      - mip-bdcs-vm38.mip.storage.hpecorp.net         # 16.143.22.163
-      # - mip-bdcs-vm39.mip.storage.hpecorp.net         # 16.143.22.164
-    no_tenant_storage: false
+      - mip-bdcs-vm35.mip.storage.hpecorp.net         # 16.143.22.160  K8s Compute Worker 1
+      # - hpecp-splunk-master.mip.storage.hpecorp.net   # 16.143.22.161  K8s Compute Worker 2
+      - 16.143.22.161                                 # hpecp-splunk-master.mip.storage.hpecorp.net  K8s Compute Worker 2
+    no_tenant_storage: true
   ###############################################################################################
   # The ecp_k8s.hosts_to_delete variable is ONLY used to delete K8S hosts from the ECP platform #
   # This list can be either IPs or FQDNs                                                        #
   #         - OR -                                                                              #
   # the hosts to delete can be specified using a status.                                        #
-  # NOTE: ALL hosts with that status will be DELETED from the platform.                         #
+  # NOTE: ALL K8s hosts with that status will be DELETED from the platform.                     #
   ###############################################################################################
   hosts_to_delete:
     list:
@@ -208,6 +202,38 @@ ecp_k8s:
       - mip-bdcs-vm37.mip.storage.hpecorp.net    
       # - mip-bdcs-vm39.mip.storage.hpecorp.net
     # status: ready      
+
+  ############################################################################################
+  # OPTIONAL: the ecp_k8s.df_master_nodes and ecp_k8s.df_worker_nodes variables are used for #
+  # configuring K8s data fabric hosts for use by a K8s data fabric cluster.                  #
+  # NOTE: a minimum of (3) df master nodes and (5) df worker nodes are required.             #
+  ############################################################################################
+  df_master_nodes:
+    disks:
+      ephemeral_disks:
+        - /dev/sdb
+        # - /dev/sdc
+      persistent_disks:
+        - /dev/sdc
+    hosts:
+      - mip-bdcs-vm37.mip.storage.hpecorp.net     # 16.143.22.162  K8s Data Fabric Master1
+      - mip-bdcs-vm38.mip.storage.hpecorp.net     # 16.143.22.163  K8s Data Fabric Master2
+      - mip-bdcs-vm39.mip.storage.hpecorp.net     # 16.143.22.164  K8s Data Fabric Master3
+    no_tenant_storage: false
+  df_worker_nodes:
+    disks:
+      ephemeral_disks:
+        - /dev/sdb
+        # - /dev/sdc
+      persistent_disks:
+        - /dev/sdc
+    hosts:
+      - mip-bdcs-vm52.mip.storage.hpecorp.net         # 16.143.22.185  K8s Data Fabric Worker 1
+      - mip-bdcs-vm53.mip.storage.hpecorp.net         # 16.143.22.186  K8s Data Fabric Worker 2
+      - mip-bdcs-vm54.mip.storage.hpecorp.net         # 16.143.22.187  K8s Data Fabric Worker 3
+      - mip-bdcs-vm55.mip.storage.hpecorp.net         # 16.143.22.188  K8s Data Fabric Worker 4
+      - mip-bdcs-vm56.mip.storage.hpecorp.net         # 16.143.22.189  K8s Data Fabric Worker 5
+    no_tenant_storage: false
 
   cluster:
     name: spark
