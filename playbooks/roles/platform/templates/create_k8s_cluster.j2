@@ -10,18 +10,18 @@
   "addons": [],
   "k8shosts_config": [
 {% for item in k8s_nodes_list %}
-    {
-      "node": "{{ item | json_query('host_id') }}",
+     {
+        "node": "{{ item | json_query('host_id') }}",
 {% if item.hostname in ecp_k8s.master_nodes.hosts %} 
-      "role": "master"
+        "role": "master"
 {% elif item.hostname in ecp_k8s.ingress_nodes.hosts or item.hostname in ecp_k8s.cp_nodes.hosts or item.hostname in ecp_k8s.worker_nodes.hosts %} 
-      "role": "worker"
+        "role": "worker"
 {% else %}      
 {% endif %}
 {% if loop.last %}
-    }
+     }
 {% else %}    
-    },
+     },
 {% endif %}
 {% endfor %}
   ]
