@@ -53,7 +53,7 @@ parameters:
 {% endif %}
     api_scheme: {{ platform.api_scheme }}
     install_type: {{ platform.install.install_type }}
-{% if (ecp_tags_list is defined and ecp_tags_list | length > 0) and (hostvars[host].Datacenter is defined or hostvars[host].Rack is defined or hostvars[host].RU is defined or hostvars[host].Zone is defined %}
+{% if (ecp_tags_list is defined and ecp_tags_list | length > 0) and (hostvars[host].Datacenter is defined or hostvars[host].Rack is defined or hostvars[host].RU is defined or hostvars[host].Zone is defined) %}
     tags:
 {% set have_tags = true %}
 {% endif %}
@@ -77,7 +77,7 @@ parameters:
       - name: RU
         value: {{ hostvars[host].RU }}
 {% endif %}
-{% if ecp_k8s.ingress_nodes.hosts is defined and ((host in ecp_k8s.ingress_nodes.hosts) or (host_ip in ecp_k8s.ingress_nodes.hosts)) %}
+{% if ecp_k8s.ingress_nodes.hosts is defined and (host in ecp_k8s.ingress_nodes.hosts or host_ip in ecp_k8s.ingress_nodes.hosts) %}
 {% if have_tags == false %}
     tags:
 {% set have_tags = true %}
@@ -85,7 +85,7 @@ parameters:
       - name: istio-ingressgateway
         value: true
 {% endif %}
-{% if ecp_k8s.cp_nodes.hosts is defined and ((host in ecp_k8s.cp_nodes.hosts) or (host_ip in ecp_k8s.cp_nodes.hosts)) %}
+{% if ecp_k8s.cp_nodes.hosts is defined and (host in ecp_k8s.cp_nodes.hosts or host_ip in ecp_k8s.cp_nodes.hosts) %}
 {% if have_tags == false %}
     tags:
 {% set have_tags = true %}
