@@ -7,6 +7,7 @@
   set_fact:
     hosts_or_ips_to_add: "{{ hosts_or_ips_to_add|default([]) }}"
     hosts_to_add: "{{ hosts_to_add|default([]) }}"
+    hosts_and_tags: "{{ hosts_and_tags|default([]) }}"
 
 # Validate vars for K8s computer master node hosts to add
 - fail:
@@ -118,6 +119,12 @@
   loop: "{{ groups['all'] }}"
   when: item in hosts_or_ips_to_add or hostvars[item].ansible_host in hosts_or_ips_to_add
 
+# - name: Create a list with the hostnames and the tags for each K8s hosts to be added
+#   set_fact:
+#     hosts_and_tags: "{{ hosts_and_tags + [ {'hostname': item, 'tags':  ] }}"
+#   loop: "{{ hosts_to_add }}"
+#   when: item in hosts_or_ips_to_add or hostvars[item].ansible_host in hosts_or_ips_to_add
+
 - debug:
     msg:
     - "*** Preparing to add K8s Hosts to ECP ***"
@@ -184,7 +191,7 @@
     - "*** Input file content: "
     - "{{ lookup('template', 'add_k8s_hosts.j2') | to_nice_yaml }}"
 
-# - name: Setting up and configuring k8s hosts.
-#   shell: "epicctl op -f {{ input_file }} -n {{ platform.name }} --defaultpassword {{ ecp_credentials.site_admin_password }}"
-#   register: res
-#   failed_when: res.rc != 0
+- name: Setting up and configuring k8s hosts.
+  shell: "epicctl op -f {{ input_file }} -n {{ platform.name }} --defaultpassword {{ ecp_credentials.site_admin_password }}"
+  register: res
+  failed_when: res.rc != 0
