@@ -95,6 +95,14 @@ parameters:
       - name: openebs-controlplane
         value: true
 {% endif %}
+{% if ecp_k8s.df_worker_nodes.hosts is defined and (host in ecp_k8s.df_worker_nodes.hosts or host_ip in ecp_k8s.df_worker_nodes.hosts) %}
+{% if have_tags == false %}
+    tags:
+{% set have_tags = true %}
+{% endif %}
+      - name: Datafabric
+        value: true
+{% endif %}
   host:
     internal_ip: {{ host_ip }}
   ssh:
