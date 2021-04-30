@@ -112,7 +112,7 @@
     msg:
     - "*** K8s Hosts to add back ***"
     - "*** Input file content: "
-    ÷- "{{ lookup('template', 're-add_k8s_hosts.j2') | to_nice_yaml(indent=4, width=132) }}"
+    #- "{{ lookup('template', 're-add_k8s_hosts.j2') | to_nice_yaml(indent=4, width=132) }}"
     - "{{ lookup('template', 're-add_k8s_hosts.j2') | from_yaml }}"
   when:
     - k8s_ids_to_delete|length > 0  
