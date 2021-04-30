@@ -27,6 +27,9 @@ parameters:
 {% if tag_name is defined %}  
       - name: {{ tag_name }}
         value: {{ tag_entry.tag_value }}
+{% else %}
+      - tag_id: {{ tag_entry.tag_id }} 
+        last_name: {{ ecp_tag | json_query('name') }}       
 {% endif %}      
 {% endfor %}
 {% endif %}
