@@ -21,7 +21,7 @@ parameters:
 {% if host_tags is defined and host_tags is iterable %}
     tags:
   {% for tag_entry in host_tags %}
-  {% set tag_name = ecp_tags_list | json_query('name') if (ecp_tags_list | json_query('tag_entry.tag_id')) %}
+  {% set tag_name = ecp_tags_list | json_query('name') if (ecp_tags_list | json_query('tag_id') == tag_entry.tag_id) %}
       - name: {{ tag_name }}
         value: {{ tag_entry.tag_value }}
   {% endfor %}
