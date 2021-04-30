@@ -22,14 +22,14 @@ parameters:
     tags:
 {% for tag_entry in host_tags %}
 {% for ecp_tag in ecp_tags_list %}
-{% set tag_name = (ecp_tag | json_query('name')) if (ecp_tag | json_query('tag_id') == tag_entry.tag_id) %}
+{% set tag_name = (ecp_tag | json_query('name')) if (ecp_tag | json_query('tag_id') == tag_entry.tag_id) else  %}
 {% endfor %}
 {% if tag_name is defined %}  
       - name: {{ tag_name }}
         value: {{ tag_entry.tag_value }}
 {% else %}
       - tag_id: {{ tag_entry.tag_id }} 
-        last_name: {{ ecp_tag | json_query('name') }}       
+        name:        
 {% endif %}      
 {% endfor %}
 {% endif %}
