@@ -98,7 +98,6 @@
 - name: Create a fact with the session info from the API call  
   set_fact:
     input_file: "/tmp/{{ platform.name }}_re-add_deleted_k8s_hosts.yml"
-    cacheable: True
   when: k8s_ids_to_delete|length > 0  
 
 - name: Prepare input file for API REST call in case we need to recover and put the hosts back in the platform
@@ -109,19 +108,27 @@
   when: 
     - k8s_ids_to_delete|length > 0  
 
-- name: Delete K8s hosts from platform
-  uri:
-    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080{{ item }}"
-    return_content: yes
-    headers:
-      X-BDS-SESSION: "{{ session_id }}"
-      Content-Type: "application/json"
-    method: DELETE
-    validate_certs: "{{ platform.validate_certs }}"
-    status_code: 204
-  register: cluster_res
-  loop: "{{ k8s_ids_to_delete }}"
-  when: k8s_ids_to_delete|length > 0  
+- debug:
+    msg:
+    - "*** K8s Hosts to add back ***"
+    - "*** Input file content: "
+    - "{{ lookup('template', 're-add_k8s_hosts.j2') | to_nice_yaml }}"
+  when:
+    - k8s_ids_to_delete|length > 0  
+ 
+# - name: Delete K8s hosts from platform
+#   uri:
+#     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080{{ item }}"
+#     return_content: yes
+#     headers:
+#       X-BDS-SESSION: "{{ session_id }}"
+#       Content-Type: "application/json"
+#     method: DELETE
+#     validate_certs: "{{ platform.validate_certs }}"
+#     status_code: 204
+#   register: cluster_res
+#   loop: "{{ k8s_ids_to_delete }}"
+#   when: k8s_ids_to_delete|length > 0  
 
 #  - name: Poll the status of cluster creation by making get call to /api/v2/k8scluster/k8scluster_id
 #    command: epicctl api get -u {{ jsonResp }} -n "OnPremSetup" -p {{ platform.type }} -o /tmp/get-response.json
