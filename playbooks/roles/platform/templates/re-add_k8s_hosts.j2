@@ -21,13 +21,13 @@ parameters:
 {% if host_tags is defined and host_tags is iterable %}
     tags:
   {% for tag_entry in host_tags %}
-    {%  for ecp_tag in ecp_tags_list %}
-  {% set tag_name = ecp_tags_list | json_query('name') if (ecp_tag.tag_id == tag_entry.tag_id) %}
-    {% endfor %}
-  {% if tag_name is defined %}  
+  {%  for ecp_tag in ecp_tags_list %}
+  {% set tag_name = ecp_tags_list | json_query('name') if (ecp_tag.tag_id == tag_entry.tag_id) else ecp_tag.tag_id %}
+  {% endfor %}
+{% if tag_name is defined %}  
       - name: {{ tag_name }}
         value: {{ tag_entry.tag_value }}
-  {% endif %}      
+{% endif %}      
   {% endfor %}
 {% endif %}
   host:
