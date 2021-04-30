@@ -22,8 +22,10 @@ parameters:
     tags:
 {% for tag_entry in host_tags %}
 {% for ecp_tag in ecp_tags_list %}
-  {% if ecp_tag | json_query('tag_id') == tag_entry.tag_id %}
+  {% if (ecp_tag | json_query('tag_id')) == tag_entry.tag_id %}
     {% set tag_name = ecp_tag | json_query('name') %}
+  {% else %}
+    {% set tag_name = 'unknown' %}      
   {% endif %}
       - ecp_tag_id: {{ ecp_tag | json_query('tag_id') }}
         tag_id: {{ tag_entry.tag_id }}
@@ -31,9 +33,6 @@ parameters:
 {% if tag_name is defined %}  
       - name: {{ tag_name }}
         value: {{ tag_entry.tag_value }}
-{% else %}
-      - tag_id: {{ tag_entry.tag_id }} 
-        name:        
 {% endif %}      
 {% endfor %}
 {% endif %}
