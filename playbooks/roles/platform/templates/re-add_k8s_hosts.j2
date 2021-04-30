@@ -20,15 +20,15 @@ parameters:
     install_type: {{ platform.install.install_type }}
 {% if host_tags is defined and host_tags is iterable %}
     tags:
-  {% for tag_entry in host_tags %}
-  {%  for ecp_tag in ecp_tags_list %}
-  {% set tag_name = ecp_tags_list | json_query('name') if (ecp_tag.tag_id == tag_entry.tag_id) else ecp_tag.tag_id %}
-  {% endfor %}
+{% for tag_entry in host_tags %}
+{% for ecp_tag in ecp_tags_list %}
+{% set tag_name = ecp_tags_list | json_query('name') if (ecp_tag.tag_id == tag_entry.tag_id) else ecp_tag.tag_id %}
+{% endfor %}
 {% if tag_name is defined %}  
       - name: {{ tag_name }}
         value: {{ tag_entry.tag_value }}
 {% endif %}      
-  {% endfor %}
+{% endfor %}
 {% endif %}
   host:
     internal_ip: {{ host_ip }}
