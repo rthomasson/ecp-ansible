@@ -24,7 +24,7 @@ parameters:
     {%  for ecp_tag in ecp_tags_list %}
   {% set tag_name = ecp_tags_list | json_query('name') if (ecp_tag.tag_id == tag_entry.tag_id) %}
     {% endfor %}
-  {% if tag_name is defined }  
+  {% if tag_name is defined %}  
       - name: {{ tag_name }}
         value: {{ tag_entry.tag_value }}
   {% endif %}      
