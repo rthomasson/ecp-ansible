@@ -1,26 +1,5 @@
 {% for host in k8s_hosts_to_restore if host not in groups.repair_pool or force_repair is defined and force_repair %}
 {% set host_ip = host | json_query('ansible_host') %}
---- 
-op: K8sHostSetup
-platform: {{ platform.type }}
-parameters:
-  host:
-    host_ip: {{ host_ip }}
-  ssh:
-    username: {{ ecp_credentials.ssh.username }}
-    access_type: {{ ecp_credentials.ssh.access_type }}
-{% if ecp_credentials.ssh.access_type == 'password_access' %}
-    password: {{ ecp_credentials.ssh.password }}
-{% else %}
-    keypair_file: {{ ecp_credentials.ssh.keypair_file }}
-    keypair_name: {{ ecp_credentials.ssh.keypair_name }}
-{% if ecp_credentials.ssh.key_passphrase is defined %}
-    priv_keypair_password: {{ ecp_credentials.ssh.key_passphrase }}
-{% endif %}
-{% endif %}
-{% endfor %} 
-{% for host in k8s_hosts_to_restore if host not in groups.repair_pool or force_repair is defined and force_repair %}
-{% set host_ip = host | json_query('ansible_host') %}
 {% set host_tags = host | json_query('tags') %}
 {% set ephemeral_disks = host | json_query('ephemeral_disks') %}
 {% set persistent_disks = host | json_query('persistent_disks') %}
@@ -55,5 +34,17 @@ parameters:
 {% endif %}
   host:
     internal_ip: {{ host_ip }}
+  ssh:
+    username: {{ ecp_credentials.ssh.username }}
+    access_type: {{ ecp_credentials.ssh.access_type }}
+{% if ecp_credentials.ssh.access_type == 'password_access' %}
+    password: {{ ecp_credentials.ssh.password }}
+{% else %}
+    keypair_file: {{ ecp_credentials.ssh.keypair_file }}
+    keypair_name: {{ ecp_credentials.ssh.keypair_name }}
+{% if ecp_credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ ecp_credentials.ssh.key_passphrase }}
+{% endif %}
+{% endif %}
 {% endfor %}
     verbose: true
