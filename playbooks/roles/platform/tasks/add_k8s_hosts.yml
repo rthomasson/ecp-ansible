@@ -92,7 +92,7 @@
     msg: "Error: If you specify K8s data fabric worker nodes then the disk configuration, host names and tenant_storage flag must be provided"
   when: 
     (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.hosts is undefined) or
-    (ecp_k8s.df_worker_nodes.hosts is defined and (ecp_k8s.df_master_nodes.hosts is not iterable or ecp_k8s.df_worker_nodes.hosts|length < 1)) or
+    (ecp_k8s.df_worker_nodes.hosts is defined and (ecp_k8s.df_worker_nodes.hosts is not iterable or ecp_k8s.df_worker_nodes.hosts|length < 1)) or
     (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.disks.ephemeral_disks is undefined) or
     (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.disks.ephemeral_disks is defined and (ecp_k8s.df_worker_nodes.disks.ephemeral_disks is not iterable or ecp_k8s.df_worker_nodes.disks.ephemeral_disks|length < 1)) or
     (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.no_tenant_storage is undefined)
