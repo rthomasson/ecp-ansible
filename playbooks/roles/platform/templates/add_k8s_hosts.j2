@@ -1,6 +1,27 @@
 {# Configure K8s Host installation YAML file for epicctl #}
 {% for host in hosts_to_add if host not in groups.repair_pool or force_repair is defined and force_repair %}
 {% set host_ip = hostvars[host].ansible_host %}
+--- 
+op: K8sHostSetup
+platform: {{ platform.type }}
+parameters:
+  host:
+    host_ip: {{ host_ip }}
+  ssh:
+    username: {{ ecp_credentials.ssh.username }}
+    access_type: {{ ecp_credentials.ssh.access_type }}
+{% if ecp_credentials.ssh.access_type == 'password_access' %}
+    password: {{ ecp_credentials.ssh.password }}
+{% else %}
+    keypair_file: {{ ecp_credentials.ssh.keypair_file }}
+    keypair_name: {{ ecp_credentials.ssh.keypair_name }}
+{% if ecp_credentials.ssh.key_passphrase is defined %}
+    priv_keypair_password: {{ ecp_credentials.ssh.key_passphrase }}
+{% endif %}
+{% endif %}
+{% endfor %} 
+{% for host in hosts_to_add if host not in groups.repair_pool or force_repair is defined and force_repair %}
+{% set host_ip = hostvars[host].ansible_host %}
 {% set have_tags = false %}
 ---
 op: K8sHostConfig
@@ -100,6 +121,8 @@ parameters:
     tags:
 {% set have_tags = true %}
 {% endif %}
+      - name: Datafabric
+        value: true
 {% endif %}
   host:
     internal_ip: {{ host_ip }}
