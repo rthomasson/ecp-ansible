@@ -28,7 +28,7 @@ parameters:
     {% if ecp_tag_id == tag_entry.tag_id %}
       {% set tag_name = ecp_tag_name %}
     {% endif %}
-      - ecp_tag_id: {{ ecp_tag | json_query('tag_id') }}
+      - ecp_tag_id: {{ ecp_tag_id }}
         tag_id: {{ tag_entry.tag_id }}
   {% endfor %}
       - name: {{ tag_name }}
