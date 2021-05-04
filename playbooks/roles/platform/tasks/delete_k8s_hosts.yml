@@ -118,19 +118,19 @@
   when:
     - k8s_ids_to_delete|length > 0  
  
-# - name: Delete K8s hosts from platform
-#   uri:
-#     url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080{{ item }}"
-#     return_content: yes
-#     headers:
-#       X-BDS-SESSION: "{{ session_id }}"
-#       Content-Type: "application/json"
-#     method: DELETE
-#     validate_certs: "{{ platform.validate_certs }}"
-#     status_code: 204
-#   register: cluster_res
-#   loop: "{{ k8s_ids_to_delete }}"
-#   when: k8s_ids_to_delete|length > 0  
+- name: Delete K8s hosts from platform
+  uri:
+    url: "{{ platform.rest_protocol }}://{{ platform.controller }}:8080{{ item }}"
+    return_content: yes
+    headers:
+      X-BDS-SESSION: "{{ session_id }}"
+      Content-Type: "application/json"
+    method: DELETE
+    validate_certs: "{{ platform.validate_certs }}"
+    status_code: 204
+  register: cluster_res
+  loop: "{{ k8s_ids_to_delete }}"
+  when: k8s_ids_to_delete|length > 0  
 
 #  - name: Poll the status of cluster creation by making get call to /api/v2/k8scluster/k8scluster_id
 #    command: epicctl api get -u {{ jsonResp }} -n "OnPremSetup" -p {{ platform.type }} -o /tmp/get-response.json
