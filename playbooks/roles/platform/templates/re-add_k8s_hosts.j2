@@ -27,14 +27,10 @@ parameters:
 {% set ecp_tag_name = ecp_tag | json_query('name') %}
 {% if ecp_tag_id == tag_entry.tag_id %}
 {% set tag_name = ecp_tag_name %}
-{% endif %}
-      - ecp_tag_id: {{ ecp_tag_id }}
-        entry_tag_id: {{ tag_entry.tag_id }}
-        ecp_tag_name: {{ ecp_tag_name }}       
-        tag_name: {{ tag_name }} 
-{% endfor %}
       - name: {{ tag_name }}
         value: {{ tag_entry.tag_value }}
+{% endif %}
+{% endfor %}
 {% endfor %}
 {% endif %}
   host:
