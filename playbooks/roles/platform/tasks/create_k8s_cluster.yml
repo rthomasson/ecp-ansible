@@ -100,6 +100,16 @@
   set_fact:
     current_k8s_hosts: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
 
+
+- debug:
+    msg:
+    - "*** Matching node found ***"
+    - "Current K8s host: {{ item | json_query('hostname') }}"
+  when:
+    ((item | json_query('status') == 'ready') and (item | json_query('ansible_host') | ipv4) and (item | json_query('ansible_host') is in current_k8s_hosts)) or 
+    ((item | json_query('status') == 'ready') and (item | json_query('hostname') is in current_k8s_hosts))
+  loop: "{{ new_cluster_nodes }}"
+
 - name: Create a fact with the list of nodes to include in the K8s cluster being created  
   set_fact:
     k8s_nodes_list: "{{ k8s_nodes_list + [item | json_query('{ansible_host: ansible_host, host_id: host_id, hostname: hostname, status: status}')] }}"
