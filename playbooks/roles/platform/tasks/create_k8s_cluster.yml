@@ -4,8 +4,8 @@
 
 - name: Create a fact for the lists of K8s hosts to add  
   set_fact:
-    k8s_nodes: "{{ k8s_nodes|default([]) }}"
-    k8s_nodes_list: "{{ k8s_nodes_list|default([]) }}"
+    new_cluster_nodes: "{{ new_cluster_nodes|default([]) }}"  # The nodes specified in the YAML for creating the new cluster 
+    k8s_nodes_list: "{{ k8s_nodes_list|default([]) }}" 
 
 # Validate vars for a K8s compute cluster Master and Worker nodes. At a minimum, a K8s compute cluster must include one master node and one worker.
 - fail:
@@ -18,7 +18,7 @@
 
 - name: Create a fact with the list of K8s compute cluster Master node and Worker node hosts to be added    
   set_fact:
-    k8s_nodes:  "{{ k8s_nodes + ecp_k8s.master_nodes.hosts + ecp_k8s.worker_nodes.hosts }}"
+    new_cluster_nodes:  "{{ new_cluster_nodes + ecp_k8s.master_nodes.hosts + ecp_k8s.worker_nodes.hosts }}"
   when: 
     - ecp_k8s.master_nodes.hosts is defined and ecp_k8s.master_nodes.hosts is iterable 
     - ecp_k8s.worker_nodes.hosts is defined and ecp_k8s.worker_nodes.hosts is iterable 
@@ -32,7 +32,7 @@
 
 - name: Create a fact with the list of K8s Ingress node hosts to be added    
   set_fact:
-    k8s_nodes:  "{{ k8s_nodes + ecp_k8s.ingress_nodes.hosts }}"
+    new_cluster_nodes:  "{{ new_cluster_nodes + ecp_k8s.ingress_nodes.hosts }}"
   when:
     - ecp_k8s.ingress_nodes.hosts is defined and ecp_k8s.ingress_nodes.hosts is iterable
 
@@ -45,7 +45,7 @@
       
 - name: Create a fact with the list of K8s CP Worker node hosts to be added    
   set_fact:
-    k8s_nodes:  "{{ k8s_nodes + ecp_k8s.cp_nodes.hosts }}"
+    new_cluster_nodes:  "{{ new_cluster_nodes + ecp_k8s.cp_nodes.hosts }}"
   when:
     - ecp_k8s.cp_nodes.hosts is defined and ecp_k8s.cp_nodes.hosts is iterable
 
@@ -58,9 +58,9 @@
     (ecp_k8s.df_worker_nodes is defined and ecp_k8s.df_worker_nodes.hosts is undefined) or
     (ecp_k8s.df_worker_nodes.hosts is defined and (ecp_k8s.df_master_nodes.hosts is not iterable or ecp_k8s.df_worker_nodes.hosts|length < 5))
       
-- name: Add the K8s data fabric master node hosts to the list to be added    
+- name: Add the K8s data fabric master node and worker node hosts to the list to be added    
   set_fact:
-    k8s_nodes:  "{{ k8s_nodes + ecp_k8s.df_master_nodes.hosts + ecp_k8s.df_worker_nodes.hosts }}"
+    new_cluster_nodes:  "{{ new_cluster_nodes + ecp_k8s.df_master_nodes.hosts + ecp_k8s.df_worker_nodes.hosts }}"
   when: 
     - ecp_k8s.df_master_nodes.hosts is defined and ecp_k8s.df_master_nodes.hosts is iterable 
     - ecp_k8s.df_master_nodes.hosts|length > 2
@@ -98,15 +98,15 @@
 
 - name: Create a fact with a parsed list of the current k8s hosts from the API call  
   set_fact:
-    k8shosts_list: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
+    current_k8s_hosts: "{{ k8shost_res.json | json_query('_embedded.k8shosts[*].{ansible_host: ipaddr, host_id: _links.self.href, hostname: hostname, status: status}') }}"
 
 - name: Create a fact with the list of nodes to include in the K8s cluster being created  
   set_fact:
     k8s_nodes_list: "{{ k8s_nodes_list + [item | json_query('{ansible_host: ansible_host, host_id: host_id, hostname: hostname, status: status}')] }}"
   when:
-    ((item | json_query('status') == 'ready') and (item | json_query('ansible_host') | ipv4) and (item | json_query('ansible_host') is in k8s_nodes)) or 
-    ((item | json_query('status') == 'ready') and (item | json_query('hostname') is in k8s_nodes))
-  loop: "{{ k8shosts_list }}"
+    ((item | json_query('status') == 'ready') and (item | json_query('ansible_host') | ipv4) and (item | json_query('ansible_host') is in current_k8s_hosts)) or 
+    ((item | json_query('status') == 'ready') and (item | json_query('hostname') is in current_k8s_hosts))
+  loop: "{{ new_cluster_nodes }}"
 
 - name: Create a fact with the JSON required for the REST API call  
   set_fact:
