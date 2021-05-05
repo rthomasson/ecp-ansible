@@ -171,9 +171,6 @@
     status_code: 204
   register: delsession_res
 
-- debug:
-    msg: "End Get Tags Session: {{ session_res.location  | urlsplit('path') }}"
-
 # NOTE: Host tag labels for the K8s hosts being added are derived from Ansible inventory host inventory variables:
 - name: Prepare input file for epicctl (skipping any in repair_pool)
   template:
