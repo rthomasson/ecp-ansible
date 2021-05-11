@@ -58,8 +58,12 @@ platform:
     ###############################################
     # Installer and Prechecks file info for ECP 5.3
     ###############################################  
-    bin_url: "http://16.143.20.46:8080/rock/golden/5.3-GA/3031/hpe-cp-rhel-release-5.3-3031.bin"
-    installer_file: "hpe-cp-rhel-release-5.3-3031.bin"
+    bin_url: https://bluedata-qa-releases.s3.amazonaws.com/5.3.1-pre-release/hpe-cp-rhel-release-5.3-3033.bin
+    installer_file: "hpe-cp-rhel-release-5.3-3033.bin"
+    # bin_url: https://bluedata-qa-releases.s3.amazonaws.com/5.3.1-pre-release/hpe-cp-rhel-release-5.3-3032.bin
+    # installer_file: "hpe-cp-rhel-release-5.3-3032.bin"
+    #bin_url: "http://16.143.20.46:8080/rock/golden/5.3-GA/3031/hpe-cp-rhel-release-5.3-3031.bin"
+    #installer_file: "hpe-cp-rhel-release-5.3-3031.bin"
     prechecks_file: "hpe-cp-rhel-prechecks-5.3.bin"
     #-----------------------------------------
     # Installer and Prechecks file for ECP 5.2  
