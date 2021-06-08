@@ -2,7 +2,7 @@
   "change_spec": {
      "remove_k8shosts": [
 
-{% for item in k8shosts_list if k8s_cluster.master_nodes is defined and item | json_query('ansible_host') in k8s_cluster.master_nodes %}
+{% for item in k8shosts_list if k8shosts_list is iterable %}
 {% if loop.last %}
         "{{ item | json_query('host_id') }}"
 {% else %}
