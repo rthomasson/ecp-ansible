@@ -1,4 +1,4 @@
-{% for host in k8s_hosts_to_restore if k8s_hosts_to_restore is iterable and host not in groups.repair_pool or force_repair is defined and force_repair %}
+{% for host in k8s_hosts_to_restore if host not in groups.repair_pool or force_repair is defined and force_repair %}
 {% set host_ip = host | json_query('ansible_host') %}
 {% set host_tags = host | json_query('tags') %}
 {% set ephemeral_disks = host | json_query('ephemeral_disks') %}

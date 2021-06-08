@@ -108,7 +108,8 @@
     dest: "{{ input_file }}"
     mode: 0777
   when: 
-    - k8s_ids_to_delete|length > 0  
+    - k8s_ids_to_delete|length > 0 
+    - k8s_hosts_to_restore is iterable 
 
 - debug:
     msg:
