@@ -80,19 +80,21 @@
     k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
     k8s_hosts_to_restore: "{{ k8s_hosts_to_restore + [item | json_query('{ansible_host: ansible_host, host_id: host_id, hostname: hostname, ephemeral_disks: ephemeral_disks, persistent_disks: persistent_disks, tags: tags}')] }}"
     cacheable: True
-  when: ecp_k8s.hosts_to_delete.list is defined and
+  when: (ecp_k8s.hosts_to_delete.list is defined and
         (item | json_query('ansible_host') in ecp_k8s.hosts_to_delete.list or 
-        item | json_query('hostname') in ecp_k8s.hosts_to_delete.list)
+        item | json_query('hostname') in ecp_k8s.hosts_to_delete.list)) or
+        (ecp_k8s.hosts_to_delete.status is defined and
+        item | json_query('status') == ecp_k8s.hosts_to_delete.status)
   loop: "{{ k8s_hosts_list }}"
 
-- name: Create list of hosts to delete based on k8s host status
-  set_fact:
-    k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
-    k8s_hosts_to_restore: "{{ k8s_hosts_to_restore + [item | json_query('{ansible_host: ansible_host, host_id: host_id, hostname: hostname, ephemeral_disks: ephemeral_disks, persistent_disks: persistent_disks, tags: tags}')] }}"
-    cacheable: True
-  when: ecp_k8s.hosts_to_delete.status is defined and
-        item | json_query('status') == ecp_k8s.hosts_to_delete.status
-  loop: "{{ k8s_hosts_list }}"
+# - name: Create list of hosts to delete based on k8s host status
+#   set_fact:
+#     k8s_ids_to_delete: "{{ k8s_ids_to_delete + [item | json_query('host_id')] }}"
+#     k8s_hosts_to_restore: "{{ k8s_hosts_to_restore + [item | json_query('{ansible_host: ansible_host, host_id: host_id, hostname: hostname, ephemeral_disks: ephemeral_disks, persistent_disks: persistent_disks, tags: tags}')] }}"
+#     cacheable: True
+#   when: ecp_k8s.hosts_to_delete.status is defined and
+#         item | json_query('status') == ecp_k8s.hosts_to_delete.status
+#   loop: "{{ k8s_hosts_list }}"
 
 # Use add_k8s_hosts.j2 to create a YAML file for re-adding the hosts that were just deleted if the operation needs to be rolled back
 - name: Create a fact with the session info from the API call  
@@ -131,20 +133,6 @@
   register: cluster_res
   loop: "{{ k8s_ids_to_delete }}"
   when: k8s_ids_to_delete|length > 0  
-
-#  - name: Poll the status of cluster creation by making get call to /api/v2/k8scluster/k8scluster_id
-#    command: epicctl api get -u {{ jsonResp }} -n "OnPremSetup" -p {{ platform.type }} -o /tmp/get-response.json
-#    vars:
-#      getResp: "{{ (lookup('file', '/tmp/get-response.json') | from_json)['status'] }}"
-#    register : res
-#    failed_when: res.rc != 0
-#    changed_when: false
-#    retries: 30
-#    delay: 60
-#    until:  '"ready" == getResp'
-
-#  - debug:
-#      msg: "polling task finished"
 
 - name: Log out of session
   uri:
