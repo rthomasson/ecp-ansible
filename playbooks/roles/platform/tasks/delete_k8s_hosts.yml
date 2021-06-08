@@ -84,7 +84,7 @@
         (item | json_query('ansible_host') in ecp_k8s.hosts_to_delete.list or 
         item | json_query('hostname') in ecp_k8s.hosts_to_delete.list)) or
         (ecp_k8s.hosts_to_delete.status is defined and
-        (ecp_k8s_hosts_to_delete.status != 'error') and item | json_query('status') == ecp_k8s.hosts_to_delete.status)
+        (ecp_k8s.hosts_to_delete.status != 'error') and item | json_query('status') == ecp_k8s.hosts_to_delete.status)
   loop: "{{ k8s_hosts_list }}"
 
 # - name: Create list of hosts to delete based on k8s host status
